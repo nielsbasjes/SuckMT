@@ -1,13 +1,13 @@
 #=========================================================================
-#                   Copyright (C) 2003 by Niels Basjes
-#              SuckMT Website : http://oss.basjes.nl/SuckMT/
+#                   Copyright (C) 2000 by Niels Basjes
+#                  SuckMT Website: http://go.to/suckmt
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2003/04/29 23:09:49 $
-#  $Revision: 1.17 $
+#  $Date: 2002/12/27 13:24:00 $
+#  $Revision: 1.11 $
 #  $RCSfile: GNUmakefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -23,14 +23,10 @@ bin_PROGRAMS = suckmt
 EXTRA_PROGRAMS = suckmtstatic
 
 DOCS=README ChangeLog INSTALL suckmt.lsm suckmt.ini.sample AUTHORS COPYING README NEWS
-datadir=/var/spool/suckmt
-scriptdir=/var/lib/suckmt
-
-#RedHat 9 expands ${sysconfdir} to  /usr/etc instead of /etc
-#So we do not use ${sysconfdir}
-#configdir=${sysconfdir}
-configdir=/etc
-bindir=${prefix}/bin
+datadir=${prefix}/var/spool/suckmt
+docdir=${prefix}/usr/doc/packages/suckmt
+configdir=${prefix}/etc
+bindir=${prefix}/usr/bin
 #-------------------------
 
 if DEBUG
@@ -43,8 +39,8 @@ COMPILER_DEBUG = -O3
 LD_OMIT_SYMBOLS = -s
 endif
 
-CXXFLAGS = $(COMPILER_DEBUG)
-CFLAGS = $(COMPILER_DEBUG)
+AM_CXXFLAGS = $(COMPILER_DEBUG)
+AM_CFLAGS = $(COMPILER_DEBUG)
 
 #-------------------------
 
@@ -73,25 +69,6 @@ SUCKSOURCES += Tokenize.cpp
 SUCKSOURCES += MultiStream.cpp 
 SUCKSOURCES += TraceLog.cpp 
 
-# Under development: support for RegEx++
-if REGEXPP
-REGEXPSOURCES  = c_regex_traits.cpp
-REGEXPSOURCES += c_regex_traits_common.cpp
-REGEXPSOURCES += cpp_regex_traits.cpp
-REGEXPSOURCES += cregex.cpp
-REGEXPSOURCES += fileiter.cpp
-REGEXPSOURCES += posix_api.cpp
-REGEXPSOURCES += regex_.cpp
-REGEXPSOURCES += regex_debug.cpp
-REGEXPSOURCES += regex_synch.cpp
-REGEXPSOURCES += w32_regex_traits.cpp
-REGEXPSOURCES += wide_posix_api.cpp
-else
-REGEXPSOURCES  = regex.c
-endif
-
-SUCKSOURCES += $(REGEXPSOURCES)
-
 # Omnithread specific flags
 if OMNITHREADIMPL_POSIX
 OMNITHREADIMPL_P = posix.cc
@@ -113,8 +90,8 @@ OMNITHREADIMPL_N = nt.cpp
 endif
 SUCKSOURCES += $(OMNITHREADIMPL_N)
 
-CXXFLAGS += @OMNITHREADFLAGS@
-CFLAGS += @OMNITHREADFLAGS@
+AM_CXXFLAGS += @OMNITHREADFLAGS@
+AM_CFLAGS += @OMNITHREADFLAGS@
 
 # Extradist includes some generic files
 EXTRA_DIST  = Makefile.nognumake Makefile.ed suckmt.ini.sample.in suckmt.ini.sample
@@ -159,128 +136,26 @@ EXTRA_DIST += Tokenize.h                Tokenize.cpp
 EXTRA_DIST += MultiStream.h             MultiStream.cpp 
 EXTRA_DIST += TraceLog.h                TraceLog.cpp 
 
-# The regex++ sources for all platforms
-EXTRA_DIST += regex++/boost/regex/detail/fileiter.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_compile.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_config.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_cstring.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_format.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_kmp.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_library_include.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_match.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_options.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_raw_buffer.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_split.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_stack.hpp
-EXTRA_DIST += regex++/boost/regex/detail/regex_synch.hpp
-EXTRA_DIST += regex++/boost/regex/pattern_except.hpp
-EXTRA_DIST += regex++/boost/regex/regex_traits.hpp
-EXTRA_DIST += regex++/boost/config.hpp
-EXTRA_DIST += regex++/boost/cregex.hpp
-EXTRA_DIST += regex++/boost/regex.h
-EXTRA_DIST += regex++/boost/regex.hpp
-EXTRA_DIST += regex++/boost/smart_ptr.hpp
-EXTRA_DIST += regex++/boost/timer.hpp
-EXTRA_DIST += regex++/boost/type_traits.hpp
-EXTRA_DIST += regex++/boost/utility.hpp
-EXTRA_DIST += regex++/boost/type_traits/alignment_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/arithmetic_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/composite_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/conversion_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/cv_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/function_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/fwd.hpp
-EXTRA_DIST += regex++/boost/type_traits/ice.hpp
-EXTRA_DIST += regex++/boost/type_traits/object_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/same_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/transform_traits.hpp
-EXTRA_DIST += regex++/boost/type_traits/transform_traits_spec.hpp
-EXTRA_DIST += regex++/boost/type_traits/type_traits_test.hpp
-EXTRA_DIST += regex++/c++boost.gif
-EXTRA_DIST += regex++/regex.htm
-EXTRA_DIST += regex++/libs/regex/src/c_regex_traits.cpp
-EXTRA_DIST += c_regex_traits.cpp
-EXTRA_DIST += regex++/libs/regex/src/c_regex_traits_common.cpp
-EXTRA_DIST += c_regex_traits_common.cpp
-EXTRA_DIST += regex++/libs/regex/src/cpp_regex_traits.cpp
-EXTRA_DIST += cpp_regex_traits.cpp
-EXTRA_DIST += regex++/libs/regex/src/cregex.cpp
-EXTRA_DIST += cregex.cpp
-EXTRA_DIST += regex++/libs/regex/src/fileiter.cpp
-EXTRA_DIST += fileiter.cpp
-EXTRA_DIST += regex++/libs/regex/src/posix_api.cpp
-EXTRA_DIST += posix_api.cpp
-EXTRA_DIST += regex++/libs/regex/src/primary_transform.hpp
-EXTRA_DIST += primary_transform.hpp
-EXTRA_DIST += regex++/libs/regex/src/regex.cpp
-EXTRA_DIST += regex_.cpp
-EXTRA_DIST += regex++/libs/regex/src/regex_debug.cpp
-EXTRA_DIST += regex_debug.cpp
-EXTRA_DIST += regex++/libs/regex/src/regex_synch.cpp
-EXTRA_DIST += regex_synch.cpp
-EXTRA_DIST += regex++/libs/regex/src/w32_regex_traits.cpp
-EXTRA_DIST += w32_regex_traits.cpp
-EXTRA_DIST += regex++/libs/regex/src/wide_posix_api.cpp
-EXTRA_DIST += wide_posix_api.cpp
-EXTRA_DIST += regex++/libs/regex/appendix.htm
-EXTRA_DIST += regex++/libs/regex/changes.txt
-EXTRA_DIST += regex++/libs/regex/dmi.sh
-EXTRA_DIST += regex++/libs/regex/faq.htm
-EXTRA_DIST += regex++/libs/regex/format_string.htm
-EXTRA_DIST += regex++/libs/regex/hl_ref.htm
-EXTRA_DIST += regex++/libs/regex/index.htm
-EXTRA_DIST += regex++/libs/regex/introduction.htm
-EXTRA_DIST += regex++/libs/regex/licence.txt
-EXTRA_DIST += regex++/libs/regex/posix_ref.htm
-EXTRA_DIST += regex++/libs/regex/readme.txt
-EXTRA_DIST += regex++/libs/regex/syntax.htm
-EXTRA_DIST += regex++/libs/regex/template_class_ref.htm
-EXTRA_DIST += regex++/libs/regex/traits_class_ref.htm
-
-# Sample scripts
-SAMPLESCRIPTS  = scripts/CreateNewGroup
-SAMPLESCRIPTS += scripts/NewsParams
-SAMPLESCRIPTS += scripts/PostProcessNews
-SAMPLESCRIPTS += scripts/put.news
-SAMPLESCRIPTS += scripts/put.news.sm
-SAMPLESCRIPTS += scripts/ReceiveNews
-SAMPLESCRIPTS += scripts/SendNews
-SAMPLESCRIPTS += scripts/TransferNews
-
-EXTRA_DIST += $(SAMPLESCRIPTS)
-
 # Enable Compiler warnings
-#ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
-ALLWARNINGS = -Wall -W -Wpointer-arith -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Woverloaded-virtual -Wsynth 
+#ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
+ALLWARNINGS = -Wall -W -Wpointer-arith -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Woverloaded-virtual -Wsynth 
 
 # GCC 3.2 supports the new C++ standard templates but this code 
 # contains some older code that hasn't been ported yet.
 ALLWARNINGS += -Wno-deprecated
 
-CXXFLAGS += $(ALLWARNINGS)
-CFLAGS += 
-
-#Some flags for the regular expression library
-if REGEXPP
-REGEXP_CXXFLAGS = -I ./regex++ -DBOOST_RE_NO_LIB
-REGEXP_CFLAGS   = -I ./regex++ -DBOOST_RE_NO_LIB
-else
-REGEXP_CXXFLAGS = -DSTDC_HEADERS -DREGEX_MALLOC
-REGEXP_CFLAGS   = -DSTDC_HEADERS -DREGEX_MALLOC
-endif
-
-CXXFLAGS += $(REGEXP_CXXFLAGS)
-CFLAGS   += $(REGEXP_CFLAGS)
+AM_CXXFLAGS += $(ALLWARNINGS)
+AM_CFLAGS += 
 
 #------------------------------
 
 suckmt_SOURCES = $(SUCKSOURCES)
 suckmtstatic_SOURCES = $(SUCKSOURCES)
 
-suckmt_LDFLAGS        = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) 
-suckmt_LDADD          = $(OMNITHREADLINKFLAG)
-suckmtstatic_LDFLAGS  = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) -static 
-suckmtstatic_LDADD    = $(OMNITHREADLINKFLAG) 
+suckmt_LDFLAGS        = -lboost_regex $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) 
+suckmt_LDADD          = -lboost_regex $(OMNITHREADLINKFLAG)
+suckmtstatic_LDFLAGS  = -lboost_regex $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) -static 
+suckmtstatic_LDADD    = -lboost_regex $(OMNITHREADLINKFLAG) 
 
 #------------------------------
 # Explicit dependency
@@ -290,11 +165,10 @@ SuckDefines.h: VERSION
 #------------------------------
 
 cxxflags:
-	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo AM_CXXFLAGS=$(AM_CXXFLAGS)
 	@echo PLATFORM=$(PLATFORM)
 
-#full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
-full-distribution-set: all rpm bin-dist bin-static-dist 
+full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
 	
 bin-dist: all suckmt.ini.sample $(DOCS) 
 	rm -rf suckmt-`cat VERSION`
@@ -354,35 +228,30 @@ suckmt.ini.sample.win32:suckmt.ini.sample
 	sed "s/\/var\/spool\/suckmt\//C:\\\\TEMP\\\\SuckMT\\\\/g" < suckmt.ini.sample \
         | sed "s/\/tmp\//C:\\\\TEMP\\\\SuckMT\\\\/g" > suckmt.ini.sample.win32
 
-# This target is the rpminstall (i.e. everything) and the things the post install
-# script from the spec file takes care of.
-install: rpminstall suckmt.ini.sample 
-	if [ -s $(DESTDIR)$(configdir)/suckmt.ini ]; then \
-	    NOW=`date`; \
-	    cp -f $(DESTDIR)$(configdir)/suckmt.ini "$(DESTDIR)$(configdir)/suckmt.ini-backup-${NOW}"; \
-	    echo Your original $(DESTDIR)$(configdir)/suckmt.ini has been backed up as "$(DESTDIR)$(configdir)/suckmt.ini-backup-${NOW}"; \
-	fi
-	./suckmt -init -i $(DESTDIR)$(configdir)/suckmt.ini
-	@echo "Installing documentation..."
-	for f in $(DOCS); do $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; done
+install: rpminstall 
+	if [ -s $(configdir)/suckmt.ini ];\
+	then \
+	    NOW=`date` ;\
+	    cp -f $(configdir)/suckmt.ini "$(configdir)/suckmt.ini-backup-${NOW}" ;\
+	    echo Your original $(configdir)/suckmt.ini has been backed up as "$(configdir)/suckmt.ini-backup-${NOW}" ;\
+	fi 
+	./suckmt -init -i $(configdir)/suckmt.ini
 
-# This targets installs everything that needs to be installed for buidling an RPM.
-# This is everything except the ini files (which in generated in the post install) 
-# and the documentation (which is handled differently by the spec file).
-rpminstall: all 
+rpminstall: all suckmt.ini.sample
 	@echo "Creating directories..."
-	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(datadir) $(DESTDIR)$(datadir)/in.coming $(DESTDIR)$(docdir) $(DESTDIR)$(scriptdir) $(DESTDIR)/var/log/suckmt
+	$(INSTALL) -d $(bindir) $(datadir) $(datadir)/in.coming $(docdir) 
 	@echo "Installing $(bin_PROGRAMS) executable..."
-	$(INSTALL_PROGRAM) $(bin_PROGRAMS) $(DESTDIR)$(bindir)/$(bin_PROGRAMS)
+	$(INSTALL_PROGRAM) $(bin_PROGRAMS) $(bindir)/$(bin_PROGRAMS)
 	@echo "Creating default configuration file..."
-	[ -d $(DESTDIR)$(configdir) ] || $(INSTALL) -d $(DESTDIR)$(configdir)
-	touch $(DESTDIR)$(configdir)/suckmt.ini
-	@echo "Installing sample scripts..."
-	for f in $(SAMPLESCRIPTS) ; do $(INSTALL_DATA) $$f $(DESTDIR)$(scriptdir)/; done
+	[ -d $(configdir) ] || $(INSTALL) -d $(configdir)
+	touch $(configdir)/suckmt.ini
+	@echo "Installing documentation..."
+	for f in $(DOCS); do $(INSTALL_DATA) $$f $(docdir)/$$f; done
 
 rpm: CopyrightMessage suckmt.lsm suckmt.spec suckmt.ini.sample dist 
-	-@mkdir -p RPM_BUILDING/BUILD  RPM_BUILDING/RPMS  RPM_BUILDING/SOURCES  RPM_BUILDING/SPECS  RPM_BUILDING/SRPMS
-	rpmbuild --define="_topdir `pwd`/RPM_BUILDING" -ta $(distdir).tar.gz  
+	rpmbuild -ta $(distdir).tar.gz  
+	mv /usr/src/redhat/RPMS/*/$(distdir)*.rpm .
+	mv /usr/src/redhat/SRPMS/$(distdir)*.rpm .
 
 debug: CopyrightMessage configure
 	./configure --enable-debug
@@ -403,8 +272,7 @@ CopyrightMessage: VERSION
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement. |"
-	@echo "| (C)2003 by Niels Basjes - http://niels.basjes.nl |"
-	@echo "| http://oss.basjes.nl/SuckMT/                     |"
+	@echo "| (C)2002 by Niels Basjes  -  http://go.to/suckmt  |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"
@@ -419,11 +287,11 @@ CopyrightMessage: VERSION
 	@echo 
 
 full-revert: clean
-	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h*
+	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h{,.in}
 	rm -f GNUmakefile GNUmakefile.in 
 	rm -f suckmt.lsm suckmt.spec suckmt.ini.sample suckmt.ini.sample.win32 
 	rm -rf .deps
-	rm -rf autom4te* depcomp install-sh missing mkinstalldirs
+	rm -rf autom4te* depcomp install-sh missing 
 	cp Makefile.ed Makefile
 
 #End of the file Makefile.am

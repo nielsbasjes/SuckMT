@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.23 $
+//  $Date: 2001/02/11 20:47:44 $
+//  $Revision: 1.21 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================

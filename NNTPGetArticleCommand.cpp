@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.18 $
+//  $Date: 2002/02/18 23:08:43 $
+//  $Revision: 1.16 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -120,7 +120,7 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
 
     char * tmpFileName = filenameStr.str();
     string fileName(tmpFileName);
-    delete tmpFileName;
+    delete[] tmpFileName;
 
     // This switch is required to be able to download
     // this message if the connection failed.

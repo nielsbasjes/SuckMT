@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : HeaderMatcher.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.8 $
+//  $Date: 2001/08/27 19:13:43 $
+//  $Revision: 1.6 $
 //  $RCSfile: HeaderMatcher.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -33,12 +33,8 @@ class HeaderMatcher; // Forward Declaration
 
 #include <strstream>
 
-#ifdef USE_BOOST_REGEX
 #include "boost/regex.hpp"
 using namespace boost;
-#else
-#include "regex.h"
-#endif
 
 #include "IniFile.h"
 #include "Printable.h"
@@ -89,11 +85,7 @@ private:
     long     fImpactValue;
 
     bool     fSearchCaseINSensitive;
-#ifdef USE_BOOST_REGEX
     regex*   fRegExpression;
-#else
-    regex_t  fRegExpression;
-#endif	
 };
 
 DEFINE_PRINTABLE_OPERATORS(HeaderMatcher)

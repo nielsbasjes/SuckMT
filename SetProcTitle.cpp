@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : SetProcTitle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.8 $
+//  $Date: 2002/02/18 23:26:09 $
+//  $Revision: 1.6 $
 //  $RCSfile: SetProcTitle.cpp,v $
 //  $Author: niels $
 //=========================================================================

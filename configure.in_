@@ -1,13 +1,13 @@
 dnl =========================================================================
 dnl                    Copyright (C) 2000 by Niels Basjes
-dnl               SuckMT Website : http://oss.basjes.nl/SuckMT/
+dnl                   SuckMT Website: http://go.to/suckmt
 dnl                         Author: SuckMT@Basjes.nl
 dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2003/04/13 20:37:12 $
-dnl   $Revision: 1.26 $
+dnl   $Date: 2002/02/19 21:44:02 $
+dnl   $Revision: 1.25 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -36,17 +36,6 @@ AC_ARG_ENABLE(debug,
  esac],[debug=false])
 
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
-
-AC_ARG_ENABLE(regexpp,
-[  --enable-regexpp    Choose RegEx++
-   --disable-regexpp   Choose old Regexp libary],
-[case "${enableval}" in
-  yes) regexpp=true ;;
-   no) regexpp=false ;;
-    *) regexpp=false ;;
- esac],[regexpp=true])
-
-AM_CONDITIONAL(REGEXPP, test x$regexpp = xtrue)
 
 dnl Detect the operating system and set the correct flag
 AC_MSG_CHECKING(for support of the current OS)
@@ -159,15 +148,7 @@ dnl Checks for programs.
 dnl Uncomment next line to try to use gcc version 3 
 dnl CCC="gcc3"
 AC_PROG_CXX
-
-if test x$regexpp = xfalse;
-then
-dnl The regular C compiler is needed
-dnl Use the selected C++ compiler for C code aswell
-CC=$CXX
 AC_PROG_CC
-fi
-
 
 dnl AC_PROG_RANLIB
 dnl Checks for libraries.

@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : HeaderMatcher.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.16 $
+//  $Date: 2002/02/18 23:08:42 $
+//  $Revision: 1.14 $
 //  $RCSfile: HeaderMatcher.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -49,9 +49,7 @@ HeaderMatcher::HeaderMatcher(
 {
     fObjectIsValid  = true;
 
-#ifdef USE_BOOST_REGEX
     fRegExpression = NULL;
-#endif
 
     // Copy the parameters
     fIniSectionName = sectionName;
@@ -107,7 +105,6 @@ HeaderMatcher::HeaderMatcher(
     fHeaderValue.assign(parseValueName.begin() + colonPosition + 1,parseValueName.end());
 
 
-#ifdef USE_BOOST_REGEX
     // ----------
     // Try to compile the header value that should be matched
     regbase::flag_type cflags = regbase::normal;
@@ -116,7 +113,7 @@ HeaderMatcher::HeaderMatcher(
 
     try 
     {
-        fRegExpression = new regex(fHeaderValue.c_str(), cflags);
+        fRegExpression = new regex(fHeaderValue, cflags);
     }
 
     catch (bad_expression)
@@ -129,25 +126,6 @@ HeaderMatcher::HeaderMatcher(
         fSettings->SetValue(fIniSectionName, fIniValueName, inistr);
         return;
     }
-#else
-    // ----------
-    // Try to compile the header value that should be matched
-    int cflags = REG_EXTENDED;
-    if (fSearchCaseINSensitive)
-        cflags |= REG_ICASE;
-
-    // Make sure the variable has been nullified
-    ::memset(&fRegExpression,0,sizeof(fRegExpression));
-
-    if (regcomp (&fRegExpression, fHeaderValue.c_str(), cflags) != 0)
-    {
-        Lerror << "Parsing regular expression:" << endl 
-             << "[" << sectionName << "]:" << valueName << " = " << fHeaderValue 
-             << endl << flush;
-        fObjectIsValid = false;
-        return;
-    }
-#endif
 
     // ----------
     // Now get the statistics parameters for the matching process
@@ -177,23 +155,11 @@ HeaderMatcher::HeaderMatcher(
 HeaderMatcher::~HeaderMatcher()
 {
     // Free the memory allocated inside the compiled expression
-#ifdef USE_BOOST_REGEX
     if (fRegExpression != NULL)
         delete (fRegExpression);
-#else
-//    regfree (&fRegExpression);
-#endif
 }
 
 //-------------------------------------------------------------------------
-
-#ifdef USE_BOOST_REGEX
-// Required callback function for the grep implementation
-static bool grep_callback(match_results<string::iterator, regex::alloc_type> & /*what*/ ) 
-{ 
-   return true; 
-}   
-#endif
 
 long
 HeaderMatcher::GetImpactValue(
@@ -229,12 +195,8 @@ HeaderMatcher::GetImpactValue(
     }
 
     // Match regular expression to the actual value
-#ifdef USE_BOOST_REGEX
-    if (!regex_grep(grep_callback,headerValue.begin(),headerValue.end(),
-                    *fRegExpression,boost::match_default | boost::match_any))
-#else
-    if (regexec (&fRegExpression, headerValue.c_str(), 0, NULL, 0) == REG_NOMATCH)
-#endif
+    boost::cmatch what;
+    if (!regex_search(headerValue.c_str(), what, *fRegExpression))
     {
         return 0; // 0 == no impact
     }

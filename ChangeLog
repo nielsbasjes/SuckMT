@@ -82,7 +82,10 @@ Version 0.55
     Fixed: Some compiler problems with the FreeBSD port (Thanks to Charles F. Randall).
     Updated: Changed makefiles so they automatically force the usage of GNU make
     Fixed: Some errors and warnings that came to light with gcc3 (Yes, these were bugs in the code).
-    Fixed: Some minor issues regarding GCC 3.2 as provided with Redhat 8.0 and 9.0
-    Improved: It is now possible for any regular user to do make rpm.
-    Improved: Included some of the improvements as provided by PLD.
-    Added: Sample scripts are now part of the standard distribution
+    Fixed: Some minor issues regarding GCC 3.2 as provided with Redhat 8.0
+Version 0.56
+    Fixed: For some reason the behaviour of automake has been changed over time. Added a reference to a C compiler that is not used.
+Version 0.57
+    Fixed: Serious bug in the INI file read code. Thanks to Bob Jaques for pointing it out to me. This bug effectively made suckmt unusable on many platforms. The strange thing is that the effected code has been in there since almost the very first version. I should have spotted this when making 0.56 but back then I only focussed on the makefiles and related scripts.
+Version 0.58
+    Updated: With Fedora Core 3 the bundeled version of Boost didn't compile any more. The nice thing of FC3 is that it comes with the most recent version of Boost as a standard RPM. SuckMT was modified to rely on this RPM.

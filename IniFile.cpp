@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2003 by Niels Basjes
-//              SuckMT Website : http://oss.basjes.nl/SuckMT/
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2003/04/13 20:51:55 $
-//  $Revision: 1.21 $
+//  $Date: 2002/02/18 23:08:42 $
+//  $Revision: 1.18 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -97,7 +97,7 @@ IniFile::ReadFile(string filename)
             inFile.getline(buffer,9999);
             work_buffer += buffer;
         }
-        
+
         // Skip leading spaces and tabs
         RemoveLeadingSpaces(work_buffer);
 
@@ -116,7 +116,7 @@ IniFile::ReadFile(string filename)
             commentNameStr << "#" << commentNr << ends;
             char * tmpCommentName = commentNameStr.str();
             string commentName(tmpCommentName);
-            delete tmpCommentName;
+            delete[] tmpCommentName;
 
             Section * commentSection = currentSection;
 
@@ -138,29 +138,29 @@ IniFile::ReadFile(string filename)
 
         if (*(work_buffer.begin()) == '[')
         {
-            // Skip leading and trailing spaces and tabs
-            RemoveLeadingSpaces(work_buffer);
-            RemoveTrailingSpaces(work_buffer);
-	    
-            // Remove the  '[' and  ']'
+            // Skip the '['
             work_buffer.erase(work_buffer.begin());
-            work_buffer.erase(work_buffer.find("]"));
 
-            // Skip leading and trailing spaces and tabs (within the [ ])
+            // Skip leading spaces and tabs
             RemoveLeadingSpaces(work_buffer);
             RemoveTrailingSpaces(work_buffer);
             
+            // This is the start of a new section
+            string token(work_buffer,0,work_buffer.find("]"));
+
+            RemoveTrailingSpaces(token);
+
             // Get or Make the requested section
-            currentSection = AddSection(work_buffer);
+            currentSection = AddSection(token);
 
             if (showWhatIsRead)
             {
-                LiniRead << "" << endl << "[" << work_buffer << "]" << endl << flush;
+                LiniRead << "" << endl << "[" << token << "]" << endl << flush;
             }
 
             if (currentSection == NULL)
             {   // Fatal error.
-                Lerror << "Couldn't find or create section \"" << work_buffer
+                Lerror << "Couldn't find or create section \"" << token
                        << "\" in file \"" << filename 
                        << "\" at line " << lineNr << "." << endl << flush;
                 return false;

@@ -3,7 +3,7 @@
 [Suck MT Installation]
 
 [Suck MT Configuration]
-News server Hostname                   = news.wirehub.nl
+News server Hostname                   = news.demon.nl
 
 [Kill Log File]
 Enable Kill Logfile   = False
@@ -35,4 +35,4 @@ nl.comp.os.linux.announce     = 0
 [Keep Headers]
 Newsgroups:^comp.os.linux.announce$     = Sun Oct 22 17:28:33 2000 ;  1873 ;  1000
 Newsgroups:^nl.comp.os.linux.announce$  = Sat Oct 21 20:40:41 2000 ;   117 ;  1000
-Newsgroups:^wirehub                     = Sat Oct 21 20:40:41 2000 ;   639 ;  1000
+Newsgroups:^demon                       = Sat Oct 21 20:40:41 2000 ;   639 ;  1000
