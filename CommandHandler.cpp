@@ -6,10 +6,10 @@
 //  Filename  : CommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2002/02/18 23:08:42 $
-//  $Revision: 1.13 $
+//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 4 $
 //  $RCSfile: CommandHandler.cpp,v $
-//  $Author: niels $
+//  $Author: $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify

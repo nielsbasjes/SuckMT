@@ -6,10 +6,10 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2001/02/11 20:47:44 $
-//  $Revision: 1.21 $
+//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 4 $
 //  $RCSfile: SuckDefines.h,v $
-//  $Author: niels $
+//  $Author: $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify

@@ -6,10 +6,10 @@
 //  Filename  : HeaderMatcher.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2001/08/27 19:13:43 $
-//  $Revision: 1.6 $
+//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 4 $
 //  $RCSfile: HeaderMatcher.h,v $
-//  $Author: niels $
+//  $Author: $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify

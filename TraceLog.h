@@ -6,10 +6,10 @@
 //  Filename  : TraceLog.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:12 $
-//  $Revision: 1.5 $
+//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 4 $
 //  $RCSfile: TraceLog.h,v $
-//  $Author: niels $
+//  $Author: $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify

@@ -6,10 +6,10 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2002/02/18 23:08:44 $
-//  $Revision: 1.35 $
+//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 4 $
 //  $RCSfile: main.cpp,v $
-//  $Author: niels $
+//  $Author: $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify
