@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:12 $
-//  $Revision: 1.8 $
+//  $Date: 1999/10/11 18:24:01 $
+//  $Revision: 1.9 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -250,9 +250,9 @@ NewsKiller::EraseHeaderRules(map<string,vector<headerMatchStruct*> > &headerRule
 bool 
 NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 {
-    string matchedValue;
-
     strstream killReasons; 
+    
+    string matchedValue;
 
     if (article == NULL)
         return false;

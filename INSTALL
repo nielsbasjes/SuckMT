@@ -42,7 +42,7 @@ Number of threads     = 5
    in the [Kill Headers] section of the suckmt.ini.
    If a message contains a header with the headername and the specified value
    occurs somewhere in the actual value of the header the message will be
-   killed. Note that alle strings are compare CASE-SENSITIVE !!!
+   killed. Note that alle strings are compared CASE-SENSITIVE and leading and trailing spaces and tabs are ignored !!!
    Example:
    
    Content-Type:text/html
@@ -61,6 +61,8 @@ Number of threads     = 5
    was. This system isn't perfect (yet) because if multiple headers would be
    reason to kill a message only the status of the first one will be updated.
 
+9) [Keep Headers] is the section of the headers that overrule all kill headers.
+   The way this is used is identical to the kill headers.
 
 Content of the suckmt.ini file
 ==============================

@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:44:43 $
-//  $Revision: 1.5 $
+//  $Date: 1999/10/20 18:01:13 $
+//  $Revision: 1.6 $
 //  $RCSfile: CommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -18,6 +18,7 @@
 
 //-------------------------------------------------------------------------
 
+#include "omnithread.h"
 #include "CommandHandler.h"
 
 //-------------------------------------------------------------------------
@@ -67,7 +68,7 @@ CommandHandler::run_undetached(void* /*arg*/)
     {
         if(currentCommand == NULL)
         {
-            sleep(0, 100000); // 100000 nanoseconds = 0.1 seconds        
+            omni_thread::sleep(0, 100000); // 100000 nanoseconds = 0.1 seconds
             currentCommandMutex.lock();
             currentCommand = myCommandQueue->GetCommand();
             currentCommandMutex.unlock();
@@ -80,7 +81,7 @@ CommandHandler::run_undetached(void* /*arg*/)
 //                cout << "ERROR !!!!!!" << endl << flush;
 //                busy = false;
             }
-            
+
             currentCommandMutex.lock();
             delete (currentCommand);
             if (KeepRunning())

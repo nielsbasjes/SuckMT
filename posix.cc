@@ -56,6 +56,14 @@
 #endif
 
 #if defined(__linux__) && defined(_MIT_POSIX_THREADS)
+
+// On Slackware 4.0 the libc does need the includes.
+#if (!defined(__GLIBC__))
+    // typedef of struct timeval and gettimeofday();
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
 #include <pthread/mit/sys/timers.h>
 #endif
 

@@ -8,3 +8,5 @@ Version 0.3b
     Added proper copyright banners
 Version 0.3f
     Fixed lots of stuff, added kill rules and keep rules.
+Version 0.3g
+    Fixed some minor portability issues.

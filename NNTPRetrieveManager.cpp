@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:14 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/20 18:01:14 $
+//  $Revision: 1.4 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -158,12 +158,10 @@ NNTPRetrieveManager::WaitForCompletion ()
 {
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
 
-    while (true)
+    while (true) // Wait until the queue is empty
     {
-        // Wait until the queue is empty
-        while (!commands.empty())
-            omni_thread::sleep(0,100000); // 100000 nanoseconds = 0.1 seconds
-    
+        omni_thread::sleep(0,100000); // 100000 nanoseconds = 0.1 seconds
+
         // Check if any of the handlers is still busy
         for(nntpHandlersIter  = NNTPHandlers.begin();
             nntpHandlersIter != NNTPHandlers.end();

@@ -1,14 +1,14 @@
 Begin3
 Title:          Suckmt 
-Version:        0.3f
-Entered-date:   1999-10-07
+Version:        0.3g
+Entered-date:   1999-10-20
 Description:    A multithreaded suck replacement
 Keywords:       NNTP
 Author:         Niels Basjes <SuckMT@Basjes.nl> 
 Maintained-by:  Niels Basjes <SuckMT@Basjes.nl> 
 Primary-site:   http://go.to/suckmt  
 Home-page:      http://go.to/suckmt   
-Original-site:  
-Platform:       Linux and other Unices and MS-Windows.
+Original-site:  http://www.wirehub.nl/~basjesn/suckmt
+Platform:       Linux and other Unices and even MS-Windows.
 Copying-policy: GNU Public License
 End

@@ -6,8 +6,8 @@
 //  Filename  : StatisticsKeeper.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:43 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/20 18:01:15 $
+//  $Revision: 1.4 $
 //  $RCSfile: StatisticsKeeper.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <iostream.h>
 #include <iomanip.h>
+#include "omnithread.h"
 #include "StatisticsKeeper.h"
  
 //--------------------------------------------------------------------
@@ -76,7 +77,7 @@ StatisticsKeeper::run_undetached(void* /*arg*/)
     unsigned long sleepTime = fMilliseconds * 1000;
     while (KeepRunning())
     {
-        sleep(0,sleepTime);    
+        omni_thread::sleep(0,sleepTime);
         if(valuesModified)
         {
             unsigned long killed  = GetNumericValue("Articles Killed");

@@ -1,0 +1,67 @@
+[Suck MT Copyright Information]
+Author                         = Suck MT was written by ir. Niels Basjes (C) 1999
+Suck MT License                = Suck MT is distributed under the GNU Public License.
+The Suck MT website            = http://www.wirehub.nl/~basjesn/suckmt
+You can email the author at    = SuckMT@Basjes.nl
+This file created by version   = 0.2
+This file modified by version  = 0.3d
+
+[Suck MT Installation]
+Date of first run  = Mon Aug 30 23:17:54 1999
+Date of last run   = Sun Oct  3 12:56:06 1999
+Run number         = 112
+
+[Suck MT Configuration]
+News server Hostname  = news.wirehub.nl
+Storage Directory     = /etc/ppp/news/Msgs
+Batch File            = /etc/ppp/news/batch
+Number of threads     = 5
+
+[Kill Log File]
+Enable Kill Logfile   = true
+Kill Log Filename     = /tmp/SuckMTKillLog.txt
+Kill Logfile Headers  = From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID
+
+[Global Kill Rules]
+Maximum Lines in a Message   = 300
+Maximum Bytes in a Message   = 15000
+Maximum Groups in a Message  = 6
+
+[News Groups]
+comp.os.linux.announce        = 15467
+nl.comp.crypt                 = 2635
+nl.comp.hardware              = 114086
+nl.comp.os.linux              = 112368
+nl.comp.os.linux.announce     = 50
+nl.comp.os.linux.installatie  = 7385
+nl.comp.os.ms-windows         = 63135
+nl.comp.overig                = 40287
+nl.comp.programmeren          = 36183
+nl.support.sysadmin           = 945
+
+[Kill Headers]
+Content-Type:text/html                    = Fri Oct  1 12:25:43 1999 ; 0
+Content-Type:multipart/alternative        = Sat Oct  2 17:00:12 1999 ; 15
+Content-Type:multipart/mixed              = Thu Sep 30 22:10:09 1999 ; 4
+Content-Transfer-Encoding:base64          = Fri Oct  1 12:25:43 1999 ; 0
+Subject:TKA                               = Sat Oct  2 17:00:12 1999 ; 5
+Subject:TKG                               = Sat Oct  2 17:00:12 1999 ; 3
+Subject:Te Koop                           = Fri Oct  1 12:25:43 1999 ; 0
+Subject:Te koop                           = Sun Oct  3 12:16:53 1999 ; 2
+Subject:te koop                           = Sat Oct  2 17:00:12 1999 ; 18
+Subject:tk:                               = Fri Oct  1 12:25:43 1999 ; 0
+Subject:Tk.                               = Fri Oct  1 12:25:43 1999 ; 0
+Subject:T.K.                              = Thu Sep 30 23:43:01 1999 ; 2
+Subject:overklok                          = Sun Oct  3 12:16:53 1999 ; 4
+Subject:overclock                         = Sat Oct  2 20:49:07 1999 ; 1
+Subject:geld verdienen                    = Sat Oct  2 17:00:12 1999 ; 1
+From:money@cashforyou.com                 = Fri Oct  1 12:25:43 1999 ; 0
+From:droid@spam.free.net                  = Fri Oct  1 12:25:43 1999 ; 0
+From:nobody@replay.com                    = Fri Oct  1 12:25:43 1999 ; 0
+From:your@email.com                       = Fri Oct  1 12:25:43 1999 ; 0
+From:defaultuser@domain.com               = Fri Oct  1 12:25:43 1999 ; 0
+
+[Keep Headers]
+Newsgroups:comp.os.linux.announce  = Wed Oct  6 22:43:35 1999 ; 12
+Subject:CVF                        = Fri Oct  1 12:25:43 1999 ; 0
+From:peters@polyware.nl            = Fri Oct  1 12:25:43 1999 ; 0

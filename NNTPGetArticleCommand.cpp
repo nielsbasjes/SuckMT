@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:13 $
-//  $Revision: 1.4 $
+//  $Date: 1999/10/22 20:37:41 $
+//  $Revision: 1.5 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -52,6 +52,14 @@ FileExists(char *fileName)
 NNTPGetArticleCommand::NNTPGetArticleCommand(NEWSArticle * theArticle)
 {
     article = theArticle;
+}
+
+//-------------------------------------------------------------------------
+
+NNTPGetArticleCommand::~NNTPGetArticleCommand()
+{
+    if (article != NULL)
+        delete article;
 }
 
 //-------------------------------------------------------------------------
@@ -101,7 +109,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         myHandler->ArticleFileHasBeenWritten(fileName);
 
         delete fileName;
-        delete article;
         return true; // Done
     }
 
@@ -109,7 +116,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
     {   
         delete fileName;
-        delete article;
         return true; // Done
     }
 
@@ -120,7 +126,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
-        delete article;
         return false; // Done
     }
 
@@ -131,7 +136,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         STAT_AddValue("Articles Killed",1);
 
         delete fileName;
-        delete article;
         return true; // Done
     }
 
@@ -142,7 +146,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
-        delete article;
         return false; // Done
     }
 
@@ -157,7 +160,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     }
     
     delete fileName;
-    delete article;
     return true;
 }
 

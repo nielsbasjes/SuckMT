@@ -6,8 +6,8 @@
 //  Filename  : TraceLog.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:52:40 $
-//  $Revision: 1.4 $
+//  $Date: 1999/10/20 18:01:16 $
+//  $Revision: 1.6 $
 //  $RCSfile: TraceLog.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <iostream.h>
 
 #include "TraceLog.h"
@@ -60,16 +60,8 @@ return 0;
 
     if (theActualLogLevel >= logLevel)
     {
-#ifdef WIN32
-        va_dcl;
-#endif
         va_list ap;
-
-#ifdef WIN32
-        va_start(ap);
-#else
         va_start(ap, format);
-#endif
 
         time_t now = time(NULL);
 

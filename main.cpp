@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:44:35 $
-//  $Revision: 1.7 $
+//  $Date: 1999/10/20 18:01:14 $
+//  $Revision: 1.8 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -122,6 +122,7 @@ static void
 SuckmtSignalHandler(int /*sig_num*/)
 {
     cout << "Received STOP signal." << endl << flush;
+
     if (retrieveManagerToSignal == NULL)
         exit(1); // No clean signalling option .. just die now.
 

@@ -6,11 +6,103 @@
 --------------------Configuration: SuckMT - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating temporary file "C:\TEMP\RSP10.tmp" with contents
+[
+/nologo /G6 /Gr /MTd /W3 /Gm /GX /ZI /Od /I "." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"W:\Software Development\suckmt\Abortable.cpp"
+"W:\Software Development\suckmt\AsciiLineSocket.cpp"
+"W:\Software Development\suckmt\Command.cpp"
+"W:\Software Development\suckmt\CommandHandler.cpp"
+"W:\Software Development\suckmt\CommandQueue.cpp"
+"W:\Software Development\suckmt\GenericSocket.cpp"
+"W:\Software Development\suckmt\IniFile.cpp"
+"W:\Software Development\suckmt\main.cpp"
+"W:\Software Development\suckmt\NEWSArticle.cpp"
+"W:\Software Development\suckmt\NewsKiller.cpp"
+"W:\Software Development\suckmt\NNTPCommandHandler.cpp"
+"W:\Software Development\suckmt\NNTPGetArticleCommand.cpp"
+"W:\Software Development\suckmt\NNTPGetXOVERCommand.cpp"
+"W:\Software Development\suckmt\NNTPProxy.cpp"
+"W:\Software Development\suckmt\NNTPRetrieveManager.cpp"
+"W:\Software Development\suckmt\nt.cpp"
+"W:\Software Development\suckmt\Printable.cpp"
+"W:\Software Development\suckmt\StatisticsKeeper.cpp"
+"W:\Software Development\suckmt\Tokenize.cpp"
+"W:\Software Development\suckmt\TraceLog.cpp"
+]
+Creating command line "cl.exe @C:\TEMP\RSP10.tmp" 
+Creating temporary file "C:\TEMP\RSP11.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /profile /debug /debugtype:both /machine:I386 /out:"Debug/SuckMT.exe" 
+".\Debug\Abortable.obj"
+".\Debug\AsciiLineSocket.obj"
+".\Debug\Command.obj"
+".\Debug\CommandHandler.obj"
+".\Debug\CommandQueue.obj"
+".\Debug\GenericSocket.obj"
+".\Debug\IniFile.obj"
+".\Debug\main.obj"
+".\Debug\NEWSArticle.obj"
+".\Debug\NewsKiller.obj"
+".\Debug\NNTPCommandHandler.obj"
+".\Debug\NNTPGetArticleCommand.obj"
+".\Debug\NNTPGetXOVERCommand.obj"
+".\Debug\NNTPProxy.obj"
+".\Debug\NNTPRetrieveManager.obj"
+".\Debug\nt.obj"
+".\Debug\Printable.obj"
+".\Debug\StatisticsKeeper.obj"
+".\Debug\Tokenize.obj"
+".\Debug\TraceLog.obj"
+]
+Creating command line "link.exe @C:\TEMP\RSP11.tmp"
+<h3>Output Window</h3>
+Compiling...
+Abortable.cpp
+AsciiLineSocket.cpp
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\asciilinesocket.cpp(51) : warning C4096: '__cdecl' must be used with '...'
+Command.cpp
+CommandHandler.cpp
+CommandQueue.cpp
+GenericSocket.cpp
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+IniFile.cpp
+main.cpp
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\main.cpp(138) : error C2664: 'signal' : cannot convert parameter 2 from 'void (int)' to 'void (__cdecl *)(int)'
+        None of the functions with this name in scope match the target type
+w:\software development\suckmt\main.cpp(147) : warning C4007: 'main' : must be '__cdecl'
+NEWSArticle.cpp
+NewsKiller.cpp
+NNTPCommandHandler.cpp
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+NNTPGetArticleCommand.cpp
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+NNTPGetXOVERCommand.cpp
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+NNTPProxy.cpp
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+NNTPRetrieveManager.cpp
+w:\software development\suckmt\asciilinesocket.h(33) : warning C4096: '__cdecl' must be used with '...'
+nt.cpp
+Printable.cpp
+StatisticsKeeper.cpp
+Tokenize.cpp
+TraceLog.cpp
+w:\software development\suckmt\tracelog.h(27) : warning C4096: '__cdecl' must be used with '...'
+w:\software development\suckmt\tracelog.cpp(56) : warning C4096: '__cdecl' must be used with '...'
+Generating Code...
+Error executing cl.exe.
 
 
 
 <h3>Results</h3>
-SuckMT.exe - 0 error(s), 0 warning(s)
+SuckMT.exe - 1 error(s), 16 warning(s)
 </pre>
 </body>
 </html>
