@@ -5,10 +5,10 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: make
-#  $Id$
-#  $Date$
-#  $Revision$
-#  $LastChangedBy$
+#  $Id: Makefile 10 2004-12-26 19:40:18Z niels $
+#  $Date: 2004-12-26 20:40:18 +0100 (Sun, 26 Dec 2004) $
+#  $Revision: 10 $
+#  $LastChangedBy: niels $
 #=========================================================================
 #
 #   This program is free software; you can redistribute it and/or modify
