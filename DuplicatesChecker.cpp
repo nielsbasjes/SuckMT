@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 19:03:55 $
-//  $Revision: 1.10 $
+//  $Date: 2001/08/26 20:42:46 $
+//  $Revision: 1.11 $
 //  $RCSfile: DuplicatesChecker.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -44,9 +44,14 @@
 // and logs this event by itself when a matching query is performed.
 //-------------------------------------------------------------------------
 
+#define RESTART_READ_BUFFER 10000
+
 DuplicatesChecker::DuplicatesChecker(IniFile *settings)
 {
     fRestartFileName = "/tmp/suckmt_restart_default.txt";
+
+    char buffer[RESTART_READ_BUFFER+2];
+    memset(&buffer,0,RESTART_READ_BUFFER+2); 
 
     // Quick check of the parameters
     if (settings != NULL)
@@ -60,12 +65,11 @@ DuplicatesChecker::DuplicatesChecker(IniFile *settings)
 
             if (inFile.good())
             {
-                char buffer[10000];
                 int count = 0;
 
                 while(!inFile.eof())
                 {
-                    inFile.getline(buffer,9999);
+                    inFile.getline(buffer,RESTART_READ_BUFFER);
                     string work_buffer(buffer);
                     if (work_buffer.length() > 3)
                     {

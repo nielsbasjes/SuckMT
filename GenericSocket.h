@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:16 $
-//  $Revision: 1.9 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.10 $
 //  $RCSfile: GenericSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -58,17 +58,14 @@
 #include <arpa/inet.h>
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include <algorithm>
 #include <string> 
 #include "Abortable.h"
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define string  std::string
-#endif
+using namespace std;
 
 //-------------------------------------------------------------------------
 

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.19 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.20 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -134,7 +134,7 @@ NewsKiller::ReadGlobalKillRule(string valueName,long &value, long &valueImpact)
     }
 
     char valuestr[50];
-    sprintf(valuestr,"%5ld ; %5ld",value,valueImpact);
+    std::sprintf(valuestr,"%5ld ; %5ld",value,valueImpact);
     fSettings->SetValue(SUCK_GLOBAL_KILL_RULES, valueName, valuestr);
 }
 

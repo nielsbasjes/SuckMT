@@ -6,8 +6,8 @@
 //  Filename  : MultiStream.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:14 $
-//  $Revision: 1.3 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.4 $
 //  $RCSfile: MultiStream.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -27,15 +27,13 @@
 
 //-------------------------------------------------------------------------
 
-#include <iostream.h>
+#include <iostream>
 #include <string>
 #include <map>
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef WIN32
-#define string std::string
-#define map    std::map
-#endif
+//-------------------------------------------------------------------------
+
+using namespace std;
 
 //-------------------------------------------------------------------------
 // Generic defines

@@ -6,8 +6,8 @@
 //  Filename  : ArticleImpactChecker.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:17 $
-//  $Revision: 1.3 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.4 $
 //  $RCSfile: ArticleImpactChecker.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -31,11 +31,7 @@ class ArticleImpactChecker; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-#ifdef WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+#include <strstream>
 
 #include "IniFile.h"
 #include "Printable.h"

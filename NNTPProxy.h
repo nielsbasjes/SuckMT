@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.8 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.10 $
 //  $RCSfile: NNTPProxy.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -40,12 +40,9 @@ class NNTPProxy; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define string std::string
-#endif
+using namespace std;
 
-//--------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 struct GroupInfo
 {
@@ -123,6 +120,8 @@ private:
     IniFile         * fSettings;
     string            currentGroup;
     int               fConnectionNr;
+
+    bool              fKeep_CarriageReturn;
 
     // Implements the common part of both versions of GetGroupOverview
     // returns 0 if error else returns 1 if OK or 2 if no messages.

@@ -6,8 +6,8 @@
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2000/10/23 20:28:22 $
-#  $Revision: 1.33 $
+#  $Date: 2001/08/27 20:41:31 $
+#  $Revision: 1.36 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -64,12 +64,24 @@ SUCKSOURCES += ArticleImpactChecker.cpp
 SUCKSOURCES += HeaderMatcher.cpp 
 SUCKSOURCES += DuplicatesChecker.cpp 
 SUCKSOURCES += NewsKiller.cpp 
-SUCKSOURCES += regex.c
 SUCKSOURCES += Printable.cpp 
 SUCKSOURCES += StatisticsKeeper.cpp 
 SUCKSOURCES += Tokenize.cpp
 SUCKSOURCES += MultiStream.cpp 
 SUCKSOURCES += TraceLog.cpp 
+
+SUCKSOURCES += regex.c
+#SUCKSOURCES += c_regex_traits.cpp
+#SUCKSOURCES += c_regex_traits_common.cpp
+#SUCKSOURCES += cpp_regex_traits.cpp
+#SUCKSOURCES += cregex.cpp
+#SUCKSOURCES += fileiter.cpp
+#SUCKSOURCES += posix_api.cpp
+#SUCKSOURCES += regex.cpp
+#SUCKSOURCES += regex_debug.cpp
+#SUCKSOURCES += regex_synch.cpp
+#SUCKSOURCES += w32_regex_traits.cpp
+#SUCKSOURCES += wide_posix_api.cpp
 
 suckmt_SOURCES = $(SUCKSOURCES)
 suckmtstatic_SOURCES = $(SUCKSOURCES)
@@ -122,6 +134,84 @@ EXTRA_DIST += Tokenize.h                Tokenize.cpp
 EXTRA_DIST += MultiStream.h             MultiStream.cpp 
 EXTRA_DIST += TraceLog.h                TraceLog.cpp 
 
+# The regex++ sources for all platforms
+EXTRA_DIST += regex++/boost/regex/detail/fileiter.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_compile.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_config.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_cstring.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_format.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_kmp.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_library_include.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_match.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_options.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_raw_buffer.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_split.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_stack.hpp
+EXTRA_DIST += regex++/boost/regex/detail/regex_synch.hpp
+EXTRA_DIST += regex++/boost/regex/pattern_except.hpp
+EXTRA_DIST += regex++/boost/regex/regex_traits.hpp
+EXTRA_DIST += regex++/boost/config.hpp
+EXTRA_DIST += regex++/boost/cregex.hpp
+EXTRA_DIST += regex++/boost/regex.h
+EXTRA_DIST += regex++/boost/regex.hpp
+EXTRA_DIST += regex++/boost/smart_ptr.hpp
+EXTRA_DIST += regex++/boost/timer.hpp
+EXTRA_DIST += regex++/boost/type_traits.hpp
+EXTRA_DIST += regex++/boost/utility.hpp
+EXTRA_DIST += regex++/boost/type_traits/alignment_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/arithmetic_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/composite_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/conversion_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/cv_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/function_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/fwd.hpp
+EXTRA_DIST += regex++/boost/type_traits/ice.hpp
+EXTRA_DIST += regex++/boost/type_traits/object_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/same_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/transform_traits.hpp
+EXTRA_DIST += regex++/boost/type_traits/transform_traits_spec.hpp
+EXTRA_DIST += regex++/boost/type_traits/type_traits_test.hpp
+EXTRA_DIST += regex++/c++boost.gif
+EXTRA_DIST += regex++/regex.htm
+EXTRA_DIST += regex++/libs/regex/src/c_regex_traits.cpp
+EXTRA_DIST += c_regex_traits.cpp
+EXTRA_DIST += regex++/libs/regex/src/c_regex_traits_common.cpp
+EXTRA_DIST += c_regex_traits_common.cpp
+EXTRA_DIST += regex++/libs/regex/src/cpp_regex_traits.cpp
+EXTRA_DIST += cpp_regex_traits.cpp
+EXTRA_DIST += regex++/libs/regex/src/cregex.cpp
+EXTRA_DIST += cregex.cpp
+EXTRA_DIST += regex++/libs/regex/src/fileiter.cpp
+EXTRA_DIST += fileiter.cpp
+EXTRA_DIST += regex++/libs/regex/src/posix_api.cpp
+EXTRA_DIST += posix_api.cpp
+EXTRA_DIST += regex++/libs/regex/src/primary_transform.hpp
+EXTRA_DIST += primary_transform.hpp
+EXTRA_DIST += regex++/libs/regex/src/regex.cpp
+EXTRA_DIST += regex.cpp
+EXTRA_DIST += regex++/libs/regex/src/regex_debug.cpp
+EXTRA_DIST += regex_debug.cpp
+EXTRA_DIST += regex++/libs/regex/src/regex_synch.cpp
+EXTRA_DIST += regex_synch.cpp
+EXTRA_DIST += regex++/libs/regex/src/w32_regex_traits.cpp
+EXTRA_DIST += w32_regex_traits.cpp
+EXTRA_DIST += regex++/libs/regex/src/wide_posix_api.cpp
+EXTRA_DIST += wide_posix_api.cpp
+EXTRA_DIST += regex++/libs/regex/appendix.htm
+EXTRA_DIST += regex++/libs/regex/changes.txt
+EXTRA_DIST += regex++/libs/regex/dmi.sh
+EXTRA_DIST += regex++/libs/regex/faq.htm
+EXTRA_DIST += regex++/libs/regex/format_string.htm
+EXTRA_DIST += regex++/libs/regex/hl_ref.htm
+EXTRA_DIST += regex++/libs/regex/index.htm
+EXTRA_DIST += regex++/libs/regex/introduction.htm
+EXTRA_DIST += regex++/libs/regex/licence.txt
+EXTRA_DIST += regex++/libs/regex/posix_ref.htm
+EXTRA_DIST += regex++/libs/regex/readme.txt
+EXTRA_DIST += regex++/libs/regex/syntax.htm
+EXTRA_DIST += regex++/libs/regex/template_class_ref.htm
+EXTRA_DIST += regex++/libs/regex/traits_class_ref.htm
+
 # Enable Compiler warnings
 #ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
@@ -129,11 +219,15 @@ CXXFLAGS += $(ALLWARNINGS)
 CFLAGS += 
 
 #Some flags for the regular expression library
+#CXXFLAGS += -I ./regex++ -DBOOST_RE_NO_LIB
+#CFLAGS   += -I ./regex++ -DBOOST_RE_NO_LIB
+
+#Some flags for the regular expression library
 CXXFLAGS += -DSTDC_HEADERS -DREGEX_MALLOC
 CFLAGS   += -DSTDC_HEADERS -DREGEX_MALLOC
 
 #------------------------------
-# Flags for omnithread
+# Platform dependend flags for omnithread
 # Linux ?
 if UNAME_LINUX
 OMNITHREADFLAGS = -D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
@@ -146,6 +240,17 @@ OMNITHREADFLAGS = -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENT
 PLATFORM=Irix
 endif
 
+# IRIX 64 bits ?
+if UNAME_IRIX64
+OMNITHREADFLAGS = -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority
+PLATFORM=Irix64
+endif
+
+# Solaris ?
+if UNAME_SOLARIS
+OMNITHREADFLAGS = -D__sunos__ -D__sparc__ -D__OSVERSION__=5 -DSVR4 -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10
+PLATFORM=Solaris
+endif
 
 CXXFLAGS += $(OMNITHREADFLAGS)
 CFLAGS += $(OMNITHREADFLAGS)
@@ -162,7 +267,7 @@ cxxflags:
 	@echo PLATFORM=$(PLATFORM)
 
 full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
-
+	
 bin-dist: all suckmt.ini.sample
 	rm -rf suckmt-`cat VERSION`
 	mkdir suckmt-`cat VERSION`
@@ -254,7 +359,7 @@ CopyrightMessage: VERSION
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement. |"
-	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "| (C)2001 by Niels Basjes  -  http://go.to/suckmt  |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"

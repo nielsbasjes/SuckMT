@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.13 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.15 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -29,13 +29,8 @@
 //-------------------------------------------------------------------------
 
 #include <sys/stat.h>
-#include <fstream.h>
-
-#ifdef WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+#include <fstream>
+#include <strstream>
 
 #include "SuckDefines.h"
 #include <omnithread.h>
@@ -244,8 +239,19 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         // Ok, we got the article. Now we store it.
         {
         ofstream outFile(fileName.c_str());
-        outFile << article->GetHeader()  << "\r\n";
-        outFile << article->GetBody()    << "\r\n";
+        bool keep_CarriageReturn = true;
+        string separator;
+
+        iniFile->GetValue(SUCK_CONFIG,SUCK_KEEP_CR,keep_CarriageReturn); 
+        
+        if (keep_CarriageReturn)
+            separator = "\r\n";
+        else            
+            separator = "\n";
+
+        outFile << article->GetHeader()  << separator;
+        outFile << article->GetBody()    << separator;
+        
         }
         // The central handler must know the article has been stored
         myHandler->ArticleHasBeenStored(article,fileName);

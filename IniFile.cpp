@@ -6,8 +6,8 @@
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/20 21:30:44 $
-//  $Revision: 1.15 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.16 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,13 +28,9 @@
 
 //-------------------------------------------------------------------------
 
-#ifdef WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+#include <strstream>
 
-#include <fstream.h>
+#include <fstream>
 #include <stdio.h>  
 #include <stdlib.h>  
 #include "TraceLog.h"

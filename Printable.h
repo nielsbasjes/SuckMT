@@ -6,8 +6,8 @@
 //  Filename  : Printable.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.5 $
+//  $Date: 2001/08/28 16:22:44 $
+//  $Revision: 1.10 $
 //  $RCSfile: Printable.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -29,17 +29,22 @@
 
 #include <string>
 #include <vector>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef OLD_OSTREAM
 #include <ostream.h>
+#else
+#include <ostream>
+#endif
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define string std::string
-#define vector std::vector
-#endif
+using namespace std;
 
-//--------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 #define DEFINE_PRINTABLE_OPERATORS(className) \
     ostream& operator<< (ostream &os, const className &className##Object);\

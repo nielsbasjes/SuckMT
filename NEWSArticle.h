@@ -6,8 +6,8 @@
 //  Filename  : NEWSArticle.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.9 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.10 $
 //  $RCSfile: NEWSArticle.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -39,12 +39,7 @@ class NEWSArticle; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define map    std::map
-#define vector std::vector
-#define string std::string
-#endif
+using namespace std;
 
 //-------------------------------------------------------------------------
 

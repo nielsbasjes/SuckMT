@@ -6,8 +6,8 @@
 //  Filename  : Tokenize.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:12 $
-//  $Revision: 1.7 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.8 $
 //  $RCSfile: Tokenize.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -31,10 +31,9 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef WIN32
-#define string std::string
-#define vector std::vector
-#endif
+//-------------------------------------------------------------------------
+
+using namespace std;
 
 //-------------------------------------------------------------------------
 

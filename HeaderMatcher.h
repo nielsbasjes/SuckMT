@@ -6,8 +6,8 @@
 //  Filename  : HeaderMatcher.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:16 $
-//  $Revision: 1.4 $
+//  $Date: 2001/08/27 19:13:43 $
+//  $Revision: 1.6 $
 //  $RCSfile: HeaderMatcher.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -31,16 +31,19 @@ class HeaderMatcher; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-#ifdef WIN32
-#include <strstrea.h>
+#include <strstream>
+
+#ifdef USE_BOOST_REGEX
+#include "boost/regex.hpp"
+using namespace boost;
 #else
-#include <strstream.h>
+#include "regex.h"
 #endif
 
-#include "regex.h"
 #include "IniFile.h"
 #include "Printable.h"
 #include "ArticleImpactChecker.h"
+
 
 //-------------------------------------------------------------------------
 // This class reads the specified value from the specified IniFile
@@ -70,7 +73,7 @@ public:
         
 private:
     omni_mutex valuesMutex;    
-    
+
     // Object validity checker
     bool     fObjectIsValid;
     // Raw Storage system
@@ -86,7 +89,11 @@ private:
     long     fImpactValue;
 
     bool     fSearchCaseINSensitive;
-	regex_t  fRegExpression;
+#ifdef USE_BOOST_REGEX
+    regex*   fRegExpression;
+#else
+    regex_t  fRegExpression;
+#endif	
 };
 
 DEFINE_PRINTABLE_OPERATORS(HeaderMatcher)

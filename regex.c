@@ -3,8 +3,8 @@
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C
 //  NOTE: This file has been changed to make it work :-(
-//  $Date: 2000/01/05 22:29:42 $
-//  $Revision: 1.1 $
+//  $Date: 2001/05/12 20:52:45 $
+//  $Revision: 1.2 $
 //  $RCSfile: regex.c,v $
 //  $Author: niels $
 //=========================================================================
@@ -3326,6 +3326,7 @@ int stop;
         regstart[mcnt] = regend[mcnt] 
             = old_regstart[mcnt] = old_regend[mcnt] = REG_UNSET_VALUE;
         
+        reg_info[mcnt].word = 0; /* Niels Basjes 2001-02-22: Fix UMR in next line */
         REG_MATCH_NULL_STRING_P (reg_info[mcnt]) = MATCH_NULL_UNSET_VALUE;
         IS_ACTIVE (reg_info[mcnt]) = 0;
         MATCHED_SOMETHING (reg_info[mcnt]) = 0;

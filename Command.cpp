@@ -6,8 +6,8 @@
 //  Filename  : Command.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:16 $
-//  $Revision: 1.5 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.6 $
 //  $RCSfile: Command.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,7 +28,7 @@
 
 //-------------------------------------------------------------------------
 
-#include <iostream.h>
+#include <iostream>
 #include "Command.h"
 
 //-------------------------------------------------------------------------

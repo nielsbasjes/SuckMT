@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 20:18:08 $
-//  $Revision: 1.20 $
+//  $Date: 2001/02/11 20:47:44 $
+//  $Revision: 1.21 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -68,6 +68,7 @@
 #define SUCK_SEND_MODEREADER   "Send MODE READER to the server"
 #define SUCK_NNTP_USERNAME     "Connect with Username"
 #define SUCK_NNTP_PASSWORD     "Connect with Password"
+#define SUCK_KEEP_CR           "Store message with the CarriageReturn (^M)"
 #define SUCK_DIR               "Storage Directory"
 #define SUCK_BATCH_FILE        "Batch File"
 #define SUCK_THREADS           "Number of threads"

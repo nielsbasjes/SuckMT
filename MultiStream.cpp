@@ -6,8 +6,8 @@
 //  Filename  : MultiStream.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/23 18:15:15 $
-//  $Revision: 1.7 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.8 $
 //  $RCSfile: MultiStream.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -38,8 +38,8 @@
 #include <stdlib.h>
 #include <string>
 #include <stdarg.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include "MultiStream.h"
 #include "TraceLog.h"
 #include <omnithread.h>

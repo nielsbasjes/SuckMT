@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 16:29:16 $
-//  $Revision: 1.11 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.12 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -31,8 +31,8 @@
 #include "TraceLog.h"
 #include "GenericSocket.h"
 #include "StatisticsKeeper.h"
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
 
 //-------------------------------------------------------------------------
 

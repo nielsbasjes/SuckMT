@@ -6,8 +6,8 @@
 //  Filename  : HeaderMatcher.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 19:03:01 $
-//  $Revision: 1.11 $
+//  $Date: 2001/08/27 19:13:43 $
+//  $Revision: 1.13 $
 //  $RCSfile: HeaderMatcher.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,7 +28,7 @@
 
 //-------------------------------------------------------------------------
 
-#include <string.h>
+#include <string>
 #include <time.h>
 #include "SuckDefines.h"
 #include "HeaderMatcher.h"
@@ -48,6 +48,10 @@ HeaderMatcher::HeaderMatcher(
     , ArticleImpactChecker(settings)
 {
     fObjectIsValid  = true;
+
+#ifdef USE_BOOST_REGEX
+    fRegExpression = NULL;
+#endif
 
     // Copy the parameters
     fIniSectionName = sectionName;
@@ -102,6 +106,30 @@ HeaderMatcher::HeaderMatcher(
     fHeaderName.assign (parseValueName,0,colonPosition);
     fHeaderValue.assign(parseValueName.begin() + colonPosition + 1,parseValueName.end());
 
+
+#ifdef USE_BOOST_REGEX
+    // ----------
+    // Try to compile the header value that should be matched
+    regbase::flag_type cflags = regbase::normal;
+    if (fSearchCaseINSensitive)
+        cflags |= regbase::icase;
+
+    try 
+    {
+        fRegExpression = new regex(fHeaderValue.c_str(), cflags);
+    }
+
+    catch (bad_expression)
+    {
+        fObjectIsValid = false;
+        Lerror << "Invalid regular expression \"" << fHeaderValue 
+               << "\". Check the suckmt config file" << endl << flush;
+        char inistr[100];
+        std::sprintf(inistr,"%s ; %5ld ; %5ld ; INVALID REGULAR EXPRESSION !!",fLastMatchDate.c_str(),fMatchCount,fImpactValue);
+        fSettings->SetValue(fIniSectionName, fIniValueName, inistr);
+        return;
+    }
+#else
     // ----------
     // Try to compile the header value that should be matched
     int cflags = REG_EXTENDED;
@@ -109,7 +137,7 @@ HeaderMatcher::HeaderMatcher(
         cflags |= REG_ICASE;
 
     // Make sure the variable has been nullified
-    memset(&fRegExpression,0,sizeof(fRegExpression));
+    ::memset(&fRegExpression,0,sizeof(fRegExpression));
 
     if (regcomp (&fRegExpression, fHeaderValue.c_str(), cflags) != 0)
     {
@@ -119,6 +147,7 @@ HeaderMatcher::HeaderMatcher(
         fObjectIsValid = false;
         return;
     }
+#endif
 
     // ----------
     // Now get the statistics parameters for the matching process
@@ -139,7 +168,7 @@ HeaderMatcher::HeaderMatcher(
     }
 
     char inistr[100];
-    sprintf(inistr,"%s ; %5ld ; %5ld",fLastMatchDate.c_str(),fMatchCount,fImpactValue);
+    std::sprintf(inistr,"%s ; %5ld ; %5ld",fLastMatchDate.c_str(),fMatchCount,fImpactValue);
     fSettings->SetValue(fIniSectionName, fIniValueName, inistr);
 }
 
@@ -148,10 +177,23 @@ HeaderMatcher::HeaderMatcher(
 HeaderMatcher::~HeaderMatcher()
 {
     // Free the memory allocated inside the compiled expression
+#ifdef USE_BOOST_REGEX
+    if (fRegExpression != NULL)
+        delete (fRegExpression);
+#else
 //    regfree (&fRegExpression);
+#endif
 }
 
 //-------------------------------------------------------------------------
+
+#ifdef USE_BOOST_REGEX
+// Required callback function for the grep implementation
+static bool grep_callback(match_results<string::iterator, regex::alloc_type> & /*what*/ ) 
+{ 
+   return true; 
+}   
+#endif
 
 long
 HeaderMatcher::GetImpactValue(
@@ -187,7 +229,12 @@ HeaderMatcher::GetImpactValue(
     }
 
     // Match regular expression to the actual value
+#ifdef USE_BOOST_REGEX
+    if (!regex_grep(grep_callback,headerValue.begin(),headerValue.end(),
+                    *fRegExpression,boost::match_default | boost::match_any))
+#else
     if (regexec (&fRegExpression, headerValue.c_str(), 0, NULL, 0) == REG_NOMATCH)
+#endif
     {
         return 0; // 0 == no impact
     }
@@ -199,7 +246,7 @@ HeaderMatcher::GetImpactValue(
     valuesMutex.unlock();
 
     char inistr[100];
-    sprintf(inistr,"%s ; %5ld ; %5ld",fLastMatchDate.c_str(),fMatchCount,fImpactValue);
+    std::sprintf(inistr,"%s ; %5ld ; %5ld",fLastMatchDate.c_str(),fMatchCount,fImpactValue);
     fSettings->SetValue(fIniSectionName, fIniValueName, inistr);
 
     strstream tmpstream;

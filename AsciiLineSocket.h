@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:17 $
-//  $Revision: 1.7 $
+//  $Date: 2001/02/11 20:47:29 $
+//  $Revision: 1.8 $
 //  $RCSfile: AsciiLineSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -63,13 +63,17 @@ public:
     // status code. We want to extract this status code.
     // Returns -1 in case of socket error
     int 
-    GetResponse(string &completeResponseLine, bool keepEOL = true);
+    GetResponse(string &completeResponseLine, 
+                bool keepEOL  = true, 
+                bool keepCR   = false);
 
     // The NNTP and HTTP protocols send information until there is a singleline
     // containing just ".\r". This function returns true if this line is 
     // NOT ".\r". This can be used in: while(GetLine(x)){ ... }
     bool
-    GetLine(string &completeResponseLine, bool keepEOL = true);
+    GetLine(string &completeResponseLine, 
+            bool keepEOL = true, 
+            bool keepCR   = false);
 
 private:
     void   init_line_buffer();

@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:16 $
-//  $Revision: 1.4 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.5 $
 //  $RCSfile: DuplicatesChecker.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -31,7 +31,7 @@ class DuplicatesChecker; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-#include <fstream.h>
+#include <fstream>
 #include <stdio.h>  
 #include <stdlib.h>  
 #include "Abortable.h"

@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 22:06:48 $
-//  $Revision: 1.20 $
+//  $Date: 2001/02/11 20:47:39 $
+//  $Revision: 1.21 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -121,6 +121,11 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         Login(username,password);
     }
 
+    //----------
+    fKeep_CarriageReturn = true; // The default if nothing specified
+    fSettings->GetValue(SUCK_CONFIG,SUCK_KEEP_CR,fKeep_CarriageReturn);
+    
+    //----------
     Linfo << "Connection " << fConnectionNr 
           << " has been established." << endl << flush;
 }
@@ -209,7 +214,7 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
     char flags[500];
 
     string line;
-    while (nntp->GetLine(line) && KeepRunning())
+    while (nntp->GetLine(line,false,fKeep_CarriageReturn) && KeepRunning())
     {
         // Serious error ? 
         if (!IsConnected())
@@ -386,7 +391,7 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
     }
 
     string line;
-    while (nntp->GetLine(line) && KeepRunning())
+    while (nntp->GetLine(line,false,fKeep_CarriageReturn) && KeepRunning())
     {
         // Serious error ? 
         if (!IsConnected())
@@ -404,7 +409,7 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
 //    if (!KeepRunning())
 //    {
 //      Linfo << "Finishing XOVER command cleanly." << endl << flush;
-//      while (nntp->GetLine(line));
+//      while (nntp->GetLine(line,false,fKeep_CarriageReturn));
 //      Linfo << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
 
@@ -432,7 +437,7 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
     }
     
     string line;
-    while (nntp->GetLine(line) && KeepRunning())
+    while (nntp->GetLine(line,false,fKeep_CarriageReturn) && KeepRunning())
     {
         // Serious error ? 
         if (!IsConnected())
@@ -451,7 +456,7 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
 //    if (!KeepRunning())
 //    {
 //      Linfo << "Finishing XOVER command cleanly." << endl << flush;
-//      while (nntp->GetLine(line));
+//      while (nntp->GetLine(line,false,fKeep_CarriageReturn));
 //      Linfo << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
     
@@ -519,7 +524,7 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
     articleHead="";
 
     string line;
-    while (nntp->GetLine(line) && KeepRunning())
+    while (nntp->GetLine(line,true,fKeep_CarriageReturn) && KeepRunning())
     {
         // Serious error ? 
         if (!IsConnected())
@@ -578,7 +583,7 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
     articleBody="";
 
     string line;
-    while (nntp->GetLine(line) && KeepRunning())
+    while (nntp->GetLine(line,true,fKeep_CarriageReturn) && KeepRunning())
     {
         // Serious error ? 
         if (!IsConnected())

@@ -6,8 +6,8 @@ dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2000/07/08 14:11:55 $
-dnl   $Revision: 1.10 $
+dnl   $Date: 2001/08/28 16:22:44 $
+dnl   $Revision: 1.13 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -39,8 +39,10 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 dnl Detect the operating system and set the correct flag
 
-AM_CONDITIONAL(UNAME_LINUX, test x`uname` = xLinux)
-AM_CONDITIONAL(UNAME_IRIX,  test x`uname` = xIRIX)
+AM_CONDITIONAL(UNAME_LINUX,   test x`uname` = xLinux)
+AM_CONDITIONAL(UNAME_IRIX,    test x`uname` = xIRIX)
+AM_CONDITIONAL(UNAME_IRIX64,  test x`uname` = xIRIX64)
+AM_CONDITIONAL(UNAME_SOLARIS, test x`uname` = xSunOS)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -49,6 +51,21 @@ AC_PROG_RANLIB
 dnl Checks for libraries.
 
 dnl Checks for header files.
+
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING(for <ostream>)
+AC_TRY_COMPILE(
+[ 
+#include <ostream>
+],
+[
+cout << "Hello World";
+],
+[AC_MSG_RESULT(yes)
+],
+[AC_MSG_RESULT(no)
+AC_DEFINE(OLD_OSTREAM, [])
+])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 

@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:17 $
-//  $Revision: 1.8 $
+//  $Date: 2001/02/11 20:47:27 $
+//  $Revision: 1.9 $
 //  $RCSfile: AsciiLineSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -110,11 +110,27 @@ AsciiLineSocket::SendCommand(const char *buffer)
 }
 
 //-------------------------------------------------------------------------
+// Helper function to cleanup the incoming data
+static void 
+RemoveTrailingCRLF(string &str)
+{
+    if (str == "")
+        return;
+        
+    while(str.begin() != str.end() && 
+          (*(str.end()-1) == '\n'  ||
+           *(str.end()-1) == '\r' ))
+        str.erase(str.end()-1);
+}
+
+//-------------------------------------------------------------------------
 // The first line the NNTP or HTTP server sends back always contains a
 // status code. We want to extract this status code.
 
 int 
-AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
+AsciiLineSocket::GetResponse (string &completeResponseLine, 
+                              bool keepEOL, 
+                              bool keepCR)
 {
     if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1 )
     {
@@ -123,6 +139,13 @@ AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
         return -1;
     }
     completeResponseLine = line_buffer;
+
+    if (!keepCR)
+    {
+        RemoveTrailingCRLF(completeResponseLine);
+        if (keepEOL)
+            completeResponseLine += '\n';
+    }
 
     if (fVerbosePrintCommands)
         Lsocketdebug << "<< " << line_buffer << endl << flush;
@@ -138,7 +161,9 @@ AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
 // NOT ".\r". This can be used in: while(GetLine(x)){ ... }
 
 bool 
-AsciiLineSocket::GetLine (string &completeResponseLine,bool keepEOL)
+AsciiLineSocket::GetLine (string &completeResponseLine,
+                          bool keepEOL, 
+                          bool keepCR)
 {
     if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1 )
     {
@@ -149,17 +174,24 @@ AsciiLineSocket::GetLine (string &completeResponseLine,bool keepEOL)
 
     completeResponseLine = line_buffer;
 
+    if (!keepCR)
+    {
+        RemoveTrailingCRLF(completeResponseLine);
+        if (keepEOL)
+            completeResponseLine += '\n';
+    }
+
     if (keepEOL)
     {
         if (strcmp(line_buffer,".\r\n"))
             return true;
     }
-    else
+     else
     {
         if (strcmp(line_buffer,".\r"))
             return true;
     }
-
+    
     return false;
 }
 

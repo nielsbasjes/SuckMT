@@ -6,8 +6,8 @@
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/07/08 14:13:00 $
-//  $Revision: 1.13 $
+//  $Date: 2001/08/26 20:40:51 $
+//  $Revision: 1.14 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -30,17 +30,12 @@
 #include <map>
 #include <list>
 #include <string>
-#include <iostream.h>
+#include <iostream>
 #include <omnithread.h>
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define map    std::map
-#define list   std::list
-#define string std::string
-#endif
+using namespace std;
 
 //-------------------------------------------------------------------------
 

@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.12 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.13 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,8 +28,8 @@
 
 //-------------------------------------------------------------------------
 
-#include <fstream.h>
-#include <iostream.h>
+#include <fstream>
+#include <iostream>
 #include "TraceLog.h"
 #include "SuckDefines.h"
 #include "NNTPRetrieveManager.h"

@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/10/22 20:18:08 $
-//  $Revision: 1.29 $
+//  $Date: 2001/08/26 21:05:10 $
+//  $Revision: 1.32 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -39,8 +39,8 @@
 #ifndef WIN32
 #include <syslog.h>
 #endif
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
 #include "TraceLog.h"
 #include "NNTPRetrieveManager.h"
 #include "StatisticsKeeper.h"
@@ -59,7 +59,7 @@ Copyright()
           << "| SuckMT " << SUCKMT_VERSION 
                         <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
-          << "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+          << "| (C)2001 by Niels Basjes  -  http://go.to/suckmt  |" << endl
           << "+==================================================+" << endl
           << flush;
 }
@@ -94,13 +94,22 @@ InitializeIniFile(IniFile &settings)
                   << newvalue << " = " << default << endl << flush;\
         }
     
+    #define SET_UNDEF_STR(key,newvalue,default)\
+        if (!settings.GetValue(key,newvalue,dummy))\
+        {\
+            dummy = default;\
+            settings.SetValue(key,newvalue,dummy);\
+            Lcout << "Added new value to INI file: [" << key << "] " \
+                  << newvalue << " = " << default << endl << flush;\
+        }
+    
     time_t now = time(NULL);
     char * nowStr = ctime(&now);
     nowStr[24] = 0x00; // Remove the endl symbol from the time string
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            "SuckMT was written by ir. Niels Basjes (C) 1999-2000");
+            "SuckMT was written by ir. Niels Basjes (C) 1999-2001");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
             "SuckMT is distributed under the GNU Public License.");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
@@ -109,39 +118,40 @@ InitializeIniFile(IniFile &settings)
             "SuckMT@Basjes.nl");
     
     // Setting default values if they don't exist yet
-    SET_UNDEFINED(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,  SUCKMT_VERSION);
-    SET_UNDEFINED(SUCK_INSTALL, SUCK_INSTALL_DATE,    nowStr);
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NEWS_SERVER,     "news");
+    SET_UNDEF_STR(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,  SUCKMT_VERSION);
+    SET_UNDEF_STR(SUCK_INSTALL, SUCK_INSTALL_DATE,    nowStr);
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_NEWS_SERVER,     "news");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PORT    ,   119);
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_USERNAME,   "");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PASSWORD,   "");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_NNTP_USERNAME,   "");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_NNTP_PASSWORD,   "");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_KEEP_CR,         false);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DEBUG_SOCKET ,   false);
 
 #ifdef WIN32
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/SuckMT-batch");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/tmp/SuckMT-restart");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/SuckMT-batch");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/tmp/SuckMT-restart");
 #else
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/var/spool/suckmt/in.coming");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/var/spool/suckmt/batch");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/var/spool/suckmt/restart");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_DIR,             "/var/spool/suckmt/in.coming");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/var/spool/suckmt/batch");
+    SET_UNDEF_STR(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/var/spool/suckmt/restart");
 #endif    
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_CONNECT_RETRIES, 0);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, true);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_LOGLEVEL,        LOGS_STATUS);
     
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MIN_LINES, "-1 ; 100");
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES, "-1 ; 100");
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES, "-1 ; 100");
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,"-1 ; 100");
+    SET_UNDEF_STR(SUCK_GLOBAL_KILL_RULES,   SUCK_MIN_LINES, "-1 ; 100");
+    SET_UNDEF_STR(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES, "-1 ; 100");
+    SET_UNDEF_STR(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES, "-1 ; 100");
+    SET_UNDEF_STR(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,"-1 ; 100");
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_MSG_THRESHOLD,-1);
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_MSG_DOWNLOAD, -1);
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
-    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
+    SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
         "/tmp/SuckMT-KillLog.txt");
-    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,
+    SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,
         "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 
     // Keep statistics
@@ -156,13 +166,12 @@ InitializeIniFile(IniFile &settings)
     if (!settings.GetVariableNames(SUCK_GROUPS,dummy_string_list))
         settings.CreateSection(SUCK_GROUPS);
 
-
     // Check if the kill headers section exists
     if (!settings.GetVariableNames(SUCK_KILL_HEADERS,dummy_string_list))
     {
         // Hmmm, new to kill rules ?
         // Ok, creating one sample rule
-        SET_UNDEFINED(SUCK_KILL_HEADERS,"Content-Type:text/html","not yet ; 0 ; 10000");
+        SET_UNDEF_STR(SUCK_KILL_HEADERS,"Content-Type:text/html","not yet ; 0 ; 10000");
         Lalways << "Created a sample kill rule in your config file." << endl << flush;
     }
 
@@ -171,7 +180,7 @@ InitializeIniFile(IniFile &settings)
     {
         // Hmmm, new to keep rules ?
         // Ok, creating one sample rule ... ;-)
-        SET_UNDEFINED(SUCK_KEEP_HEADERS,"~From:Niels Basjes","not yet ; 0 ; 10000");
+        SET_UNDEF_STR(SUCK_KEEP_HEADERS,"~From:Niels Basjes","not yet ; 0 ; 10000");
         Lalways << "Created a sample keep rule in your config file." << endl << flush;
     }
 }
@@ -242,7 +251,7 @@ int main(int argc, char** argv, char **envp)
     for (int i = 1 ; i < argc ; i++)
     {
         // INIFILE SETTING ??
-        if (!strcmp(argv[i],"-i"))
+        if (!std::strcmp(argv[i],"-i"))
         {
             if ( argc >= i+2 )
             {
@@ -263,7 +272,7 @@ int main(int argc, char** argv, char **envp)
         else
         
         // ADD a GROUP ??
-        if (!strcmp(argv[i],"-n"))
+        if (!std::strcmp(argv[i],"-n"))
         {
             if ( argc >= i+2 )
             {
@@ -284,14 +293,14 @@ int main(int argc, char** argv, char **envp)
         }
 
         // Create default INIFile ??
-        if (!strcmp(argv[i],"-init"))
+        if (!std::strcmp(argv[i],"-init"))
         {
             writeDefaultInitFile = true;
             continue;
         }
 
         // Be quiet ??
-        if (!strcmp(argv[i],"-q"))
+        if (!std::strcmp(argv[i],"-q"))
         {
             SetLoggingLevel(LOGS_NOTHING);
             forcedQuiet = true;

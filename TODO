@@ -12,5 +12,5 @@ Nr  Status  Description
  9  Partial Fix the handling if the server dies during download.
 10          Add checks to see if the target directory and files exist and are writable.            
 11          No shouting option (perhaps regular expression ?)
-12          Create some sample scripts
+12  Done    Create some sample scripts
 13          Add capability to upload messages (make sure we can still download if we can't upload).

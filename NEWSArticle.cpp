@@ -6,8 +6,8 @@
 //  Filename  : NEWSArticle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:14 $
-//  $Revision: 1.14 $
+//  $Date: 2001/02/11 20:47:34 $
+//  $Revision: 1.15 $
 //  $RCSfile: NEWSArticle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -190,7 +190,7 @@ NEWSArticle::StoreHeader(const string &line)
         else
         {  // This means that this line is a continuation of the previous line
             // Just append the extra data with a newline
-            fParsedHeaders[fieldName] += "\r\n" + thisLine;
+            fParsedHeaders[fieldName] += "\n" + thisLine;
         }
     }
 

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:13 $
-//  $Revision: 1.14 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.15 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,13 +35,9 @@ class NewsKiller; // Forward declaration
 #include <vector>
 #include <string>
 
-#ifdef WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+#include <strstream>
 
-#include <fstream.h>
+#include <fstream>
 #include "NEWSArticle.h"
 #include "IniFile.h"
 #include <omnithread.h>
@@ -49,12 +45,7 @@ class NewsKiller; // Forward declaration
 
 //-------------------------------------------------------------------------
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
-#ifdef __WIN32__
-#define map    std::map
-#define vector std::vector
-#define string std::string
-#endif
+using namespace std;
 
 //-------------------------------------------------------------------------
 

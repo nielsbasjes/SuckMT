@@ -70,3 +70,8 @@ Version 0.53
     Fixed ?: Removed alarm call from GenericSocket.cpp, perhaps this solves the SIG_ALRM problem.
     Fixed ?: Removed regfree call from HeaderMatcher.cpp, perhaps this solves some unexplained crashes. It does introduce memory leaks at exit.
     Fixed: The mutexes in MultiStream.cpp which still allowed some race conditions.
+Version 0.54
+    Added: Compiler flags for IRIX64 and Solaris (not fully tested).
+    Added: Option to remove the ^M from the lines in the downloaded messages.
+    Changed: Completely different regular expression library. Now uses the regex++ from www.boost.org which was created by Dr John Maddock. It is currently only enables on Win32 due to an internal compiler error on my system (SuSE 6.1).
+    Fixed: Usage of namespaces and C++ include files. I found that I really did it wrong in the previous versions.

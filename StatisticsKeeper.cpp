@@ -6,8 +6,8 @@
 //  Filename  : StatisticsKeeper.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:12 $
-//  $Revision: 1.11 $
+//  $Date: 2001/08/26 20:40:52 $
+//  $Revision: 1.12 $
 //  $RCSfile: StatisticsKeeper.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -36,8 +36,8 @@
 
 #include <time.h>
 #include <stdio.h>
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
 #include <omnithread.h>
 #include "StatisticsKeeper.h"
 #include "SetProcTitle.h"
