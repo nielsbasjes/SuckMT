@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:43 $
-//  $Revision: 1.6 $
+//  $Date: 1999/12/13 20:09:38 $
+//  $Revision: 1.7 $
 //  $RCSfile: GenericSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -74,20 +74,20 @@ class GenericSocket  : public Abortable
 //-----------------------------------    
 public:
     GenericSocket();
-    GenericSocket(string hostName, unsigned short portNumber);
+    GenericSocket(const string hostName, const unsigned short portNumber);
     virtual ~GenericSocket();
 
     bool
-    SetConnectionParams(string hostName, unsigned short portNumber);
+    SetConnectionParams(const string hostName, const unsigned short portNumber);
 
     struct hostent *
-    GetHostEntry(string hostname);
+    GetHostEntry(const string hostname);
 
     bool
     Connect();
 
     bool
-    Connect(string hostName, unsigned short portNumber);
+    Connect(const string hostName, const unsigned short portNumber);
 
     bool
     IsConnected();
@@ -95,12 +95,12 @@ public:
     // Send 0x00 terminated ACSII string pointed to by 'buffer' 
     // Returns number of bytes sent or -1 in case of error.
     int 
-    Send (char *buffer);
+    Send (const char *buffer);
 
     // Send 'len' bytes pointed to by 'buffer' 
     // Returns number of bytes sent or -1 in case of error.
     int 
-    Send (char *buffer, unsigned int len);
+    Send (const char *buffer, const unsigned int len);
 
     // Receive maximum of 'maxlen' bytes and store them in the preallocated 'buffer'.
     // Stop reading at the end of the stream. 

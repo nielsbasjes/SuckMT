@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:16 $
-//  $Revision: 1.4 $
+//  $Date: 1999/12/13 20:09:34 $
+//  $Revision: 1.5 $
 //  $RCSfile: AsciiLineSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,9 +35,22 @@ public:
     AsciiLineSocket(string hostName, unsigned short portNumber);
     ~AsciiLineSocket();
 
+    // Start/Stop showing the socket commands on cout
+    void 
+    DebugSocketCommands(bool show = true);
+
     // Send the formatted string to the socket
     int
-    Sendf(char *fmt, ...);
+    Sendf(const char *fmt, ...);
+
+    // Send the formatted command string to the socket
+    int
+    SendCommandf(const char *fmt, ...);
+
+    // Send the command string to the socket
+    int
+    SendCommand(const char *buffer);
+
 
     // The first line the NNTP or HTTP server sends back always contains a
     // status code. We want to extract this status code.
@@ -55,6 +68,7 @@ private:
     void   init_line_buffer();
     char * line_buffer; // Internal buffer for GetResponse and GetLine
     int    line_buffer_size;
+    bool   fVerbosePrintCommands;
 };
 
 //-------------------------------------------------------------------------

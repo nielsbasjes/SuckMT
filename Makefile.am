@@ -6,8 +6,8 @@
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 1999/11/19 21:52:06 $
-#  $Revision: 1.5 $
+#  $Date: 1999/12/13 21:02:04 $
+#  $Revision: 1.7 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -28,7 +28,39 @@ suckmt_LDADD          = -lpthread
 suckmtstatic_LDADD    = -lpthread 
 suckmtstatic_LDFLAGS  =  -static
 
-EXTRA_DIST = AsciiLineSocket.cpp AsciiLineSocket.h Command.cpp Command.h CommandHandler.cpp CommandHandler.h CommandQueue.cpp CommandQueue.h GenericSocket.cpp GenericSocket.h NEWSArticle.cpp NEWSArticle.h NNTPCommandHandler.cpp NNTPCommandHandler.h NNTPGetArticleCommand.cpp NNTPGetArticleCommand.h NNTPGetXOVERCommand.cpp NNTPGetXOVERCommand.h NNTPProxy.cpp NNTPProxy.h NNTPRetrieveManager.cpp NNTPRetrieveManager.h NewsKiller.cpp NewsKiller.h Printable.cpp Printable.h TraceLog.cpp TraceLog.h main.cpp omnithread.h posix.cc tsqueue.h StatisticsKeeper.cpp StatisticsKeeper.h Abortable.cpp Abortable.h IniFile.cpp IniFile.h Tokenize.cpp Tokenize.h
+# Extradist includes some generic files
+EXTRA_DIST  = Makefile.ed suckmt.ini.sample suckmt.lsm 
+
+# The MS-Visual Studio Specific Project/Make files.
+EXTRA_DIST += SuckMT.dsp SuckMT.dsw SuckMT.plg 
+
+# The omni_thread sources for all platforms
+EXTRA_DIST += omnithread.h 
+EXTRA_DIST += omnithread/mach.h     mach.cc 
+EXTRA_DIST += omnithread/nt.h       nt.cpp
+EXTRA_DIST += omnithread/posix.h    posix.cc 
+EXTRA_DIST += omnithread/solaris.h  solaris.cc 
+
+# All the C++ sources and header files.
+EXTRA_DIST += SuckDefines.h main.cpp tsqueue.h  
+EXTRA_DIST += AsciiLineSocket.h         AsciiLineSocket.cpp 
+EXTRA_DIST += Abortable.h               Abortable.cpp 
+EXTRA_DIST += Command.h                 Command.cpp 
+EXTRA_DIST += CommandHandler.h  	    CommandHandler.cpp 
+EXTRA_DIST += CommandQueue.h            CommandQueue.cpp 
+EXTRA_DIST += GenericSocket.h           GenericSocket.cpp 
+EXTRA_DIST += IniFile.h                 IniFile.cpp 
+EXTRA_DIST += NEWSArticle.h             NEWSArticle.cpp 
+EXTRA_DIST += NNTPCommandHandler.h      NNTPCommandHandler.cpp 
+EXTRA_DIST += NNTPGetArticleCommand.h   NNTPGetArticleCommand.cpp 
+EXTRA_DIST += NNTPGetXOVERCommand.h     NNTPGetXOVERCommand.cpp 
+EXTRA_DIST += NNTPProxy.h               NNTPProxy.cpp 
+EXTRA_DIST += NNTPRetrieveManager.h     NNTPRetrieveManager.cpp 
+EXTRA_DIST += NewsKiller.h              NewsKiller.cpp 
+EXTRA_DIST += Printable.h               Printable.cpp 
+EXTRA_DIST += StatisticsKeeper.h        StatisticsKeeper.cpp 
+EXTRA_DIST += Tokenize.h                Tokenize.cpp 
+EXTRA_DIST += TraceLog.h                TraceLog.cpp 
 
 # Optimization flags
 #CXXFLAGS=-O0  -g
@@ -36,16 +68,20 @@ EXTRA_DIST = AsciiLineSocket.cpp AsciiLineSocket.h Command.cpp Command.h Command
 CXXFLAGS=-O3 
 
 # Enable Compiler warnings
-#CXXFLAGS+= -Wall 
 CXXFLAGS+= -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 
 # Linux specific omnithread flags
 CXXFLAGS+=-D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
 
-easydist: distclean
-	rm configure
-	rm Makefile.in
-	cp Makefile.ed Makefile
+# This target makes the distribution easier to build for the end user.
+easydist: distdir
+	-chmod -R a+r $(distdir)
+	rm $(distdir)/configure
+	rm $(distdir)/Makefile.in
+	cp Makefile.ed $(distdir)/Makefile
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
 
 # End of the file Makefile.am
 #=========================================================================
+

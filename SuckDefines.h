@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/03 18:04:38 $
-//  $Revision: 1.11 $
+//  $Date: 1999/12/13 20:09:43 $
+//  $Revision: 1.12 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -60,6 +60,7 @@
 #define SUCK_CONFIG            "Suck MT Configuration"
 #define SUCK_NEWS_SERVER       "News server Hostname"
 #define SUCK_NNTP_PORT         "Connect with Port Number"
+#define SUCK_DEBUG_SOCKET      "Debug SOCKET commands"
 #define SUCK_SEND_MODEREADER   "Send MODE READER to the server"
 #define SUCK_NNTP_USERNAME     "Connect with Username"
 #define SUCK_NNTP_PASSWORD     "Connect with Password"

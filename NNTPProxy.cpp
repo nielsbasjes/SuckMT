@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:34:18 $
-//  $Revision: 1.6 $
+//  $Date: 1999/12/13 20:09:41 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -47,15 +47,17 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         return;
     }
 
+    //----------
     string newsServerName;
-    
     if (!fSettings->GetValue(SUCK_CONFIG,SUCK_NEWS_SERVER,newsServerName))
         newsServerName = "news"; // Default value if nothing is specified
 
+    //----------
     long newsServerPort;
     if (!fSettings->GetValue(SUCK_CONFIG,SUCK_NNTP_PORT,newsServerPort))
         newsServerPort = 119; // Default value if nothing is specified
 
+    //----------
     // Create socket connection to server on the NNTP port
     nntp = new AsciiLineSocket(newsServerName,newsServerPort);
     
@@ -66,6 +68,15 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         return; // abort
     }
 
+    //----------
+    // En/Disable the socket debug info
+    bool showSocketDebug;
+    if (!fSettings->GetValue(SUCK_CONFIG,SUCK_DEBUG_SOCKET,showSocketDebug))
+        showSocketDebug = false; // Default value if nothing is specified
+
+    nntp->DebugSocketCommands(showSocketDebug);
+
+    //----------
     // Get the server ID message
     string serverIdentification = "An unknown fatal error occurred.";
     
@@ -76,6 +87,7 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         nntp = NULL;
     }
 
+    //----------
     bool sendModeReader = false;
     if (fSettings->GetValue(SUCK_CONFIG,SUCK_SEND_MODEREADER,sendModeReader))
     {
@@ -83,6 +95,7 @@ NNTPProxy::NNTPProxy(IniFile *settings)
             Send_MODE_READER();
     }
 
+    //----------
     string username = "";
     fSettings->GetValue(SUCK_CONFIG,SUCK_NNTP_USERNAME,username);
 
@@ -93,9 +106,6 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         
         Login(username,password);
     }
-
-
-//    cout << serverIdentification << endl;
 }
 
 //--------------------------------------------------------------------
@@ -156,7 +166,7 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
         return false; // Not connected
     }
         
-    nntp->Send("LIST\n");
+    nntp->SendCommand("LIST");
 
     string responseLine;
 
@@ -209,7 +219,7 @@ NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo)
 
 //    cout << "Settinggroup :\"" << groupName << "\"." << endl;
 
-    nntp->Sendf("GROUP %s\n",groupName.c_str());
+    nntp->SendCommandf("GROUP %s",groupName.c_str());
 
     string responseLine;
 
@@ -282,9 +292,9 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
     }
     
     if (first == last)
-        nntp->Sendf("XOVER %ld\n",first);
+        nntp->SendCommandf("XOVER %ld",first);
     else
-        nntp->Sendf("XOVER %ld-%ld\n",first,last);
+        nntp->SendCommandf("XOVER %ld-%ld",first,last);
     
     string responseLine;
     
@@ -410,7 +420,7 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
         return false; // Not connected
     }
 
-    nntp->Sendf("HEAD %s\n",articleId.c_str());
+    nntp->SendCommandf("HEAD %s",articleId.c_str());
 
     string responseLine;
 
@@ -455,7 +465,7 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
         return false; // Not connected
     }
 
-    nntp->Sendf("BODY %s\n",articleId.c_str());
+    nntp->SendCommandf("BODY %s",articleId.c_str());
 
     string responseLine;
 
@@ -534,7 +544,7 @@ NNTPProxy::Send_MODE_READER()
         return false; // Not connected
     }
 
-    nntp->Send("MODE READER\n");
+    nntp->SendCommand("MODE READER");
 
     string responseLine;
 
@@ -569,8 +579,7 @@ NNTPProxy::Login(string user,string pass)
         return false; // Not connected
     }
 
-    printf("AUTHINFO USER %s\n",user.c_str());
-    nntp->Sendf("AUTHINFO USER %s\n",user.c_str());
+    nntp->SendCommandf("AUTHINFO USER %s",user.c_str());
 
     string responseLine;
     int responseCode;
@@ -585,8 +594,7 @@ NNTPProxy::Login(string user,string pass)
         return false;
     }
 
-    printf("AUTHINFO PASS %s\n",pass.c_str());
-    nntp->Sendf("AUTHINFO PASS %s\n",pass.c_str());
+    nntp->SendCommandf("AUTHINFO PASS %s",pass.c_str());
 
     responseCode = nntp->GetResponse(responseLine);
     if (responseCode >= 500)

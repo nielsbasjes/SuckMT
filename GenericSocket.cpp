@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:42 $
-//  $Revision: 1.4 $
+//  $Date: 1999/12/13 20:09:36 $
+//  $Revision: 1.5 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -74,7 +74,9 @@ GenericSocket::GenericSocket()
 
 //------------------------------------------------------------------------
 
-GenericSocket::GenericSocket(string hostName, unsigned short portNumber)
+GenericSocket::GenericSocket(
+        const string hostName, 
+        const unsigned short portNumber)
 {
     socketCreateTime = time(NULL);
     sendBytes = 0;
@@ -102,7 +104,9 @@ GenericSocket::~GenericSocket()
 //------------------------------------------------------------------------
 
 bool
-GenericSocket::SetConnectionParams(string hostName, unsigned short portNumber)
+GenericSocket::SetConnectionParams(
+        const string hostName, 
+        const unsigned short portNumber)
 {
     /* this is for the lame win32 socket crap */
 #ifdef WIN32
@@ -151,7 +155,7 @@ GenericSocket::SetConnectionParams(string hostName, unsigned short portNumber)
 //------------------------------------------------------------------------
 
 bool
-GenericSocket::Connect(string hostName, unsigned short portNumber)
+GenericSocket::Connect(const string hostName, const unsigned short portNumber)
 {
     if (SetConnectionParams(hostName,portNumber))
         Connect();
@@ -161,7 +165,7 @@ GenericSocket::Connect(string hostName, unsigned short portNumber)
 //------------------------------------------------------------------------
 
 struct hostent * 
-GenericSocket::GetHostEntry(string hostname)
+GenericSocket::GetHostEntry(const string hostname)
 {
     struct hostent *hostEnt = NULL;
     
@@ -237,7 +241,7 @@ GenericSocket::IsConnected()
 // Returns number of bytes sent or -1 in case of error.
 
 int 
-GenericSocket::Send(char *buffer)
+GenericSocket::Send(const char *buffer)
 {
     if (buffer==NULL)
     {
@@ -253,7 +257,7 @@ GenericSocket::Send(char *buffer)
 // Returns number of bytes sent or -1 in case of error.
 
 int 
-GenericSocket::Send(char *buffer, unsigned int len)
+GenericSocket::Send(const char *buffer, const unsigned int len)
 {
     if (buffer==NULL)
     {

@@ -18,3 +18,8 @@ Version 0.3i
     Added the option for MODE READER
     Added the option for username and password to login using AUTHINFO
     Fixed lockup problem when aborting.
+Version 0.3j
+    Changed the command syntax from just \n to \r\n and made this a 
+    centralized issue. 
+    Added a simple debug option to track the socket commands. 
+    

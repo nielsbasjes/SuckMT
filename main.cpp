@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/03 18:04:43 $
-//  $Revision: 1.11 $
+//  $Date: 1999/12/13 20:09:45 $
+//  $Revision: 1.12 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -100,6 +100,7 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PORT    ,   119);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_USERNAME,   "");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PASSWORD,   "");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DEBUG_SOCKET ,   false);
 
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/suckmtbatch");
