@@ -1,25 +1,33 @@
-/***************************************************************************
-                          main.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sat Jul  3 01:47:46 MEST 1999
-                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : main.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:49 $
+//  $Revision: 1.3 $
+//  $RCSfile: main.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+//-------------------------------------------------------------------------
+
+#include <time.h>
 #include <signal.h>
 #include <iostream.h>
 #include <iomanip.h>
-
-#include "debugging.h"
 #include "TraceLog.h"
 #include "NNTPRetrieveManager.h"
 #include "StatisticsKeeper.h"
@@ -27,8 +35,9 @@
 #include "SuckDefines.h"
 
 //-------------------------------------------------------------------------
+
 void
-FUNCTION_START(Copyright())
+Copyright()
 {
     cout << setprecision(2) // for the version displaying
          << "+=================================================+" << endl
@@ -38,26 +47,32 @@ FUNCTION_START(Copyright())
          << "| http://www.wirehub.nl/~basjesn/suckmt           |" << endl
          << "+=================================================+" << endl;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
 void
-FUNCTION_START(Usage())
+Usage()
 {
     cout << "+=================================================+" << endl
          << "| Usage: suckmt [-i <file>] [-n <group>] [-init]  |" << endl
          << "| -i <filename>   Use specified file as ini file  |" << endl
          << "| -n <groupname>  Add the specied group           |" << endl
          << "| -init           Fill ini file with defaults     |" << endl
+         << "| -q              quiet: don't show the progress  |" << endl
          << "+=================================================+" << endl;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 void
-FUNCTION_START(InitializeIniFile(IniFile &settings))
+InitializeIniFile(IniFile &settings)
 {
     string dummy;
+
+    // Convenience macro that sets a value to the default if it is not defined
+    #define SET_UNDEFINED(key,value,default)\
+        if (!settings.GetValue(key,value,dummy))\
+            settings.SetValue(key,value,default);
+    
     time_t now = time(NULL);
     char * nowStr = ctime(&now);
     nowStr[24] = 0x00; // Remove the endl symbol from the time string
@@ -73,26 +88,20 @@ FUNCTION_START(InitializeIniFile(IniFile &settings))
             "SuckMT@Basjes.nl");
     
     // Setting default values if they don't exist yet
-    if (!settings.GetValue(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,dummy))
-        settings.SetValue(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,SUCKMT_VERSION);
+    SET_UNDEFINED(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,SUCKMT_VERSION);
+    SET_UNDEFINED(SUCK_INSTALL, SUCK_INSTALL_DATE,  nowStr);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NEWS_SERVER,   "news");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,           "/tmp/");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,    "/tmp/suckmtbatch");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,       3);
     
-    if (!settings.GetValue(SUCK_INSTALL,SUCK_INSTALL_DATE,dummy))
-        settings.SetValue(SUCK_INSTALL,SUCK_INSTALL_DATE,nowStr);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES,     -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES,     -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,    -1);
 
-    if (!settings.GetValue(SUCK_CONFIG,SUCK_NEWS_SERVER,dummy))
-        settings.SetValue(SUCK_CONFIG,SUCK_NEWS_SERVER,"news");
-
-    if (!settings.GetValue(SUCK_CONFIG,SUCK_DIR,dummy))
-        settings.SetValue(SUCK_CONFIG,SUCK_DIR,"/tmp/");
-
-    if (!settings.GetValue(SUCK_CONFIG,SUCK_BATCH_FILE,dummy))
-        settings.SetValue(SUCK_CONFIG,SUCK_BATCH_FILE,"/tmp/suckmtbatch");
-
-    if (!settings.GetValue(SUCK_CONFIG,SUCK_THREADS,dummy))
-        settings.SetValue(SUCK_CONFIG,SUCK_THREADS,3);
-
-    if (!settings.GetValue(SUCK_GLOBAL_KILL_RULES,SUCK_MAX_LINES,dummy))
-        settings.SetValue(SUCK_GLOBAL_KILL_RULES,SUCK_MAX_LINES,-1);
+//    SET_UNDEFINED(SUCK_KILL_STATISTICS,"Explanation of these fields",
+//    "These fields indicate when the last message was killed and how often messages"
+//    "have been killed for the specified reason.");
 
     // Keep statistics
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LATEST_VERSION,SUCKMT_VERSION);
@@ -105,12 +114,13 @@ FUNCTION_START(InitializeIniFile(IniFile &settings))
         settings.CreateSection(SUCK_GROUPS);
 
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 static NNTPRetrieveManager * retrieveManagerToSignal = NULL;
-static void SignalHandler(int /*sig_num*/)
+
+static void 
+SignalHandler(int /*sig_num*/)
 {
     cout << "Received STOP signal." << endl << flush;
     if (retrieveManagerToSignal == NULL)
@@ -121,7 +131,8 @@ static void SignalHandler(int /*sig_num*/)
 
 //-------------------------------------------------------------------------
 
-static void SetSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
+static void 
+SetSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
 {
     retrieveManagerToSignal = nntpRetrieveManager;
     signal(SIGINT,  SignalHandler);
@@ -132,11 +143,12 @@ static void SetSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(int main(int argc, char** argv))
+int main(int argc, char** argv)
 {
     string iniFileName = SUCK_CONFIG_FILE;
     bool   writeDefaultInitFile = false;
     bool   downloadMessages = true;
+    bool   showProgress = true;
 
     IniFile settings;
     
@@ -189,6 +201,13 @@ FUNCTION_START(int main(int argc, char** argv))
         if (!strcmp(argv[i],"-init"))
         {
             writeDefaultInitFile = true;
+            continue;
+        }
+
+        // Be quiet ??
+        if (!strcmp(argv[i],"-q"))
+        {
+            showProgress = false;
             continue;
         }
 
@@ -249,14 +268,17 @@ FUNCTION_START(int main(int argc, char** argv))
     
         SetSignalHandler(&nntpRetrieveManager);
 
-        KeepStatistics(10000); // 10000 == Show every 1 second
+        if (showProgress)
+            KeepStatistics(10000); // 10000 == Show every 1 second
 
         nntpRetrieveManager.WaitForCompletion();
 
-        cout << endl;
-        //    statisticsKeeper->Print(cout);
-    
-        EndStatistics();
+        if (showProgress)
+        {
+            cout << endl;
+            //    statisticsKeeper->Print(cout);
+            EndStatistics();
+        }
         
         // Write the ini file back if we were not aborted
         if (nntpRetrieveManager.KeepRunning())
@@ -276,6 +298,8 @@ FUNCTION_START(int main(int argc, char** argv))
 
     return EXIT_SUCCESS;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file main.cpp
+//=========================================================================

@@ -1,19 +1,29 @@
-/***************************************************************************
-                          IniFile.h  -  description                              
-                             -------------------                                         
-    begin                : Sun Aug 1 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : IniFile.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:28 $
+//  $Revision: 1.3 $
+//  $RCSfile: IniFile.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef INIFILE_H
 #define INIFILE_H
+
+//-------------------------------------------------------------------------
 
 #include <map>
 #include <list>
 #include <string>
 #include <iostream.h>
 #include "omnithread.h"
+
+//-------------------------------------------------------------------------
 
 // Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
@@ -128,6 +138,28 @@ public:
     AddValue(string section, string name, long value);
 
     //------------------------------------------------------
+    // Set lowest value of the specified and the current value.
+    // If the section doesn't exist it is created
+    // If the setting doesn't exist it is created
+    // If the existing setting is a number the value will be added
+    // If the existing setting is NOT a number false is returned
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    MinValue(string section, string name, long value);
+
+    //------------------------------------------------------
+    // Set highest value of the specified and the current value.
+    // If the section doesn't exist it is created
+    // If the setting doesn't exist it is created
+    // If the existing setting is a number the value will be added
+    // If the existing setting is NOT a number false is returned
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    MaxValue(string section, string name, long value);
+
+    //------------------------------------------------------
     // Erase the specified setting
     // Returns true if erased, false if not present.
     bool
@@ -190,7 +222,36 @@ private:
     bool
     SetValue(Section * theSection, string name, string value);
 
+    //------------------------------------------------------
+    // Set the specified setting in the specified section
+    // If the section doesn't exist it is created
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    SetValue(Section * theSection, string name, long value);
+
+    //------------------------------------------------------
+    // Get the specified setting from the specified section
+    // The value is returned in the value parameter
+    // Returns true if the setting exists --> value is filled
+    // Returns false if the setting does not exist --> value is unchanged
+    bool
+    GetValue(Section * theSection, string name, string &value);
+
+    //------------------------------------------------------
+    // Get the specified setting from the specified section
+    // The value is returned in the value parameter
+    // Returns true if the setting exists and it is a number 
+    //                          --> value is filled
+    // Returns false if the setting does not exist or not a number 
+    //                          --> value is unchanged
+    bool
+    GetValue(Section * theSection, string name, long &value);
+
 //======
 };
 
 #endif
+
+// End of the file IniFile.h
+//=========================================================================

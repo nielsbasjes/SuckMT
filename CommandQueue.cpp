@@ -1,20 +1,30 @@
-/***************************************************************************
-                          CommandQueue.cpp  -  description                              
-                             -------------------                                         
-    begin                : Wed Jul 28 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : CommandQueue.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:22 $
+//  $Revision: 1.2 $
+//  $RCSfile: CommandQueue.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
 
 #include "CommandQueue.h"
 #include "StatisticsKeeper.h"
 
-Command * CommandQueue::GetCommand()
+//-------------------------------------------------------------------------
+
+Command * 
+CommandQueue::GetCommand()
 {
     omni_mutex_lock lock(cqmutex);
 
@@ -32,9 +42,17 @@ Command * CommandQueue::GetCommand()
     return command;
 }
 
-void CommandQueue::AddCommand(Command * newCommand)
+//-------------------------------------------------------------------------
+
+void 
+CommandQueue::AddCommand(Command * newCommand)
 {
     omni_mutex_lock lock(cqmutex);
     push(newCommand);
     STAT_SetValue("Command Queue Length",size());
 }
+
+//-------------------------------------------------------------------------
+
+// End of the file CommandQueue.cpp
+//=========================================================================

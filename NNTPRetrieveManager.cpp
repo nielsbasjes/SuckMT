@@ -1,10 +1,16 @@
-/***************************************************************************
-                          NNTPRetrieveManager.cpp  -  description                              
-                             -------------------                                         
-    begin                : Mon Jul 26 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPRetrieveManager.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:44 $
+//  $Revision: 1.2 $
+//  $RCSfile: NNTPRetrieveManager.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
@@ -18,7 +24,7 @@
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKiller(&settings))
+NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKiller(&settings)
 {
     fSettings = &settings;
     string newsServerName;
@@ -71,11 +77,10 @@ FUNCTION_START(NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKil
                           (*groupIter,lastOneWeHave+1));
     }
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPRetrieveManager::~NNTPRetrieveManager())
+NNTPRetrieveManager::~NNTPRetrieveManager()
 {
     if (KeepRunning())
     {   // We were not aborted so we write the files
@@ -112,19 +117,17 @@ FUNCTION_START(NNTPRetrieveManager::~NNTPRetrieveManager())
     
 //    delete (fKiller);
 }
-FUNCTION_END
 
 
 //-------------------------------------------------------------------------
 // Store the specified filename so we know which files have to 
 // be processed later
 void
-FUNCTION_START(NNTPRetrieveManager::ArticleFileHasBeenWritten(string fileName))
+NNTPRetrieveManager::ArticleFileHasBeenWritten(string fileName)
 {
     omni_mutex_lock lock(nrm_mutex);
     fFilesWritten.push_back(fileName);
 }
-FUNCTION_END
 
 
 //-------------------------------------------------------------------------
@@ -132,7 +135,7 @@ FUNCTION_END
 // Returns the number of downloaded messages or -1 in case of error    
 
 void
-FUNCTION_START(NNTPRetrieveManager::GetGroups(vector<string> groupNames))
+NNTPRetrieveManager::GetGroups(vector<string> groupNames)
 {
     vector<string>::iterator groupNamesIter;
 
@@ -143,12 +146,11 @@ FUNCTION_START(NNTPRetrieveManager::GetGroups(vector<string> groupNames))
         commands.AddCommand(new NNTPGetXOVERCommand(*groupNamesIter));
     }
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void
-FUNCTION_START(NNTPRetrieveManager::WaitForCompletion ())
+NNTPRetrieveManager::WaitForCompletion ()
 {
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
 
@@ -172,12 +174,11 @@ FUNCTION_START(NNTPRetrieveManager::WaitForCompletion ())
             break;
     }
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void
-FUNCTION_START(NNTPRetrieveManager::AbortChildren())
+NNTPRetrieveManager::AbortChildren()
 {
     cout << "Making Queue EMPTY." <<  endl << flush;
 	
@@ -215,7 +216,8 @@ FUNCTION_START(NNTPRetrieveManager::AbortChildren())
         command = commands.GetCommand();
     }
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
+// End of the file NNTPRetrieveManager.cpp
+//=========================================================================

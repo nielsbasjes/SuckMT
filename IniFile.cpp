@@ -1,14 +1,22 @@
-/***************************************************************************
-                          IniFile.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Aug 1 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : IniFile.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:26 $
+//  $Revision: 1.3 $
+//  $RCSfile: IniFile.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
+
+//-------------------------------------------------------------------------
 
 #include <fstream.h>
 #include <stdio.h>  
@@ -39,41 +47,6 @@ IniFile::~IniFile()
 // Read the specified file into the settings database
 // Returns true if file succesfully read
 //         false otherwise (like : syntax error / no such file)
-
-
-//-------------------------------------------
-// First two helper functions
-
-static void RemoveLeadingSpaces(string &str)
-{
-    while(str.begin() != str.end() && 
-          (*(str.begin()) == ' '  ||
-           *(str.begin()) == '\t' ||
-           *(str.begin()) == '\r' ))
-        str.erase(str.begin());
-}
-
-static void RemoveTrailingSpaces(string &str)
-{
-    while(str.begin() != str.end() && 
-          (*(str.end()-1) == ' '  ||
-           *(str.end()-1) == '\t' ||
-           *(str.end()-1) == '\r' ))
-        str.erase(str.end()-1);
-}
-            
-//-------------------------------------------
-
-static char * RemoveLeadingSpaces(char * str)
-{
-    // go back one position
-    while (*str == ' ' || *str == '\t')
-        str++; 
-    
-    return str;
-}
-
-//-------------------------------------------
 
 bool
 IniFile::ReadFile(string filename)
@@ -148,11 +121,13 @@ IniFile::ReadFile(string filename)
                      << "\" at line " << lineNr << "." << endl;
                 return false;
             }
-            
-            vector<string> tokens = GetTokens(work_buffer,'=');
 
+            vector<string> tokens = GetTokens(work_buffer,'=');
+            
             string settingName  = tokens[0];      // Everything before the first '='
-            string settingValue = tokens[1]; // Everything after the first '='
+            string settingValue = "";
+            if (tokens.size() == 2)
+                settingValue = tokens[1]; // Everything after the first '=';
 
             RemoveLeadingSpaces(settingName);
             RemoveTrailingSpaces(settingName);
@@ -169,6 +144,7 @@ IniFile::ReadFile(string filename)
                      << "\" at line " << lineNr << "." << endl;
                 return false;
             }
+
         }
         
     }
@@ -252,7 +228,17 @@ bool
 IniFile::GetValue(string section, string name, string &value)
 {
     omni_mutex_lock lock(valuesMutex);
-    Section * theSection=GetSection(section);
+    return GetValue(GetSection(section),name,value);
+}
+
+//-------------------------------------------------------------------------
+// Get the specified setting from the specified section
+// The value is returned in the value parameter
+// Returns true if the setting exists --> value is filled
+// Returns false if the setting does not exist --> value is unchanged
+bool
+IniFile::GetValue(Section * theSection, string name, string &value)
+{
     if (theSection == NULL)
         return false; // Section doesn't exist 
         
@@ -274,8 +260,26 @@ IniFile::GetValue(string section, string name, string &value)
 bool
 IniFile::GetValue(string section, string name, long &value)
 {
+    omni_mutex_lock lock(valuesMutex);
+    return GetValue(GetSection(section),name,value);
+}
+
+//------------------------------------------------------
+// Get the specified setting from the specified section
+// The value is returned in the value parameter
+// Returns true if the setting exists and it is a number 
+//                          --> value is filled
+// Returns false if the setting does not exist or not a number 
+//                          --> value is 0 if not exists
+//                          --> value is 1 if exists
+bool
+IniFile::GetValue(Section * theSection, string name, long &value)
+{
+    if (theSection == NULL)
+        return false;
+
     string string_value;
-    if (!GetValue(section, name, string_value))
+    if (!GetValue(theSection, name, string_value))
     {
         value = 0;    // NON existence indicator
         return false; // Doesn't exist
@@ -377,11 +381,28 @@ IniFile::SetValue(string section, string name, string value)
 bool
 IniFile::SetValue(string section, string name, long value)
 {
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+
+    return SetValue(theSection,name,value);
+}
+
+//------------------------------------------------------
+// Set the specified setting in the specified section
+// If the section doesn't exist it is created
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::SetValue(Section * theSection, string name, long value)
+{
     char cstr[50];
     sprintf(cstr,"%ld",value);
     string newValue = cstr;
     
-    return SetValue(section,name,newValue);
+    return SetValue(theSection,name,newValue);
 }
 
 //------------------------------------------------------
@@ -439,6 +460,81 @@ IniFile::AddValue(string section, string name, long value)
 
     return SetValue(section,name,currentValue + value);
 }
+
+//------------------------------------------------------
+// Set lowest value of the specified and the current value.
+// If the section doesn't exist it is created
+// If the setting doesn't exist it is created
+// If the existing setting is a number the value will be added
+// If the existing setting is NOT a number false is returned
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::MinValue(string section, string name, long value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+        
+    long   currentValue;
+
+    if (!GetValue(theSection, name, currentValue))
+    {   // This means its the current setting is not a number
+        if (currentValue == 0)
+        {   // The value just doesn't exist
+            // So we can just set it.
+            return SetValue(theSection,name,value);
+        }
+        else
+        {   // The value DOES exist but its a string
+            return false;
+        }
+    }
+
+    if (currentValue > value)
+        return SetValue(theSection,name,value);
+    return true;
+}
+
+//------------------------------------------------------
+// Set highest value of the specified and the current value.
+// If the section doesn't exist it is created
+// If the setting doesn't exist it is created
+// If the existing setting is a number the value will be added
+// If the existing setting is NOT a number false is returned
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::MaxValue(string section, string name, long value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+        
+    long   currentValue;
+
+    if (!GetValue(theSection, name, currentValue))
+    {   // This means its the current setting is not a number
+        if (currentValue == 0)
+        {   // The value just doesn't exist
+            // So we can just set it.
+            return SetValue(theSection,name,value);
+        }
+        else
+        {   // The value DOES exist but its a string
+            return false;
+        }
+    }
+
+    if (currentValue < value)
+        return SetValue(theSection,name,value);
+    return true;
+}
+
 
 //-------------------------------------------------------------------------
 // Erase the specified setting
@@ -567,3 +663,6 @@ IniFile::AddSection(string section)
 }
 
 //-------------------------------------------------------------------------
+
+// End of the file IniFile.cpp
+//=========================================================================

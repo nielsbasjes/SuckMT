@@ -1,13 +1,23 @@
-// NNTPProxy.h: interface for the NNTPProxy class.
-//
-//------------------------------------------------------------------------
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPProxy.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:43 $
+//  $Revision: 1.2 $
+//  $RCSfile: NNTPProxy.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef __NNTPPROXY_H__
 #define __NNTPPROXY_H__
 
-class NNTPProxy; // Forward Declaration
+//-------------------------------------------------------------------------
 
-#include "debugging.h"
+class NNTPProxy; // Forward Declaration
 
 #include <algorithm>
 #include <vector>
@@ -17,11 +27,12 @@ class NNTPProxy; // Forward Declaration
 #include "Abortable.h"
 #include "NNTPCommandHandler.h"
 
+//-------------------------------------------------------------------------
+
 // Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define string std::string
 #endif
-
 
 //--------------------------------------------------------------------
 
@@ -100,13 +111,11 @@ private:
     int
     COMMON_GetGroupOverview(string groupName,
                             long   startAtArticlenr = -1);
-
-
 };
 
 //------------------------------------------------------------------------
 
 #endif // __NNTPPROXY_H__
 
-
-
+// End of the file NNTPProxy.h
+//=========================================================================

@@ -1,10 +1,22 @@
-// NNTPProxy.cpp: implementation of the NNTPProxy class.
-//
-//--------------------------------------------------------------------
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPProxy.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:39 $
+//  $Revision: 1.3 $
+//  $RCSfile: NNTPProxy.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
+
+//--------------------------------------------------------------------
 
 #include "TraceLog.h"
 #include "NNTPProxy.h"
@@ -15,7 +27,7 @@
 // Construction/Destruction
 //--------------------------------------------------------------------
 
-FUNCTION_START(NNTPProxy::NNTPProxy (string serverName))
+NNTPProxy::NNTPProxy (string serverName)
 {
     // Create socket connection to server
     nntp = new AsciiLineSocket(serverName,119);
@@ -40,22 +52,21 @@ FUNCTION_START(NNTPProxy::NNTPProxy (string serverName))
     
 //    cout << serverIdentification << endl;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
-FUNCTION_START(NNTPProxy::~NNTPProxy ())
+NNTPProxy::~NNTPProxy ()
 {
     if (nntp != NULL)
 	{
         delete(nntp);
 	}
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
-FUNCTION_START(ostream & operator<< (ostream &os, const GroupInfo &group))
+ostream& 
+operator<< (ostream &os, const GroupInfo &group)
 {
     os << group.name
        << " [" << group.first
@@ -63,11 +74,11 @@ FUNCTION_START(ostream & operator<< (ostream &os, const GroupInfo &group))
        << group.flags;
     return os;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
-FUNCTION_START(ostream& operator<< (ostream &os, const vector<GroupInfo> &groups)) 
+ostream& 
+operator<< (ostream &os, const vector<GroupInfo> &groups)
 {
     vector<GroupInfo>::const_iterator itemIter;
 
@@ -80,12 +91,11 @@ FUNCTION_START(ostream& operator<< (ostream &os, const vector<GroupInfo> &groups
 
     return os;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 bool 
-FUNCTION_START(NNTPProxy::GetGroups(vector<GroupInfo> &groups))
+NNTPProxy::GetGroups(vector<GroupInfo> &groups)
 {
     if (nntp == NULL)
     {
@@ -126,12 +136,12 @@ FUNCTION_START(NNTPProxy::GetGroups(vector<GroupInfo> &groups))
     return true;
 
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Sets the current group
-FUNCTION_START(bool NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo))
+bool 
+NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo)
 {
     if (nntp == NULL)
     {
@@ -175,14 +185,13 @@ FUNCTION_START(bool NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &group
     
     return true;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Implements the common part of both versions of GetGroupOverview
 // returns 0 if error else returns 1 if OK or 2 if no messages.
 int 
-FUNCTION_START(NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr))
+NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
 {
     if (nntp == NULL)
     {
@@ -232,12 +241,12 @@ FUNCTION_START(NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAt
     }
 	return 0;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves the complete list of the overview database
-FUNCTION_START(bool NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticles, long startAtArticlenr))
+bool 
+NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticles, long startAtArticlenr)
 {
 	switch (COMMON_GetGroupOverview(groupName,startAtArticlenr))
 	{
@@ -262,13 +271,13 @@ FUNCTION_START(bool NNTPProxy::GetGroupOverview (string groupName, vector<NEWSAr
 
     return true;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 // Retrieves the complete list of the overview database
 // Instead of storing the articles in a vector they are stored
 // with the specified commandhandler
-FUNCTION_START(bool NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler, long startAtArticlenr))
+bool 
+NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler, long startAtArticlenr)
 {
 	if (commandHandler == NULL)
 	{
@@ -300,32 +309,32 @@ FUNCTION_START(bool NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHan
 	
 	return true;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves an article by ID
-FUNCTION_START(bool NNTPProxy::GetArticle (string /*articleId*/,string &/*article*/))
+bool 
+NNTPProxy::GetArticle (string /*articleId*/,string &/*article*/)
 {
     lprintf(LOG_FATAL,"NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleId,string &article)");
     return true;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves an article by number in the group
-FUNCTION_START(bool NNTPProxy::GetArticle (int /*articleNumber*/,string &/*article*/))
+bool 
+NNTPProxy::GetArticle (int /*articleNumber*/,string &/*article*/)
 {
     lprintf(LOG_FATAL,"NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleNumber,string &article)");
     return true;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves the header of an article
-FUNCTION_START(bool NNTPProxy::GetArticleHead(string articleId,string &articleHead))
+bool 
+NNTPProxy::GetArticleHead(string articleId,string &articleHead)
 {
     if (nntp == NULL)
     {
@@ -360,13 +369,12 @@ FUNCTION_START(bool NNTPProxy::GetArticleHead(string articleId,string &articleHe
     return true;
 
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves the body of an article
 bool 
-FUNCTION_START(NNTPProxy::GetArticleBody(string articleId,string &articleBody))
+NNTPProxy::GetArticleBody(string articleId,string &articleBody)
 {
     if (nntp == NULL)
     {
@@ -399,32 +407,43 @@ FUNCTION_START(NNTPProxy::GetArticleBody(string articleId,string &articleBody))
     } 
 
     return true;
-
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves the header of an article
 bool
-FUNCTION_START(NNTPProxy::GetArticleHead(NEWSArticle * article))
+NNTPProxy::GetArticleHead(NEWSArticle * article)
 {
     if (article == NULL)
         return false;
-    return GetArticleHead(article->messageID,article->header);
+    string theHeader;
+    bool get_status = GetArticleHead(article->fMessageID,theHeader);
+    
+    if (get_status == false)
+        return false;
+        
+    return article->StoreHeader(theHeader);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 // Retrieves the body of an article
 bool
-FUNCTION_START(NNTPProxy::GetArticleBody(NEWSArticle * article))
+NNTPProxy::GetArticleBody(NEWSArticle * article)
 {
     if (article == NULL)
         return false;
-    return GetArticleBody(article->messageID,article->body);
+    string theBody;
+    bool get_status = GetArticleBody(article->fMessageID,theBody);
+    
+    if (get_status == false)
+        return false;
+        
+    return article->StoreBody(theBody);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
+
+// End of the file NNTPProxy.cpp
+//=========================================================================

@@ -1,7 +1,13 @@
-(1) Actually create usefull logging options (syslog ?). 
-(2) Parse the header fields
-(3) After (2): Create fully flexible header based killrules.
-(4) Automagically remove non-existant groups from suckmt.ini ??
-(5) Better handle error situations (no such group, cannot connect to server, server throttle, etc).
-(6) Rewrite makefiles so they work on NT, Linux and Irix.
-(7) Write manual pages and such.
+This is the TODO list I currentky have. 
+
+Nr  Status  Description
+ 1          Actually create usefull logging options (syslog ?). 
+ 2  Done    Parse the header fields
+ 3  Done    After (2): Create fully flexible header based killrules.
+ 4          Automagically remove non-existant groups from suckmt.ini ??
+ 5          Better handle error situations (no such group, cannot connect to server, server throttle, etc).
+ 6          Rewrite makefiles so they work on NT, Linux and Irix.
+ 7  Partial Write manual pages and such.
+ 8          Create an auto remove for header kill rules that haven't been used for a
+ specified time.
+            

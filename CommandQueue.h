@@ -1,15 +1,25 @@
-/***************************************************************************
-                          CommandQueue.h  -  description                              
-                             -------------------                                         
-    begin                : Wed Jul 28 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : CommandQueue.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:23 $
+//  $Revision: 1.2 $
+//  $RCSfile: CommandQueue.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef COMMANDQUEUE_H
 #define COMMANDQUEUE_H
 
+//-------------------------------------------------------------------------
+
 class CommandQueue; // Forward Declaration
+
+//-------------------------------------------------------------------------
 
 #include "tsqueue.h"
 #include "Command.h"
@@ -24,4 +34,9 @@ private:
     omni_mutex cqmutex;
 };
 
+//-------------------------------------------------------------------------
+
 #endif
+
+// End of the file CommandQueue.h
+//=========================================================================

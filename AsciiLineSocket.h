@@ -1,16 +1,25 @@
-/***************************************************************************
-                          AsciiLineSocket.h  -  description                              
-                             -------------------                                         
-    begin                : Sat Jul 17 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : AsciiLineSocket.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:21 $
+//  $Revision: 1.3 $
+//  $RCSfile: AsciiLineSocket.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef __AsciiLineSocket_h__
 #define __AsciiLineSocket_h__
 
-#include "debugging.h"
+//-------------------------------------------------------------------------
+
 #include "GenericSocket.h"
+
+//-------------------------------------------------------------------------
 
 class AsciiLineSocket : public GenericSocket
 {
@@ -41,5 +50,9 @@ private:
     int    line_buffer_size;
 };
 
+//-------------------------------------------------------------------------
+
 #endif // __AsciiLineSocket_h__
 
+// End of the file AsciiLineSocket.h
+//=========================================================================

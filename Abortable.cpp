@@ -1,38 +1,44 @@
-/***************************************************************************
-                          Abortable.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Aug 1 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : Abortable.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:10 $
+//  $Revision: 1.2 $
+//  $RCSfile: Abortable.cpp,v $
+//  $Author: niels $
+//=========================================================================
+
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
-#include "debugging.h"
+//-------------------------------------------------------------------------
+
 #include "Abortable.h"
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Abortable::Abortable())
+Abortable::Abortable()
 {
     keepRunning = true;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Abortable::~Abortable())
+Abortable::~Abortable()
 {
     // Nothing to to
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void
-FUNCTION_START(Abortable::Abort())
+Abortable::Abort()
 {
     if (keepRunning)
     {
@@ -40,25 +46,24 @@ FUNCTION_START(Abortable::Abort())
         AbortChildren();
     }
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 bool
-FUNCTION_START(Abortable::KeepRunning())
+Abortable::KeepRunning()
 {
     return keepRunning;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void
-FUNCTION_START(Abortable::AbortChildren())
+Abortable::AbortChildren()
 {
     // Nothing to to
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
+// End of the file Abortable.cpp
+//=========================================================================

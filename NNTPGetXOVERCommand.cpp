@@ -1,10 +1,16 @@
-/***************************************************************************
-                          Command.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPGetXOVERCommand.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:36 $
+//  $Revision: 1.3 $
+//  $RCSfile: NNTPGetXOVERCommand.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
@@ -20,18 +26,17 @@
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPGetXOVERCommand::NNTPGetXOVERCommand(string newsGroup, long startAtArticlenr))
+NNTPGetXOVERCommand::NNTPGetXOVERCommand(string newsGroup, long startAtArticlenr)
 {
 //cout << endl << "CREATED XOVER COMMAND FOR GROUP:" << newsGroup << " @ " << startAtArticlenr << endl << endl << endl << flush;
 
     fNewsGroup        = newsGroup;
     fStartAtArticlenr = startAtArticlenr;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 bool 
-FUNCTION_START(NNTPGetXOVERCommand::Execute(CommandHandler * currentHandler))
+NNTPGetXOVERCommand::Execute(CommandHandler * currentHandler)
 {
     NNTPCommandHandler * myHandler = 
 // TODO: figure out why this doesn't work.
@@ -82,7 +87,7 @@ FUNCTION_START(NNTPGetXOVERCommand::Execute(CommandHandler * currentHandler))
         if (!KeepRunning() || !myHandler->DoWeKeepThisArticle(article))
         {   
             STAT_AddValue("Articles Killed",1);
-            //cout << "KILLED ARTICLE: " << article->messageID << endl;
+            //cout << "KILLED ARTICLE: " << article->fMessageID << endl;
             delete article;
         }
         else
@@ -93,6 +98,8 @@ FUNCTION_START(NNTPGetXOVERCommand::Execute(CommandHandler * currentHandler))
 */
     return true;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file NNTPGetXOVERCommand.cpp
+//=========================================================================

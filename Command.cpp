@@ -1,36 +1,43 @@
-/***************************************************************************
-                          Command.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : Command.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:17 $
+//  $Revision: 1.2 $
+//  $RCSfile: Command.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
-
-#include "Command.h"
+//-------------------------------------------------------------------------
 
 #include <iostream.h>
+#include "Command.h"
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Command::Command())
+Command::Command()
 {
 //cout << "+" << flush;
     // Nothing to do
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Command::~Command())
+Command::~Command()
 {
 //cout << "-" << flush;
     // Nothing to do
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file Command.cpp
+//=========================================================================

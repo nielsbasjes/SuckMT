@@ -1,10 +1,16 @@
-/***************************************************************************
-                          NNTPCommandHandler.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPCommandHandler.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:34 $
+//  $Revision: 1.2 $
+//  $RCSfile: NNTPCommandHandler.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
@@ -14,68 +20,64 @@
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPCommandHandler::NNTPCommandHandler(NNTPRetrieveManager* retrieveManager,CommandQueue * commandQueue,NewsKiller *killer, IniFile *iniFile, string newsServer): CommandHandler(commandQueue))
+NNTPCommandHandler::NNTPCommandHandler(NNTPRetrieveManager* retrieveManager,CommandQueue * commandQueue,NewsKiller *killer, IniFile *iniFile, string newsServer): CommandHandler(commandQueue)
 {
     fRetrieveManager = retrieveManager;
     nntpConnection   = new NNTPProxy(newsServer);
     fIniFile         = iniFile;
     fKiller          = killer;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPCommandHandler::~NNTPCommandHandler())
+NNTPCommandHandler::~NNTPCommandHandler()
 {
     if (nntpConnection != NULL)
         delete (nntpConnection);
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 NNTPProxy * 
-FUNCTION_START(NNTPCommandHandler::GetNNTPProxy())
+NNTPCommandHandler::GetNNTPProxy()
 {
     return nntpConnection;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 IniFile * 
-FUNCTION_START(NNTPCommandHandler::GetIniFile())
+NNTPCommandHandler::GetIniFile()
 {
     return fIniFile;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 bool 
-FUNCTION_START(NNTPCommandHandler::DoWeKeepThisArticle(NEWSArticle * article))
+NNTPCommandHandler::DoWeKeepThisArticle(NEWSArticle * article)
 {
     return fKiller->DoWeKeepThisArticle(article);
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void
-FUNCTION_START(NNTPCommandHandler::ArticleFileHasBeenWritten(string fileName))
+NNTPCommandHandler::ArticleFileHasBeenWritten(string fileName)
 {
     fRetrieveManager->ArticleFileHasBeenWritten(fileName);
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void 
-FUNCTION_START(NNTPCommandHandler::AbortChildren())
+NNTPCommandHandler::AbortChildren()
 {
     if (nntpConnection != NULL)
 		nntpConnection->Abort();
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file NNTPCommandHandler.cpp
+//=========================================================================

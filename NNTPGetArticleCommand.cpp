@@ -1,14 +1,22 @@
-/***************************************************************************
-                          Command.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPGetArticleCommand.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:34 $
+//  $Revision: 1.3 $
+//  $RCSfile: NNTPGetArticleCommand.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
+
+//-------------------------------------------------------------------------
 
 #include <sys/stat.h>
 #include <fstream.h>
@@ -27,8 +35,11 @@
 #include "NEWSArticle.h"
 #include "TraceLog.h"
 #include "StatisticsKeeper.h"
+
+//-------------------------------------------------------------------------
  
-static bool FileExists(char *fileName)
+static bool 
+FileExists(char *fileName)
 {
     struct stat fileStatus;
     if (stat(fileName,&fileStatus) == 0)
@@ -38,15 +49,14 @@ static bool FileExists(char *fileName)
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(NNTPGetArticleCommand::NNTPGetArticleCommand(NEWSArticle * theArticle))
+NNTPGetArticleCommand::NNTPGetArticleCommand(NEWSArticle * theArticle)
 {
     article = theArticle;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 bool 
-FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
+NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
 {
     NNTPCommandHandler * myHandler = 
 //            dynamic_cast<NNTPCommandHandler*> currentHandler;
@@ -65,23 +75,10 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
 
     if (iniFile != NULL)
     {
-
-// TODO: This section contains a race condition between the Get and the Set.
-        long currentMax;
-        if (iniFile->GetValue(SUCK_GROUPS,article->primaryNewsGroup,currentMax))
-        {
-            if (currentMax < (long)article->articleNr)
-                iniFile->SetValue(SUCK_GROUPS,
-                                  article->primaryNewsGroup,
-                                  article->articleNr);
-        }        
-        else
-            iniFile->SetValue(SUCK_GROUPS,
-                              article->primaryNewsGroup,
-                              article->articleNr);
+        iniFile->MaxValue(SUCK_GROUPS,
+                          article->fPrimaryNewsGroup,
+                          article->fArticleNr);
     }
-
-//    char * fileName = GetArticleFileName();
 
     strstream filenameStr;
 
@@ -89,7 +86,7 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     if(iniFile->GetValue(SUCK_CONFIG,SUCK_DIR,baseDirectory))
         filenameStr << baseDirectory << "/" ;
 
-    filenameStr << article->primaryNewsGroup << "_" << article->articleNr << ends;
+    filenameStr << article->fPrimaryNewsGroup << "_" << article->fArticleNr << ends;
 
     char * fileName = filenameStr.str();
 
@@ -119,7 +116,7 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     // Get the headers of the article
     if (!nntpProxy->GetArticleHead(article))
     {   
-        cout << endl << "ERROR GETTING ARTICLE HEAD: " << article->messageID << endl;
+        cout << endl << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
@@ -130,7 +127,7 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     // Based on the headers --> Do we continue or kill this one ?
     if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
     {   
-        //cout << "KILLED ARTICLE: " << article->messageID << endl;
+        //cout << "KILLED ARTICLE: " << article->fMessageID << endl;
         STAT_AddValue("Articles Killed",1);
 
         delete fileName;
@@ -141,7 +138,7 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     // Get the body of the article
     if (!nntpProxy->GetArticleBody(article))
     {   
-        cout << "ERROR GETTING ARTICLE HEAD: " << article->messageID << endl;
+        cout << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
@@ -153,8 +150,8 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     {
         // Ok, we got the article. Now we store it.
         ofstream outFile(fileName);
-        outFile << article->header  << "\r\n";
-        outFile << article->body    << "\r\n";
+        outFile << article->GetHeader()  << "\r\n";
+        outFile << article->GetBody()      << "\r\n";
         STAT_AddValue("Articles Written",1);
         myHandler->ArticleFileHasBeenWritten(fileName);
     }
@@ -163,7 +160,8 @@ FUNCTION_START(NNTPGetArticleCommand::Execute(CommandHandler * currentHandler))
     delete article;
     return true;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
+// End of the file NNTPGetArticleCommand.cpp
+//=========================================================================

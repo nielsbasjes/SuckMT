@@ -1,3 +1,8 @@
 Version 0.3
     First public version.
     Actually works but losts of things are still missing.
+Version 0.3a
+    Fixed a silly bug that caused a lock up (threads terminated prematurely)
+Version 0.3b
+    Remove the FUNCTION_BEGIN ... testing code completely.
+    Added proper copyright banners

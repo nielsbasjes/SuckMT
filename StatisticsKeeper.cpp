@@ -1,19 +1,26 @@
-/***************************************************************************
-                          StatisticsKeeper.cpp  -  description                              
-                             -------------------                                         
-    begin                : Sat Jul 31 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : StatisticsKeeper.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:43 $
+//  $Revision: 1.3 $
+//  $RCSfile: StatisticsKeeper.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <iostream.h>
 #include <iomanip.h>
-#include "debugging.h"
 #include "StatisticsKeeper.h"
  
 //--------------------------------------------------------------------
@@ -24,19 +31,18 @@ StatisticsKeeper * statisticsKeeper = NULL;
 
 // The specified time indicated the statistics should be printer automagically
 void 
-FUNCTION_START(KeepStatistics(long milliseconds))
+KeepStatistics(long milliseconds)
 {
     if (statisticsKeeper != NULL)
         EndStatistics();
     
     statisticsKeeper = new StatisticsKeeper(milliseconds);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void 
-FUNCTION_START(EndStatistics())
+EndStatistics()
 {
     if (statisticsKeeper == NULL)
         return;
@@ -47,28 +53,25 @@ FUNCTION_START(EndStatistics())
 }
 
 //--------------------------------------------------------------------
-
-FUNCTION_START(StatisticsKeeper::StatisticsKeeper(long milliseconds): Printable("StatisticsKeeper"))
+StatisticsKeeper::StatisticsKeeper(long milliseconds): Printable("StatisticsKeeper")
 {
     valuesModified = true;
     fMilliseconds = milliseconds;
     if (fMilliseconds > 0)
         start_undetached();
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
-FUNCTION_START(StatisticsKeeper::~StatisticsKeeper())
+StatisticsKeeper::~StatisticsKeeper()
 {
     // Nothing to do
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
 void* 
-FUNCTION_START(StatisticsKeeper::run_undetached(void* /*arg*/))
+StatisticsKeeper::run_undetached(void* /*arg*/)
 {
     unsigned long sleepTime = fMilliseconds * 1000;
     while (KeepRunning())
@@ -106,69 +109,63 @@ FUNCTION_START(StatisticsKeeper::run_undetached(void* /*arg*/))
 
     return NULL;
 }
-FUNCTION_END
 
 
 //--------------------------------------------------------------------
 
 void
-FUNCTION_START(StatisticsKeeper::SetValue(string name, string value))
+StatisticsKeeper::SetValue(string name, string value)
 {
     omni_mutex_lock lock(valuesMutex);
     valuesModified = true;
     stringValues[name] = value;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void
-FUNCTION_START(StatisticsKeeper::SetValue(string name, long value))
+StatisticsKeeper::SetValue(string name, long value)
 {
     omni_mutex_lock lock(valuesMutex);
     valuesModified = true;
     numericValues[name] = value;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void
-FUNCTION_START(StatisticsKeeper::AddValue(string name, long value))
+StatisticsKeeper::AddValue(string name, long value)
 {
     omni_mutex_lock lock(valuesMutex);
     valuesModified = true;
 
     numericValues[name] = numericValues[name] + value;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 string 
-FUNCTION_START(StatisticsKeeper::GetStringValue(string name))
+StatisticsKeeper::GetStringValue(string name)
 {
     omni_mutex_lock lock(valuesMutex);
 
     return stringValues[name];
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 long 
-FUNCTION_START(StatisticsKeeper::GetNumericValue(string name))
+StatisticsKeeper::GetNumericValue(string name)
 {
     omni_mutex_lock lock(valuesMutex);
 
     return numericValues[name];
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void 
-FUNCTION_START(StatisticsKeeper::Print(ostream &os))
+StatisticsKeeper::Print(ostream &os)
 {
     omni_mutex_lock lock(valuesMutex);
 
@@ -196,61 +193,58 @@ FUNCTION_START(StatisticsKeeper::Print(ostream &os))
     
     os << "}" << endl;
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void 
-FUNCTION_START(STAT_SetValue(string name, string value))
+STAT_SetValue(string name, string value)
 {
     if (statisticsKeeper == NULL)
         return;
     statisticsKeeper->SetValue(name,value);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void 
-FUNCTION_START(STAT_SetValue(string name, long value))
+STAT_SetValue(string name, long value)
 {
     if (statisticsKeeper == NULL)
         return;
     statisticsKeeper->SetValue(name,value);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 void 
-FUNCTION_START(STAT_AddValue(string name, long value))
+STAT_AddValue(string name, long value)
 {
     if (statisticsKeeper == NULL)
         return;
     statisticsKeeper->AddValue(name,value);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 string
-FUNCTION_START(STAT_GetStringValue(string name))
+STAT_GetStringValue(string name)
 {
     if (statisticsKeeper == NULL)
         return "Statistics are disabled";
     return statisticsKeeper->GetStringValue(name);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
 
 long
-FUNCTION_START(STAT_GetNumericValue(string name))
+STAT_GetNumericValue(string name)
 {
     if (statisticsKeeper == NULL)
         return -1;
     return statisticsKeeper->GetNumericValue(name);
 }
-FUNCTION_END
 
 //--------------------------------------------------------------------
+
+// End of the file StatisticsKeeper.cpp
+//=========================================================================

@@ -1,20 +1,36 @@
-// GenericSocket.cpp: implementation of the GenericSocket class.
-//
-//------------------------------------------------------------------------
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : GenericSocket.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:24 $
+//  $Revision: 1.2 $
+//  $RCSfile: GenericSocket.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
+
 #include "TraceLog.h"
 #include "GenericSocket.h"
 #include "StatisticsKeeper.h"
+
+//-------------------------------------------------------------------------
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
+
+//-------------------------------------------------------------------------
 
 #ifndef INADDR_NONE
 #define INADDR_NONE -1
@@ -41,18 +57,17 @@ extern int strcasecmp(const char *s1, const char *s2);
 // Construction
 //------------------------------------------------------------------------
 
-FUNCTION_START(GenericSocket::GenericSocket())
+GenericSocket::GenericSocket()
 {
     socketCreateTime = time(NULL);
     sendBytes = 0;
     receivedBytes = 0;
     connected = false;
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
-FUNCTION_START(GenericSocket::GenericSocket(string hostName, unsigned short portNumber))
+GenericSocket::GenericSocket(string hostName, unsigned short portNumber)
 {
     socketCreateTime = time(NULL);
     sendBytes = 0;
@@ -60,15 +75,12 @@ FUNCTION_START(GenericSocket::GenericSocket(string hostName, unsigned short port
     connected = false;
     Connect(hostName,portNumber);
 }
-FUNCTION_END
-
-//------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
 // Destruction
 //------------------------------------------------------------------------
 
-FUNCTION_START(GenericSocket::~GenericSocket())
+GenericSocket::~GenericSocket()
 {
     cout << "Socket statistics: ";
     PrintStatistics(cout);
@@ -78,12 +90,11 @@ FUNCTION_START(GenericSocket::~GenericSocket())
         WSACleanup();
 #endif
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
 bool
-FUNCTION_START(GenericSocket::SetConnectionParams(string hostName, unsigned short portNumber))
+GenericSocket::SetConnectionParams(string hostName, unsigned short portNumber)
 {
     /* this is for the lame win32 socket crap */
 #ifdef WIN32
@@ -121,29 +132,28 @@ FUNCTION_START(GenericSocket::SetConnectionParams(string hostName, unsigned shor
     hostEntry = GetHostEntry(hostName);
     if(hostEntry == 0) 
     {
-        lprintf(LOG_ERROR,"Couldn't resolv '%s', exiting.\n", hostName.c_str());
+        lprintf(LOG_ERROR,"Couldn't resolv '%s', exiting.\n", 
+                hostName.c_str());
         return false;
     }
 
     return true;
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
 bool
-FUNCTION_START(GenericSocket::Connect(string hostName, unsigned short portNumber))
+GenericSocket::Connect(string hostName, unsigned short portNumber)
 {
     if (SetConnectionParams(hostName,portNumber))
         Connect();
     return connected;
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
 struct hostent * 
-FUNCTION_START(GenericSocket::GetHostEntry(string hostname))
+GenericSocket::GetHostEntry(string hostname)
 {
     struct hostent *hostEnt = NULL;
     
@@ -155,7 +165,8 @@ FUNCTION_START(GenericSocket::GetHostEntry(string hostname))
         
         if ( hostEnt == NULL )
         {
-            lprintf(LOG_ERROR,"gethostbyaddr(1) failed for %s\n", hostname.c_str());
+            lprintf(LOG_ERROR,"gethostbyaddr(1) failed for %s\n", 
+                    hostname.c_str());
         }
     } 
     else 
@@ -164,17 +175,17 @@ FUNCTION_START(GenericSocket::GetHostEntry(string hostname))
 
         if ( hostEnt == NULL ) 
         {
-            lprintf(LOG_ERROR,"gethostbyname(2) failed for %s\n", hostname.c_str());
+            lprintf(LOG_ERROR,"gethostbyname(2) failed for %s\n", 
+                    hostname.c_str());
         }   
     }
     return (hostEnt);
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
 bool
-FUNCTION_START(GenericSocket::Connect())
+GenericSocket::Connect()
 {
     socketHandle = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -205,13 +216,13 @@ FUNCTION_START(GenericSocket::Connect())
     
     return true;
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 // Send 0x00 terminated ACSII string pointed to by 'buffer' 
 // Returns number of bytes sent or -1 in case of error.
+
 int 
-FUNCTION_START(GenericSocket::Send(char *buffer))
+GenericSocket::Send(char *buffer)
 {
     if (buffer==NULL)
     {
@@ -221,14 +232,13 @@ FUNCTION_START(GenericSocket::Send(char *buffer))
     
     return Send(buffer,strlen(buffer));
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
-
 // Send 'len' bytes pointed to by 'buffer' 
 // Returns number of bytes sent or -1 in case of error.
+
 int 
-FUNCTION_START(GenericSocket::Send(char *buffer, unsigned int len))
+GenericSocket::Send(char *buffer, unsigned int len)
 {
     if (buffer==NULL)
     {
@@ -251,18 +261,18 @@ FUNCTION_START(GenericSocket::Send(char *buffer, unsigned int len))
 
     return(SocketWrite(socketHandle,buffer,len));
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
-
 // Receive maximum of 'maxlen' bytes and store them in the preallocated 'buffer'.
 // Returns Number Of Bytes stored in 'buffer' or -1 in case of error
 // Stop reading at the end of the stream. 
 // When 'usestopChar' is true stop reading when 'stopChar' is found.
 // When 'usestopChar' is true then 'storestopCharInBuffer' determined if the 'stopChar' 
 // is stored in 'buffer'.
+
 int 
-FUNCTION_START(GenericSocket::__Receive(char *buffer, int maxlen, char stopChar, bool usestopChar, bool storeStopCharInBuffer))
+GenericSocket::__Receive(char *buffer, int maxlen, char stopChar, 
+        bool usestopChar, bool storeStopCharInBuffer)
 {
     char * realBuffer  = buffer;
     int  byteCounter   = 0;
@@ -338,7 +348,6 @@ FUNCTION_START(GenericSocket::__Receive(char *buffer, int maxlen, char stopChar,
 
     return byteCounter;
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
 
@@ -346,29 +355,29 @@ FUNCTION_END
 // Stop reading at the end of the stream. 
 // Returns Number Of Bytes stored in 'buffer' or -1 in case of error
 int 
-FUNCTION_START(GenericSocket::Receive (char *buffer, int maxlen))
+GenericSocket::Receive (char *buffer, int maxlen)
 {
     return __Receive(buffer, maxlen, ' ', false, false);
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
-
 // Receive maximum of 'maxlen' bytes and store them in the preallocated 'buffer'.
 // Stop reading at the end of the stream. 
 // Stop reading when 'stopChar' is found.
 // 'storestopCharInBuffer' determines if the 'stopChar' is stored in 'buffer'.
 // Returns Number Of Bytes stored in 'buffer' or -1 in case of error
+
 int 
-FUNCTION_START(GenericSocket::Receive (char *buffer, int maxlen, char stopChar, bool storestopCharInBuffer))
+GenericSocket::Receive (char *buffer, int maxlen, 
+        char stopChar, bool storestopCharInBuffer)
 {
     return __Receive(buffer, maxlen, stopChar, true, storestopCharInBuffer);
 }
-FUNCTION_END
 
 //------------------------------------------------------------------------
+
 void
-FUNCTION_START(GenericSocket::PrintStatistics(ostream &os))
+GenericSocket::PrintStatistics(ostream &os)
 {
     time_t usedTime = time(NULL) - socketCreateTime;
     os << "Out " << sendBytes << " bytes, in " << receivedBytes << " bytes" 
@@ -378,4 +387,8 @@ FUNCTION_START(GenericSocket::PrintStatistics(ostream &os))
     else
         os << (receivedBytes)/(usedTime) << " bytes/second";
 }
-FUNCTION_END
+
+//-------------------------------------------------------------------------
+
+// End of the file GenericSocket.cpp
+//=========================================================================

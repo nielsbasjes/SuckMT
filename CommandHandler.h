@@ -1,13 +1,21 @@
-/***************************************************************************
-                          CommandHandler.cpp  -  description                              
-                             -------------------                                         
-    begin                : Wed Jul 28 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : CommandHandler.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:20 $
+//  $Revision: 1.2 $
+//  $RCSfile: CommandHandler.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef COMMANDHANDLER_H
 #define COMMANDHANDLER_H
+
+//-------------------------------------------------------------------------
 
 class CommandHandler; // Forward Declaration
 
@@ -15,6 +23,8 @@ class CommandHandler; // Forward Declaration
 #include "Command.h"
 #include "CommandQueue.h"
 #include "Abortable.h"
+
+//-------------------------------------------------------------------------
 
 class CommandHandler : public omni_thread , public Abortable
 {
@@ -41,4 +51,9 @@ private:
     void  AbortChildren();
 };
 
+//-------------------------------------------------------------------------
+
 #endif // COMMANDHANDLER_H
+
+// End of the file CommandHandler.h
+//=========================================================================

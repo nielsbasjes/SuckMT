@@ -1,10 +1,16 @@
-/***************************************************************************
-                          TraceLog.cpp  -  description                              
-                             -------------------                                          
-    begin                : Tue Jul 6 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : TraceLog.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:48 $
+//  $Revision: 1.3 $
+//  $RCSfile: TraceLog.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
@@ -17,7 +23,6 @@
 #include <varargs.h>
 #include <iostream.h>
 
-#include "debugging.h"
 #include "TraceLog.h"
 
 // Warning Dirty hack to skip the std namespace in Visual C++ 6.0
@@ -38,15 +43,16 @@ static FILE* traceLogFile = NULL;
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(void SetCurrentLogLevel(int newLogLevel))
+void 
+SetCurrentLogLevel(int newLogLevel)
 {
     theActualLogLevel = newLogLevel;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(int lprintf(int logLevel, const char *format, ...))
+int 
+lprintf(int logLevel, const char *format, ...)
 {
     int printedChars = 0;
  
@@ -96,12 +102,12 @@ return 0;
     return printedChars;
 
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 // This adds an additional trace of all information that is printed by lprintf
 
-FUNCTION_START(bool StartTraceLog(const char * fileName))
+bool 
+StartTraceLog(const char * fileName)
 {
     if (fileName == NULL)
     {
@@ -122,16 +128,18 @@ FUNCTION_START(bool StartTraceLog(const char * fileName))
     
     return true;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(void StopTraceLog())
+void 
+StopTraceLog()
 {
     if (traceLogFile != NULL)
         fclose (traceLogFile);
     traceLogFile = NULL;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file TraceLog.cpp
+//=========================================================================

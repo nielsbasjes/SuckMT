@@ -1,19 +1,28 @@
-/***************************************************************************
-                          Printable.h  -  description                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : Printable.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:50 $
+//  $Revision: 1.2 $
+//  $RCSfile: Printable.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef PRINTABLE_H
 #define PRINTABLE_H
+
+//-------------------------------------------------------------------------
 
 #include <string>
 #include <vector>
 #include <ostream.h>
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
+//-------------------------------------------------------------------------
+
 #ifdef __WIN32__
 #define string std::string
 #define vector std::vector
@@ -37,6 +46,8 @@
     ostream& operator<< (ostream &os, const vector<className*> *className##Vector)\
         { os << (const vector<Printable*>*)(className##Vector); return os;}
 
+//-------------------------------------------------------------------------
+
 class Printable
 {
 public: 
@@ -49,8 +60,15 @@ private:
     string thisClassName;
 };
 
+//-------------------------------------------------------------------------
+
 DEFINE_PRINTABLE_OPERATORS(Printable)
 
 ostream& operator<< (ostream &os, const string &stringObject);
 
+//-------------------------------------------------------------------------
+
 #endif
+
+// End of the file Printable.h
+//=========================================================================

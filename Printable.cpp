@@ -1,19 +1,29 @@
-/***************************************************************************
-                          Printable.cpp  -  superclass for objects that want to be printable                              
-                             -------------------                                         
-    begin                : Sun Jul 18 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : Printable.cpp
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:49 $
+//  $Revision: 1.2 $
+//  $RCSfile: Printable.cpp,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
 
-#include "debugging.h"
+//-------------------------------------------------------------------------
+
 #include "Printable.h"
 
-ostream& operator<< (ostream &os, const string &stringObject)
+//-------------------------------------------------------------------------
+
+ostream& 
+operator<< (ostream &os, const string &stringObject)
 {
 	os << stringObject.c_str();
 	return os;
@@ -21,49 +31,48 @@ ostream& operator<< (ostream &os, const string &stringObject)
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Printable::Printable(string className))
+Printable::Printable(string className)
 {
     thisClassName = className;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(Printable::~Printable())
+Printable::~Printable()
 {
     // Nothing to do.   
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(void Printable::Print(ostream &os) const)
+void 
+Printable::Print(ostream &os) const
 {
     os << "### The function \"void " << thisClassName 
        << "::Print(ostream &os)\" is NOT IMPLEMENTED !!!" << endl;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(void Printable::PrintClassName(ostream &os) const)
+void 
+Printable::PrintClassName(ostream &os) const
 {
     os << thisClassName;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(ostream& operator<< (ostream &os, const Printable &printableObject))
+ostream& 
+operator<< (ostream &os, const Printable &printableObject)
 {
     printableObject.Print(os);
     return os;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(ostream& operator<< (ostream &os, const Printable *printableObject))
+ostream& 
+operator<< (ostream &os, const Printable *printableObject)
 {
     if (printableObject == NULL)
         os << "#@NULL@#";
@@ -72,11 +81,11 @@ FUNCTION_START(ostream& operator<< (ostream &os, const Printable *printableObjec
     
     return os;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(ostream& operator<< (ostream &os, const vector<Printable*> &printableObjectVector))
+ostream& 
+operator<< (ostream &os, const vector<Printable*> &printableObjectVector)
 {
     vector<Printable*>::const_iterator itemIter;
 
@@ -97,11 +106,11 @@ FUNCTION_START(ostream& operator<< (ostream &os, const vector<Printable*> &print
     os << "@@@@@@@@@@@@@@@@@@@@" << endl << flush ;
     return os;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
 
-FUNCTION_START(ostream& operator<< (ostream &os, const vector<Printable*> *printableObjectVector))
+ostream& 
+operator<< (ostream &os, const vector<Printable*> *printableObjectVector)
 {
     if (printableObjectVector == NULL)
         os << "#@NULL@#";
@@ -110,6 +119,8 @@ FUNCTION_START(ostream& operator<< (ostream &os, const vector<Printable*> *print
     
     return os;
 }
-FUNCTION_END
 
 //-------------------------------------------------------------------------
+
+// End of the file Printable.cpp
+//=========================================================================

@@ -1,13 +1,19 @@
-// GenericSocket.h: interface for the GenericSocket class.
-//
-//------------------------------------------------------------------------
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : GenericSocket.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/29 20:12:25 $
+//  $Revision: 1.3 $
+//  $RCSfile: GenericSocket.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef __GENERICSOCKET_H__
 #define __GENERICSOCKET_H__
-
-//-------------------------------------------------------------------------
-
-#include "debugging.h"
 
 //-------------------------------------------------------------------------
 
@@ -46,7 +52,8 @@
 #include <string> 
 #include "Abortable.h"
 
-// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
+//-------------------------------------------------------------------------
+
 #ifdef __WIN32__
 #define string std::string
 #endif
@@ -123,4 +130,9 @@ private:
     unsigned long       receivedBytes;
 };
 
+//-------------------------------------------------------------------------
+
 #endif // __GENERICSOCKET_H__
+
+// End of the file GenericSocket.h
+//=========================================================================

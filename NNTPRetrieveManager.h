@@ -1,10 +1,16 @@
-/***************************************************************************
-                          NNTPRetrieveManager.h  -  description                              
-                             -------------------                                         
-    begin                : Mon Jul 26 1999                                           
-    copyright            : (C) 1999 by Niels Basjes                         
-    email                : Niels@Basjes.nl                                     
- ***************************************************************************/
+//=========================================================================
+//                   Copyright (C) 1999 by Niels Basjes
+//                  Suck MT Website: http://go.to/suckmt
+//                        Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Filename  : NNTPRetrieveManager.h
+//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Language  : C++
+//  $Date: 1999/09/18 21:27:45 $
+//  $Revision: 1.2 $
+//  $RCSfile: NNTPRetrieveManager.h,v $
+//  $Author: niels $
+//=========================================================================
 
 #ifndef NNTPRETRIEVEMANAGER_H
 #define NNTPRETRIEVEMANAGER_H
@@ -24,7 +30,6 @@ class NNTPRetrieveManager; // Forward Declaration
 #ifdef __WIN32__
 #define string std::string
 #endif
-
 
 class NNTPRetrieveManager : public Abortable
 {
@@ -68,3 +73,6 @@ private:
 };
 
 #endif
+
+// End of the file NNTPRetrieveManager.h
+//=========================================================================
