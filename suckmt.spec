@@ -1,77 +1,66 @@
 #=========================================================================
 #                   Copyright (C) 2000 by Niels Basjes
-#              SuckMT Website : http://oss.basjes.nl/SuckMT/
+#                  Suck MT Website: http://go.to/suckmt
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : suckmt.spec.in
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : RedHat RPM spec file.
-#  $Date: 2003/04/29 23:09:49 $
-#  $Revision: 1.13 $
+#  $Date: 2000/10/22 22:31:33 $
+#  $Revision: 1.10 $
 #  $RCSfile: suckmt.spec.in,v $
 #  $Author: niels $
 #=========================================================================
 
 Vendor: Niels Basjes
 Summary: SuckMT, a multithreaded suck replacement
-Summary(pl):	SuckMT - wielow±tkowy zamiennik sucka
 Name: suckmt
-Version: 0.55
+Version: 0.56
 Release: 1
-Source: http://oss.basjes.nl/SuckMT/Files/%{name}-%{version}.tar.gz
+Source: http://www.wirehub.nl/~basjesn/suckmt/Files/suckmt-0.56.tar.gz
 Packager: Niels Basjes <SuckMT@Basjes.nl>
-BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot-%(id -u -n)
-BuildRequires:	autoconf
-BuildRequires:	automake
+BuildRoot: /tmp/suck-%{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
 Copyright: GPL
-Group:		Applications/News
-Provides: suckmt news-sucker
+Group: News
+Provides: suckmt
 
 %description
-This package contains software to download news from an NNTP server to
-your local machine. This software was inspired by suck
-(http://www.sucknews.org/) but has a major difference with
-suck: SuckMT will open several NNTP connections simultaneously to
-reduce the required connect time. To upload new messages back to the
-NNTP server you will still need tools from the suck package.
-
-%description -l pl
-SuckMT to program do ¶ci±gania newsów z serwera NNTP na twój lokalny
-komputer. Inspiracj± by³ program suck, od którego SuckMT do¶æ wyra¼nie
-siê odró¿nia: SuckMT otwiera kilka równoleg³ych po³±czeñ z serwerem
-NNTP aby ograniczyæ czas po³±czenia. Aby przes³aæ artyku³y z powrotem
-do serwera NNTP potrzebujesz narzêdzi z pakietu suck.
-
+SuckMT is intended to be a multithreaded replacement for suck (http://home.att.net/~bobyetman/) i.e. use client NNTP to download news messages from a news server. SuckMT automatically balances the download of all NEWS items over several NNTP socket connections thus actually using a lot more of the available bandwidth. To upload new messages back to the NNTP server you will still need tools from the suck package.
 
 %prep
-%setup -q
+%setup
+make configure
+./configure --prefix=${RPM_BUILD_ROOT}
+
 %build
-%{__make} configure
-./configure --disable-dependency-tracking --disable-debug --prefix=/usr
-%{__make} -j2
+make -j4
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-%{__make} rpminstall DESTDIR=$RPM_BUILD_ROOT
+make \
+    rpminstall
 
 %clean
 if [ "${RPM_BUILD_ROOT}" != '/' ] ; then rm -rf ${RPM_BUILD_ROOT} ; fi
 
 %files
-%defattr(644,root,root,755)
-%doc INSTALL README ChangeLog suckmt.ini.sample AUTHORS NEWS
-%attr(755,root,root) %{_bindir}/suckmt
-%config(noreplace,missingok) %verify(not md5 size mtime) %attr(660,news,news) %{_sysconfdir}/suckmt.ini
-%attr(750,news,news) %dir %{_var}/spool/suckmt
-%attr(750,news,news) %dir %{_var}/spool/suckmt/in.coming
-%attr(750,news,news) %dir %{_var}/lib/suckmt
-%attr(750,news,news) %dir %{_var}/log/suckmt
-%attr(750,news,news) %{_var}/lib/suckmt/*
+
+%dir /var/spool/suckmt/in.coming/
+%doc README ChangeLog INSTALL suckmt.lsm
+/usr/doc/packages/suckmt/AUTHORS
+/usr/doc/packages/suckmt/COPYING
+/usr/doc/packages/suckmt/ChangeLog
+/usr/doc/packages/suckmt/INSTALL
+/usr/doc/packages/suckmt/NEWS
+/usr/doc/packages/suckmt/README
+/usr/doc/packages/suckmt/suckmt.ini.sample
+/usr/doc/packages/suckmt/suckmt.lsm
+
+%attr(- root root) /usr/bin/suckmt
+%config /etc/suckmt.ini
 
 %post
 echo "Creating default configuration file..."
-CONFIG_FILE=%{_sysconfdir}/suckmt.ini
+CONFIG_FILE=/etc/suckmt.ini
 
 if [ -s ${CONFIG_FILE} ];
 then
@@ -87,7 +76,7 @@ else
     fi
 fi
 
-/usr/bin/suckmt -i ${CONFIG_FILE} -init
+/usr/bin/suckmt -init
 
 
 # End of the file suckmt.spec
