@@ -6,8 +6,8 @@
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:47:37 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/02 22:22:48 $
+//  $Revision: 1.6 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -110,6 +110,17 @@ public:
     GetValue(string section, string name, long &value);
 
     //------------------------------------------------------
+    // Get the specified setting from the specified section
+    // The value is returned in the value parameter
+    // Returns true if the setting exists and it is a boolean
+    //                          --> value is filled
+    // Returns false if the setting does not exist or not a boolean 
+    //                          --> value is false if not exists
+    //                          --> value is true if exists
+    bool
+    GetValue(string section, string name, bool &value);
+
+    //------------------------------------------------------
     // Get the list of all the variables in the specified section
     // The list of names is returned in the variableNames parameter
     // Returns true if the section exists --> value is filled
@@ -125,7 +136,6 @@ public:
     // Returns false in case of error --> value is unchanged
     bool
     GetSectionNames(list<string> &sectionNames);
-
 
     //------------------------------------------------------
     // Add the specified section
@@ -238,6 +248,14 @@ private:
     SetValue(Section * theSection, string name, long value);
 
     //------------------------------------------------------
+    // Set the specified setting in the specified section
+    // If the section doesn't exist it is created
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    SetValue(Section * theSection, string name, bool value);
+
+    //------------------------------------------------------
     // Get the specified setting from the specified section
     // The value is returned in the value parameter
     // Returns true if the setting exists --> value is filled
@@ -254,6 +272,17 @@ private:
     //                          --> value is unchanged
     bool
     GetValue(Section * theSection, string name, long &value);
+
+    //------------------------------------------------------
+    // Get the specified setting from the specified section
+    // The value is returned in the value parameter
+    // Returns true if the setting exists and it is a boolean
+    //                          --> value is filled
+    // Returns false if the setting does not exist or not a boolean 
+    //                          --> value is false if not exists
+    //                          --> value is true if exists
+    bool
+    GetValue(Section * theSection, string name, bool &value);
 
 //======
 };

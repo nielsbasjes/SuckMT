@@ -6,8 +6,8 @@
 //  Filename  : Abortable.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:23 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/03 18:04:26 $
+//  $Revision: 1.6 $
 //  $RCSfile: Abortable.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -24,18 +24,23 @@
 
 //-------------------------------------------------------------------------
 
+#include <omnithread.h>
+
+//-------------------------------------------------------------------------
+
 class Abortable 
 {
 public: 
     Abortable();
     virtual ~Abortable();
     
-    void Abort();
+    void Abort(bool alsoAbortChildren = true);
     bool KeepRunning();
     virtual void AbortChildren();
     
 private:
     bool keepRunning;
+    omni_mutex keepRunningMutex;
 };
 
 //-------------------------------------------------------------------------

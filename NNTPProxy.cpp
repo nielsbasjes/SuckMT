@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:58:07 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/02 22:34:18 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -26,6 +26,7 @@
 //--------------------------------------------------------------------
 
 #include "TraceLog.h"
+#include "SuckDefines.h"
 #include "NNTPProxy.h"
 #include "NNTPGetArticleCommand.h"
 #include "StatisticsKeeper.h"
@@ -34,18 +35,36 @@
 // Construction/Destruction
 //--------------------------------------------------------------------
 
-NNTPProxy::NNTPProxy (string serverName)
+NNTPProxy::NNTPProxy(IniFile *settings)
 {
-    // Create socket connection to server
-    nntp = new AsciiLineSocket(serverName,119);
+    fSettings = settings;
+    nntp = NULL;       // Not connected yet.
+    currentGroup = ""; // No current group yet
+
+    if (fSettings == NULL)
+    {
+        lprintf(LOG_ERROR,"NNTPProxy called with settings == NULL");
+        return;
+    }
+
+    string newsServerName;
+    
+    if (!fSettings->GetValue(SUCK_CONFIG,SUCK_NEWS_SERVER,newsServerName))
+        newsServerName = "news"; // Default value if nothing is specified
+
+    long newsServerPort;
+    if (!fSettings->GetValue(SUCK_CONFIG,SUCK_NNTP_PORT,newsServerPort))
+        newsServerPort = 119; // Default value if nothing is specified
+
+    // Create socket connection to server on the NNTP port
+    nntp = new AsciiLineSocket(newsServerName,newsServerPort);
     
     if (nntp == NULL)
     {
-        lprintf(LOG_ERROR,"Unable to connect to NNTP server on %s", serverName.c_str());
+        lprintf(LOG_ERROR,
+            "Unable to connect to NNTP server on %s", newsServerName.c_str());
         return; // abort
     }
-
-    currentGroup = ""; // No current group yet
 
     // Get the server ID message
     string serverIdentification = "An unknown fatal error occurred.";
@@ -56,7 +75,26 @@ NNTPProxy::NNTPProxy (string serverName)
         delete (nntp);
         nntp = NULL;
     }
-    
+
+    bool sendModeReader = false;
+    if (fSettings->GetValue(SUCK_CONFIG,SUCK_SEND_MODEREADER,sendModeReader))
+    {
+        if (sendModeReader)
+            Send_MODE_READER();
+    }
+
+    string username = "";
+    fSettings->GetValue(SUCK_CONFIG,SUCK_NNTP_USERNAME,username);
+
+    if (username != "")
+    {   // Only if a username is specified we login to the server.
+        string password = "";
+        fSettings->GetValue(SUCK_CONFIG,SUCK_NNTP_PASSWORD,password);
+        
+        Login(username,password);
+    }
+
+
 //    cout << serverIdentification << endl;
 }
 
@@ -484,6 +522,84 @@ NNTPProxy::GetArticleBody(NEWSArticle * article)
 }
 
 //--------------------------------------------------------------------
+// Sends MODE READER to the server.
+// Returns true if success.
+// Returns false if the server disconnected.
+bool
+NNTPProxy::Send_MODE_READER()
+{
+    if (!IsConnected())
+    {
+        lprintf(LOG_ERROR,"Not connected.");
+        return false; // Not connected
+    }
+
+    nntp->Send("MODE READER\n");
+
+    string responseLine;
+
+    switch(nntp->GetResponse(responseLine))
+    {
+        case 200: // 200 Hello, you can post --> Ok, proceed
+        case 201: // 201 Hello, you can't post --> Ok, proceed
+            return true;
+
+        default:
+            delete nntp;
+            nntp = NULL;
+            cout << "ERROR Connection closed in response to MODE READER: " 
+                 << responseLine << endl;
+            return false;
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+
+// Tries to login to the server
+// Returns true if success
+// Returns false if failed ---> also disconnected.
+bool
+NNTPProxy::Login(string user,string pass)
+{
+    if (!IsConnected())
+    {
+        lprintf(LOG_ERROR,"Not connected.");
+        return false; // Not connected
+    }
+
+    printf("AUTHINFO USER %s\n",user.c_str());
+    nntp->Sendf("AUTHINFO USER %s\n",user.c_str());
+
+    string responseLine;
+    int responseCode;
+
+    responseCode = nntp->GetResponse(responseLine);
+    if (responseCode >= 500)
+    {  // Some kind of error
+        delete nntp;
+        nntp = NULL;
+        cout << "ERROR Connection closed in response to AUTHINFO USER : " 
+             << responseLine << endl;
+        return false;
+    }
+
+    printf("AUTHINFO PASS %s\n",pass.c_str());
+    nntp->Sendf("AUTHINFO PASS %s\n",pass.c_str());
+
+    responseCode = nntp->GetResponse(responseLine);
+    if (responseCode >= 500)
+    {  // Some kind of error
+        delete nntp;
+        nntp = NULL;
+        cout << "ERROR Connection closed in response to AUTHINFO PASS : " 
+             << responseLine << endl;
+        return false;
+    }
+
+    return true;
+}
 
 // End of the file NNTPProxy.cpp
 //=========================================================================

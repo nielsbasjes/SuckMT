@@ -6,8 +6,8 @@
 //  Filename  : Abortable.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:13 $
-//  $Revision: 1.4 $
+//  $Date: 1999/12/03 18:04:24 $
+//  $Revision: 1.5 $
 //  $RCSfile: Abortable.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -44,12 +44,14 @@ Abortable::~Abortable()
 //-------------------------------------------------------------------------
 
 void
-Abortable::Abort()
+Abortable::Abort(bool alsoAbortChildren)
 {
+    omni_mutex_lock lock(keepRunningMutex);
     if (keepRunning)
     {
         keepRunning = false;
-        AbortChildren();
+        if (alsoAbortChildren)
+            AbortChildren();
     }
 }
 

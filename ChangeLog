@@ -10,3 +10,11 @@ Version 0.3f
     Fixed lots of stuff, added kill rules and keep rules.
 Version 0.3g
     Fixed some minor portability issues.
+Version 0.3h
+    Fixed some problems with counting in case of errors
+Version 0.3i
+    Created transparant boolean readout for IniFile.
+    Made the NNTProxy query its parameters from an IniFile.
+    Added the option for MODE READER
+    Added the option for username and password to login using AUTHINFO
+    Fixed lockup problem when aborting.

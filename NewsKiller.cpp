@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:58:10 $
-//  $Revision: 1.10 $
+//  $Date: 1999/12/02 22:22:51 $
+//  $Revision: 1.11 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -37,21 +37,6 @@
 
 //-------------------------------------------------------------------------
 
-static bool 
-StringToBool(string value)
-{
-    if (value == "1"    || 
-        value == "TRUE" ||
-        value == "True" ||
-        value == "true" ||
-        value == "YES"  ||
-        value == "Yes"  ||
-        value == "yes"  )
-        return true;
-    return false;
-}
-//-------------------------------------------------------------------------
-
 NewsKiller::NewsKiller(IniFile * settings)
 {
     omni_mutex_lock lock(fKillLogFileMutex);
@@ -65,16 +50,13 @@ NewsKiller::NewsKiller(IniFile * settings)
     fSettings = settings;
 
     fLogKilledMessages = false; // Default value
-    string logKilledMessages;
 
     if (fSettings != NULL)
     {
         //=====================
 
-        if (fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE,logKilledMessages))
+        if (fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE,fLogKilledMessages))
         {
-            fLogKilledMessages = StringToBool(logKilledMessages);
-
             if (fLogKilledMessages)
             {
                 if (!fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME, fKillLogFileName))

@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:53:19 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/03 18:04:36 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -23,6 +23,8 @@
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
+
 #include <fstream.h>
 #include <iostream.h>
 #include "SuckDefines.h"
@@ -35,10 +37,6 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
     :fKiller(&settings)
 {
     fSettings = &settings;
-    string newsServerName;
-    
-    if (!fSettings->GetValue(SUCK_CONFIG,SUCK_NEWS_SERVER,newsServerName))
-        newsServerName = "news"; // Default value
 
     list<string> groups;
     fSettings->GetVariableNames(SUCK_GROUPS,groups);
@@ -63,7 +61,7 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
     for (int i = 0 ; i < handlersToCreate ; i ++)
     {
         NNTPCommandHandler * newCommandHandler = new NNTPCommandHandler 
-                        (this,&commands, &fKiller, fSettings, newsServerName);
+                        (this,&commands, &fKiller, fSettings);
 
         NNTPHandlers.push_back (newCommandHandler);
     }
@@ -181,6 +179,11 @@ NNTPRetrieveManager::WaitForCompletion ()
         // If this is true the queue is empty and none are busy
         if (commands.empty() && (nntpHandlersIter == NNTPHandlers.end()))
             break;
+
+        // This is here because it is not possible to call the AbortChildren
+        // function from the sighandler because it will lockup otherwise
+        if (!KeepRunning())
+            AbortChildren();
     }
 }
 
@@ -207,6 +210,8 @@ NNTPRetrieveManager::AbortChildren()
     {
         someAreBusy = false;
         
+        omni_thread::sleep(0,100000); // 100000 nanoseconds = 0.1 seconds
+
         // Wait for all the handlers to really finish
         for(nntpHandlersIter  = NNTPHandlers.begin();
             nntpHandlersIter != NNTPHandlers.end();

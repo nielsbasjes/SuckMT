@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:54:24 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/02 22:34:16 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPCommandHandler.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -42,8 +42,7 @@ public:
     NNTPCommandHandler (NNTPRetrieveManager* retrieveManager,
                         CommandQueue *commandQueue, 
                         NewsKiller   *killer, 
-                        IniFile      *iniFile,
-                        string        newsServer);
+                        IniFile      *iniFile);
 
     ~NNTPCommandHandler();
 

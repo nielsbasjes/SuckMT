@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:58:08 $
-//  $Revision: 1.4 $
+//  $Date: 1999/12/02 22:34:21 $
+//  $Revision: 1.5 $
 //  $RCSfile: NNTPProxy.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -33,6 +33,7 @@ class NNTPProxy; // Forward Declaration
 #include "NEWSArticle.h"
 #include "Abortable.h"
 #include "NNTPCommandHandler.h"
+#include "IniFile.h"
 
 //-------------------------------------------------------------------------
 
@@ -60,7 +61,9 @@ ostream& operator<<(ostream &os, const vector<GroupInfo> &groups);
 class NNTPProxy  : public Abortable
 {
 public:
-    NNTPProxy(string serverName);
+    // All parameters required for construction are 
+    // available in the IniFile.
+    NNTPProxy(IniFile  *settings);
     virtual ~NNTPProxy();
 
     bool
@@ -114,13 +117,23 @@ public:
 
 private:
     AsciiLineSocket * nntp;
-    string currentGroup;
+    IniFile         * fSettings;
+    string            currentGroup;
 
     // Implements the common part of both versions of GetGroupOverview
     // returns 0 if error else returns 1 if OK or 2 if no messages.
     int
     COMMON_GetGroupOverview(string groupName,
                             long   startAtArticlenr = -1);
+
+    bool
+    Send_MODE_READER();
+
+    // Tries to login to the server
+    // Returns true if success
+    // Returns false if failed ---> also disconnected.
+    bool
+    Login(string user,string pass);
 };
 
 //------------------------------------------------------------------------

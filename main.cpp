@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:30 $
-//  $Revision: 1.9 $
+//  $Date: 1999/12/03 18:04:43 $
+//  $Revision: 1.11 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -89,23 +89,28 @@ InitializeIniFile(IniFile &settings)
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
             "Suck MT is distributed under the GNU Public License.");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
-            "http://www.wirehub.nl/~basjesn/suckmt");
+            "http://go.to/suckmt");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
             "SuckMT@Basjes.nl");
     
     // Setting default values if they don't exist yet
-    SET_UNDEFINED(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,SUCKMT_VERSION);
-    SET_UNDEFINED(SUCK_INSTALL, SUCK_INSTALL_DATE,  nowStr);
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NEWS_SERVER,   "news");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,           "/tmp/");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,    "/tmp/suckmtbatch");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,       3);
+    SET_UNDEFINED(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,  SUCKMT_VERSION);
+    SET_UNDEFINED(SUCK_INSTALL, SUCK_INSTALL_DATE,    nowStr);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NEWS_SERVER,     "news");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PORT    ,   119);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_USERNAME,   "");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PASSWORD,   "");
+
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/suckmtbatch");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, false);
     
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES,  -1);
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES,  -1);
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS, -1);
 
-    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, "0");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    "/tmp/SuckMTKillLog.txt");
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,"From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 
@@ -123,7 +128,7 @@ InitializeIniFile(IniFile &settings)
 
 //-------------------------------------------------------------------------
 
-static NNTPRetrieveManager * retrieveManagerToSignal = NULL;
+static NNTPRetrieveManager *retrieveManagerToSignal = NULL;
 
 static void 
 SuckmtSignalHandler(int /*sig_num*/)
@@ -133,7 +138,7 @@ SuckmtSignalHandler(int /*sig_num*/)
     if (retrieveManagerToSignal == NULL)
         exit(1); // No clean signalling option .. just die now.
 
-    retrieveManagerToSignal->Abort();
+    retrieveManagerToSignal->Abort(false);
 }
 
 //-------------------------------------------------------------------------

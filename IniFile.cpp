@@ -6,8 +6,8 @@
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:47:36 $
-//  $Revision: 1.5 $
+//  $Date: 1999/12/02 22:22:46 $
+//  $Revision: 1.6 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -334,6 +334,67 @@ IniFile::GetValue(Section * theSection, string name, long &value)
 }
 
 //------------------------------------------------------
+// Get the specified setting from the specified section
+// The value is returned in the value parameter
+// Returns true if the setting exists and it is a boolean
+//                          --> value is filled
+// Returns false if the setting does not exist or not a boolean 
+//                          --> value is false if not exists
+//                          --> value is true if exists
+bool
+IniFile::GetValue(string section, string name, bool &value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    return GetValue(GetSection(section),name,value);
+}
+
+//------------------------------------------------------
+// Get the specified setting from the specified section
+// The value is returned in the value parameter
+// Returns true if the setting exists and it is a boolean
+//                          --> value is filled
+// Returns false if the setting does not exist or not a boolean 
+//                          --> value is false if not exists
+//                          --> value is true if exists
+bool
+IniFile::GetValue(Section * theSection, string name, bool &value)
+{
+    if (theSection == NULL)
+        return false;
+
+    string string_value;
+    if (!GetValue(theSection, name, string_value))
+    {
+        value = false;    // NON existence indicator
+        return false; // Doesn't exist
+    }
+
+    value = true;    // Existence indicator
+
+    if (string_value == "1"    ||
+        string_value == "TRUE" ||
+        string_value == "True" ||
+        string_value == "true" ||
+        string_value == "YES"  ||
+        string_value == "Yes"  ||
+        string_value == "yes"  )
+        value = true;
+    else
+    if (string_value == "0"     ||
+        string_value == "FALSE" ||
+        string_value == "False" ||
+        string_value == "false" ||
+        string_value == "NO"    ||
+        string_value == "No"    ||
+        string_value == "no"    )
+        value = false;
+    else
+        return false; // The value exists but is not a boolean
+    
+    return true;
+}
+
+//------------------------------------------------------
 // Get the list of all the variables in the specified section
 // The list of names is returned in the variableNames parameter
 // Returns true if the section exists --> value is filled
@@ -428,6 +489,21 @@ IniFile::SetValue(Section * theSection, string name, long value)
     char cstr[50];
     sprintf(cstr,"%ld",value);
     string newValue = cstr;
+    
+    return SetValue(theSection,name,newValue);
+}
+
+//------------------------------------------------------
+// Set the specified setting in the specified section
+// If the section doesn't exist it is created
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::SetValue(Section * theSection, string name, bool value)
+{
+    string newValue = "False";
+    if (value)
+        newValue = "True";
     
     return SetValue(theSection,name,newValue);
 }

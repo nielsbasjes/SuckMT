@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:54:22 $
-//  $Revision: 1.4 $
+//  $Date: 1999/12/03 18:04:33 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPCommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -23,16 +23,25 @@
 #pragma warning( disable : 4786 ) 
 #endif
 
+//-------------------------------------------------------------------------
+
+#include "SuckDefines.h"
 #include "NNTPCommandHandler.h"
 
 //-------------------------------------------------------------------------
 
-NNTPCommandHandler::NNTPCommandHandler(NNTPRetrieveManager* retrieveManager,CommandQueue * commandQueue,NewsKiller *killer, IniFile *iniFile, string newsServer): CommandHandler(commandQueue)
+NNTPCommandHandler::NNTPCommandHandler
+        (NNTPRetrieveManager *retrieveManager,
+         CommandQueue        *commandQueue,
+         NewsKiller          *killer, 
+         IniFile             *iniFile)
+         : CommandHandler(commandQueue)
 {
     fRetrieveManager = retrieveManager;
-    nntpConnection   = new NNTPProxy(newsServer);
     fIniFile         = iniFile;
     fKiller          = killer;
+   
+    nntpConnection = new NNTPProxy(fIniFile);
 }
 
 //-------------------------------------------------------------------------
@@ -80,6 +89,7 @@ NNTPCommandHandler::ArticleFileHasBeenWritten(string fileName)
 void 
 NNTPCommandHandler::AbortChildren()
 {
+    CommandHandler::AbortChildren();
     if (nntpConnection != NULL)
         nntpConnection->Abort();
 }

@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:38 $
-//  $Revision: 1.3 $
+//  $Date: 1999/12/03 18:04:31 $
+//  $Revision: 1.4 $
 //  $RCSfile: CommandHandler.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -49,13 +49,13 @@ public:
     
 protected:
     CommandQueue * myCommandQueue;
+    void  AbortChildren();
 
 private:
     omni_mutex currentCommandMutex;
     Command * currentCommand;
     void* run_undetached(void* arg);
     bool  busy;
-    void  AbortChildren();
 };
 
 //-------------------------------------------------------------------------

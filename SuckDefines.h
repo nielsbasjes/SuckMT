@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:29 $
-//  $Revision: 1.9 $
+//  $Date: 1999/12/03 18:04:38 $
+//  $Revision: 1.11 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -24,8 +24,18 @@
 
 //-------------------------------------------------------------------------
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+//-------------------------------------------------------------------------
+
+#ifdef VERSION
+#define SUCKMT_VERSION VERSION
+#else
 #ifndef SUCKMT_VERSION
-#define SUCKMT_VERSION "0.3h"
+#define SUCKMT_VERSION "????"
+#endif
 #endif
 
 //-------------------------------------------------------------------------
@@ -49,6 +59,10 @@
 
 #define SUCK_CONFIG            "Suck MT Configuration"
 #define SUCK_NEWS_SERVER       "News server Hostname"
+#define SUCK_NNTP_PORT         "Connect with Port Number"
+#define SUCK_SEND_MODEREADER   "Send MODE READER to the server"
+#define SUCK_NNTP_USERNAME     "Connect with Username"
+#define SUCK_NNTP_PASSWORD     "Connect with Password"
 #define SUCK_DIR               "Storage Directory"
 #define SUCK_BATCH_FILE        "Batch File"
 #define SUCK_THREADS           "Number of threads"
