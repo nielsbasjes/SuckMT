@@ -1,13 +1,13 @@
 #=========================================================================
 #                   Copyright (C) 1999 by Niels Basjes
-#                  Suck MT Website: http://go.to/suckmt
+#              SuckMT Website : http://oss.basjes.nl/SuckMT/
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 2002/12/27 13:24:00 $
-#  $Revision: 1.24 $
+#  $Date: 2003/04/13 20:37:11 $
+#  $Revision: 1.25 $
 #  $RCSfile: Makefile.ed,v $
 #  $Author: niels $
 #=========================================================================
@@ -81,7 +81,8 @@ CopyrightMessage: VERSION
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement  |"
-	@echo "| (C)2002 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "| (C)2003 by Niels Basjes - http://niels.basjes.nl |"
+	@echo "| http://oss.basjes.nl/SuckMT/                     |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"

@@ -1,13 +1,13 @@
 //=========================================================================
 //                 Copyright (C)1999-2002 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//             SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2002/02/18 23:08:44 $
-//  $Revision: 1.35 $
+//  $Date: 2003/04/29 23:09:49 $
+//  $Revision: 1.38 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -59,7 +59,8 @@ Copyright()
           << "| SuckMT " << SUCKMT_VERSION 
                         <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
-          << "| (C)2002 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+          << "| (C)2003 by Niels Basjes - http://niels.basjes.nl |" << endl
+          << "| http://oss.basjes.nl/SuckMT/                     |" << endl
           << "+==================================================+" << endl
           << flush;
 }
@@ -109,11 +110,11 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            string("SuckMT was written by ir. Niels Basjes (C) 1999-2001"));
+            string("SuckMT was written by ir. Niels Basjes (C) 1999-2003"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
             string("SuckMT is distributed under the GNU Public License."));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
-            string("http://go.to/suckmt"));
+            string("http://oss.basjes.nl/SuckMT/"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
             string("SuckMT@Basjes.nl"));
     
@@ -150,7 +151,7 @@ InitializeIniFile(IniFile &settings)
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
     SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
-        "/tmp/SuckMT-KillLog.txt");
+        "/var/log/suckmt/KillLog.txt");
     SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,
         "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 

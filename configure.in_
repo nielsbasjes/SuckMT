@@ -1,13 +1,13 @@
 dnl =========================================================================
 dnl                    Copyright (C) 2000 by Niels Basjes
-dnl                   SuckMT Website: http://go.to/suckmt
+dnl               SuckMT Website : http://oss.basjes.nl/SuckMT/
 dnl                         Author: SuckMT@Basjes.nl
 dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2002/02/19 21:44:02 $
-dnl   $Revision: 1.25 $
+dnl   $Date: 2003/04/13 20:37:12 $
+dnl   $Revision: 1.26 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -159,7 +159,6 @@ dnl Checks for programs.
 dnl Uncomment next line to try to use gcc version 3 
 dnl CCC="gcc3"
 AC_PROG_CXX
-AC_PROG_CC
 
 if test x$regexpp = xfalse;
 then

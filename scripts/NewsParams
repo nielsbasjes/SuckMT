@@ -1,0 +1,43 @@
+#!/bin/bash
+#BEFORE USING - check to ensure all the paths defined below are correct!!
+
+echo "BEFORE YOU CAN USE THESE SCRIPTS YOU MUST CHECK THE VALUES IN /var/lib/suckmt/NewsParams"
+exit 1
+# Remove the above two lines once you've checked all values below
+
+
+SUCKBINDIR=/usr/bin
+
+PREFIX=/usr
+NEWSPREFIX=/usr/lib/news
+REMOTE_HOST=news.wirehub.nl
+LOCAL_HOST=localhost
+
+SPOOLDIR=/var/spool/news		# base directory for articles to be rposted
+BASEDIR=/var/lib/suckmt			# base directory for scripts
+LOGDIR=/var/log/suckmt
+
+LOCALPOST=${NEWSPREFIX}/bin/innxmit		# location of binary
+CTLINND=${NEWSPREFIX}/bin/ctlinnd		# location of binary
+
+TMPDIR=${BASEDIR}			# location for suck.* files
+MSGDIR=/var/spool/suckmt/in.coming	# where to put MultiFile messages when getting them
+BATCHFILE=/var/spool/suckmt/batch	# Name of batchfile to build for rnews or innxmit
+SITE=wirehub			        # name of site from newsfeeds file
+OUTGOING=${SPOOLDIR}/outgoing/${SITE}	# location of the list of articles to upload
+OUTGOINGNEW=${OUTGOING}.new		# file to contain the list temporarily
+OUTGOINGFAIL=${OUTGOINGNEW}.fail	# file with failed xfers
+SCRIPT=${BASEDIR}/put.news.sm		# my filter for rpost (CNFS)
+#SCRIPT=${BASEDIR}/put.news		# my filter for rpost (tradspool)
+OUTFILE=/tmp/tmp$$			# used by rpost as article after it is filtered
+LOCKFILE=${BASEDIR}/getnews.lock	# lock file to prevent multiple instances of script
+
+TESTHOST=${SUCKBINDIR}/testhost
+RPOST=${SUCKBINDIR}/rpost
+SUCK=${SUCKBINDIR}/suck
+SUCKMT=${SUCKBINDIR}/suckmt
+
+SUCKMT_INI=/etc/suckmt.ini
+
+SHLOCK=${PREFIX}/bin/shlock            # location of binary
+NEWSGROUP=news                         # which group owns the file in out.going, typically either news or uucp.

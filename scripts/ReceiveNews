@@ -1,0 +1,16 @@
+#!/bin/bash
+BASEDIR=/var/lib/suckmt                 # base directory for scripts
+. ${BASEDIR}/NewsParams
+
+echo "    NEWS Retrieve START `date`" >> ${LOGDIR}/transfer.log
+
+${TESTHOST} ${REMOTE_HOST} -s
+
+if [ $? -ne 0 ]; then
+	echo "Remote host not responding" >> ${LOGDIR}/transfer.log
+	echo "Remote host not responding"
+else
+	# download messages
+	${SUCKMT} -q -i /etc/suckmt.ini
+fi
+echo "    NEWS Retrieve STOP  `date`" >> ${LOGDIR}/transfer.log
