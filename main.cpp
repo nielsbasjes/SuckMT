@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: main.cpp 6 2004-12-20 20:53:20Z niels $
-//  $Date: 2004-12-20 21:53:20 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 6 $
+//  $Id: main.cpp 7 2004-12-20 22:10:29Z niels $
+//  $Date: 2004-12-20 23:10:29 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 7 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -58,7 +58,7 @@ Copyright()
           << "| SuckMT " << SUCKMT_VERSION 
                         <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
-          << "| (C)2002 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+          << "| (C)2005 by Niels Basjes http://suckmt.basjes.nl  |" << endl
           << "+==================================================+" << endl
           << flush;
 }
@@ -108,11 +108,11 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            string("SuckMT was written by ir. Niels Basjes (C) 1999-2001"));
+            string("SuckMT was written by drs. ir. Niels Basjes (C) 1999-2005"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
             string("SuckMT is distributed under the GNU Public License."));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
-            string("http://go.to/suckmt"));
+            string("http://suckmt.basjes.nl"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
             string("SuckMT@Basjes.nl"));
     

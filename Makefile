@@ -1,20 +1,23 @@
-http://oss.basjes.nl/SuckMT#                   Copyright (C) 1999 by Niels Basjes
-#                  Suck MT Website: http://go.to/suckmt
-#                        Author: SuckMT@Basjes.nl
+#=========================================================================
+#                 Copyright (C)1999-2005 by Niels Basjes
+#              SuckMT Website : http://oss.basjes.nl/SuckMT
+#                       Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
-#  Filename  : Makefile.ed
-#  Sub-system: SuckMT, a multithreaded suck replacement
-#  Language  : make
-#  $Date: 2002/12/27 13:24:00 $
-#  $Revision: 1.24 $
-#  $RCSfile: Makefile.ed,v $
-#  $Author: niels $
+#  Project: SuckMT, a multithreaded suck replacement
+#  Language: make
+#  $Id$
+#  $Date$
+#  $Revision$
+#  $LastChangedBy$
 #=========================================================================
 #
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   If you reuse code from SuckMT you are required to put a notice of 
+#   this fact in both your manual and about box.
 #
 #=========================================================================
 
