@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:50 $
-//  $Revision: 1.6 $
+//  $Date: 2000/04/04 11:22:36 $
+//  $Revision: 1.9 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -99,6 +99,8 @@ GenericSocket::~GenericSocket()
 {
     PrintStatistics(Linfo);
     Linfo << endl << flush;
+
+    closesocket(socketHandle);
 
 #ifdef WIN32
     if (connected)
@@ -348,10 +350,14 @@ GenericSocket::__Receive(char *buffer, int maxlen, char stopChar,
                     break;
             //------------
             case 0: // We got 0 bytes --> End of stream
+                    connected = false;
+                    Lerror << "Connection " << fSocketNr << " ended." << endl << flush;
                     return byteCounter; 
 
             //------------
             default: // We got some kind of error condition.
+                    connected = false;
+                    Lerror << "Connection " << fSocketNr << " failed." << endl << flush;
                     return -1;
         } // switch
     } // while
@@ -408,8 +414,8 @@ GenericSocket::PrintStatistics(ostream &os)
     else
         os << "Socket " << fSocketNr << ": ";
         
-    os << "OUT: " << setw(4) << sendBytes << " bytes, " 
-       << "IN: " << setw(7) <<  receivedBytes << " bytes, AVG: " << setw(7);
+    os << "OUT: " << setw(7) << sendBytes << " bytes, " 
+       << "IN: " << setw(9) <<  receivedBytes << " bytes, AVG: " << setw(7);
     if (usedTime==0)
         os << (receivedBytes) << " bytes/second"; // We assume 1 second
     else

@@ -4,10 +4,13 @@ Nr  Status  Description
  1  Done    Actually create usefull logging options (syslog ?). 
  2  Done    Parse the header fields
  3  Done    After (2): Create fully flexible header based killrules.
- 4          Automagically remove non-existant groups from suckmt.ini ??
+ 4  NO      Automagically remove non-existant groups from suckmt.ini ??
  5  Partial Better handle error situations (no such group, cannot connect to server, server throttle, extremely slow server, etc).
- 6          Rewrite makefiles so they work on NT, Linux and Irix (use autoconf better !!).
+ 6  Partial Rewrite makefiles so they work on NT, Linux and Irix (use autoconf better !!).
  7  Partial Write manual pages and such.
- 8          Create an auto remove for header kill rules that haven't been used for a
- specified time.
-            
+ 8  NO      Create an auto remove for header kill rules that haven't been used for a specified time.
+ 9  Partial Fix the handling if the server dies during download.
+10          Add checks to see if the target directory and files exist and are writable.            
+11          No shouting option (perhaps regular expression ?)
+12          Create some sample scripts
+13          Add capability to upload messages (make sure we can still download if we can't upload).

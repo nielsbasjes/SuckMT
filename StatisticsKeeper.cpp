@@ -6,8 +6,8 @@
 //  Filename  : StatisticsKeeper.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 22:15:30 $
-//  $Revision: 1.8 $
+//  $Date: 2000/04/04 11:22:36 $
+//  $Revision: 1.10 $
 //  $RCSfile: StatisticsKeeper.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -66,6 +66,7 @@ EndStatistics()
         return;
         
     statisticsKeeper->Abort();
+    // The call to join does a "delete this" at the end.
     statisticsKeeper->join(NULL);
     statisticsKeeper = NULL;
 }
@@ -76,8 +77,7 @@ StatisticsKeeper::StatisticsKeeper(long milliseconds)
 {
     valuesModified = true;
     fMilliseconds = milliseconds;
-    if (fMilliseconds > 0)
-        start_undetached();
+    Start(milliseconds);
 }
 
 //--------------------------------------------------------------------
@@ -85,6 +85,16 @@ StatisticsKeeper::StatisticsKeeper(long milliseconds)
 StatisticsKeeper::~StatisticsKeeper()
 {
     // Nothing to do
+}
+
+//-------------------------------------------------------------------------
+
+void 
+StatisticsKeeper::Start(long milliseconds)
+{
+    fMilliseconds = milliseconds;
+    if (fMilliseconds > 0)
+        start_undetached();
 }
 
 //-------------------------------------------------------------------------
@@ -169,9 +179,9 @@ StatisticsKeeper::run_undetached(void* /*arg*/)
         avgBytesReceivedPerSecond = (bytesReceived)/(usedTime);
 
     Linfo << "Overall : ";
-    Linfo << "OUT: " << setw(4) << bytesSent << " bytes, " 
-          << "IN: " << setw(7) <<  bytesReceived << " bytes, AVG: " 
-          << setw(7) << avgBytesReceivedPerSecond << " bytes/second" 
+    Linfo << "OUT: " << setw(7) << bytesSent << " bytes, " 
+          << "IN: " << setw(9) <<  bytesReceived << " bytes, "
+          << "AVG: " << setw(7) << avgBytesReceivedPerSecond << " bytes/second" 
           << endl << flush;
 
     return NULL;
@@ -262,6 +272,16 @@ StatisticsKeeper::Print(ostream &os)
 }
 
 //--------------------------------------------------------------------
+
+void 
+STAT_Start(long milliseconds)
+{
+    if (statisticsKeeper == NULL)
+        return;
+    statisticsKeeper->Start(milliseconds);
+}
+
+//-------------------------------------------------------------------------
 
 void 
 STAT_SetValue(string name, string value)

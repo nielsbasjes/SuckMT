@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:03 $
-//  $Revision: 1.10 $
+//  $Date: 2000/04/04 11:13:23 $
+//  $Revision: 1.15 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,9 +35,12 @@
 // Construction/Destruction
 //--------------------------------------------------------------------
 
-NNTPProxy::NNTPProxy(IniFile *settings, int connectionNr)
+int NNTPProxy::Next_ID = 1;
+
+NNTPProxy::NNTPProxy(IniFile *settings)
 {
     fSettings = settings;
+    fConnectionNr = Next_ID++;
     nntp = NULL;       // Not connected yet.
     currentGroup = ""; // No current group yet
 
@@ -59,9 +62,9 @@ NNTPProxy::NNTPProxy(IniFile *settings, int connectionNr)
 
     //----------
     // Create socket connection to server on the NNTP port
-    nntp = new AsciiLineSocket(newsServerName,newsServerPort,connectionNr);
+    nntp = new AsciiLineSocket(newsServerName,newsServerPort,fConnectionNr);
     
-    if (nntp == NULL)
+    if (nntp == NULL || !nntp->IsConnected())
     {
         Lerror << "Unable to connect to NNTP server on \"" 
                << newsServerName.c_str() << "\"." << endl << flush;
@@ -82,8 +85,9 @@ NNTPProxy::NNTPProxy(IniFile *settings, int connectionNr)
     
     if (nntp->GetResponse(serverIdentification) != 200)
     {
-        Lfatal << "Some error occurred connecting:\"" 
-               << serverIdentification << "\"" << endl << flush;
+        Linfo << "Connection " << fConnectionNr 
+              << " FAILED: \"" 
+              << serverIdentification << "\"" << endl << flush;
         delete (nntp);
         nntp = NULL;
     }
@@ -108,7 +112,7 @@ NNTPProxy::NNTPProxy(IniFile *settings, int connectionNr)
         Login(username,password);
     }
 
-    Linfo << "Connection " << connectionNr 
+    Linfo << "Connection " << fConnectionNr 
           << " has been established." << endl << flush;
 }
 
@@ -184,7 +188,9 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
             Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            Lfatal << "Unknown error: " << responseLine << endl << flush;
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "Unknown error Connection closed: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -196,6 +202,15 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
     string line;
     while (nntp->GetLine(line) && KeepRunning())
     {
+        // Serious error ? 
+        if (!IsConnected())
+        {
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "ERROR Connection closed during GetGroups." << endl << flush;
+            return false;
+        }
+            
         sscanf(line.c_str(),"%s %ld %ld %s",groupName,&last,&first,flags);
         GroupInfo aGroup;
         aGroup.name  = groupName;
@@ -240,7 +255,9 @@ NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo)
             Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            Lfatal << "Unknown error: " << responseLine << endl << flush;
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "Unknown error Connection closed: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -318,7 +335,9 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
             Lerror << "INVALID/NO RANGE: " << responseLine << endl << flush;
             break;
         default:
-            Lfatal << "Unknown error: " << responseLine << endl << flush;
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "Unknown error Connection closed: " << responseLine << endl << flush;
             break;
     }
     return 0;
@@ -340,6 +359,15 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
     string line;
     while (nntp->GetLine(line) && KeepRunning())
     {
+        // Serious error ? 
+        if (!IsConnected())
+        {
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "ERROR Connection closed during GetGroupOverview." << endl << flush;
+            return false;
+        }
+        
         NEWSArticle * article = new NEWSArticle(groupName,line.c_str());
         newsArticles.push_back(article);
     }
@@ -377,6 +405,15 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
     string line;
     while (nntp->GetLine(line) && KeepRunning())
     {
+        // Serious error ? 
+        if (!IsConnected())
+        {
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "ERROR Connection closed during GetGroupOverview." << endl << flush;
+            return false;
+        }
+
         STAT_AddValue("Articles Present",1);
         NEWSArticle * article = new NEWSArticle(groupName,line.c_str());
         commandHandler->AddCommand(new NNTPGetArticleCommand(article));
@@ -435,13 +472,18 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
         case 411: // Group doesn't exist
             Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
+        case 430: // Article doesn't exist (probably bad overview DB)
+            Lerror << "NO SUCH ARTICLE: " << responseLine << endl << flush;
+            return false;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
             Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            Lfatal << "Unknown error: " << responseLine << endl << flush;
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "Unknown error Connection closed: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -450,6 +492,15 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
     string line;
     while (nntp->GetLine(line) && KeepRunning())
     {
+        // Serious error ? 
+        if (!IsConnected())
+        {
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "ERROR Connection closed during GetArticleHead." << endl << flush;
+            return false;
+        }
+        
         articleHead += line;
     } 
 
@@ -480,13 +531,18 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
         case 411: // Group doesn't exist
             Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
+        case 430: // Article doesn't exist (probably bad overview DB)
+            Lerror << "NO SUCH ARTICLE: " << responseLine << endl << flush;
+            return false;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
             Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            Lfatal << "Unknown error: " << responseLine << endl << flush;
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "Unknown error Connection closed: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -495,6 +551,15 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
     string line;
     while (nntp->GetLine(line) && KeepRunning())
     {
+        // Serious error ? 
+        if (!IsConnected())
+        {
+            delete nntp;
+            nntp = NULL;
+            Lfatal << "ERROR Connection closed during GetArticleBody." << endl << flush;
+            return false;
+        }
+        
         articleBody += line;
     } 
 

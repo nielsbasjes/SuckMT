@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/13 21:28:03 $
-//  $Revision: 1.16 $
+//  $Date: 2000/03/28 20:06:29 $
+//  $Revision: 1.17 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -67,6 +67,7 @@
 #define SUCK_DIR               "Storage Directory"
 #define SUCK_BATCH_FILE        "Batch File"
 #define SUCK_THREADS           "Number of threads"
+#define SUCK_CONNECT_RETRIES   "Number of retries if connection fails"
 #define SUCK_RESTART_FILE      "Restart File"
 #define SUCK_LOGLEVEL          "Logging amount [0(nothing)..7(noise)]"
 

@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:40 $
-//  $Revision: 1.2 $
+//  $Date: 2000/03/28 20:06:12 $
+//  $Revision: 1.3 $
 //  $RCSfile: DuplicatesChecker.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -65,6 +65,7 @@ private:
     // The string is the messageID and 
     // the bool is always true except when not yet present
     map <string,bool>   fAllMessageIDs;
+    map <string,bool>   fRestartMessageIDs;
     omni_mutex          fMessageDBmutex;
 };
 

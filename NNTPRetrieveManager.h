@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:53 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/28 20:06:27 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPRetrieveManager.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -79,6 +79,13 @@ public:
     AbortChildren();
 
 private:
+
+    bool
+    CreateHandlers();
+
+    void
+    AddGroupsToCommandQueue(list<string> &groups);
+
     omni_mutex nrm_mutex;
     
     vector <NNTPCommandHandler*> NNTPHandlers;

@@ -6,8 +6,8 @@
 //  Filename  : NEWSArticle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/02 20:51:29 $
-//  $Revision: 1.12 $
+//  $Date: 2000/04/03 18:59:09 $
+//  $Revision: 1.13 $
 //  $RCSfile: NEWSArticle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -194,8 +194,8 @@ NEWSArticle::StoreHeader(const string &line)
     string groupsField;
     if (GetHeaderField("Newsgroups",groupsField))
     {
-            fNewsGroups = GetTokens(groupsField,',');
-            fNrOfNewsGroups = fNewsGroups.size();
+        fNewsGroups = GetTokens(groupsField,',');
+        fNrOfNewsGroups = fNewsGroups.size();
     }
 
     fState = NA_ONLY_HEADER;

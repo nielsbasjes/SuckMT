@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:50 $
-//  $Revision: 1.10 $
+//  $Date: 2000/03/28 20:06:24 $
+//  $Revision: 1.11 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -50,34 +50,88 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
         return;
     }
 
+    AddGroupsToCommandQueue(groups);
+    if (!CreateHandlers())
+        return;
+}
+
+//-------------------------------------------------------------------------
+
+bool
+NNTPRetrieveManager::CreateHandlers()
+{
     // Create the handlers.
     long   handlersToCreate;
     if (!fSettings->GetValue(SUCK_CONFIG,SUCK_THREADS,handlersToCreate))
         handlersToCreate = 3; // Default value
+
+    // Get the maximum number of connect retries.
+    long   maxNumberOfRetries;
+    if (!fSettings->GetValue(SUCK_CONFIG,SUCK_CONNECT_RETRIES,maxNumberOfRetries))
+        maxNumberOfRetries = 3; // Default value
+
+    // You want more than 10 retries ???? .... sure you do.
+    if (maxNumberOfRetries < 0 || maxNumberOfRetries > 10)
+    {
+        maxNumberOfRetries = 3; // Default value
+    }
     
     Linfo << "Starting " << handlersToCreate 
           << " simultaneous connections." << endl << flush;
 
-    for (int i = 0 ; i < handlersToCreate ; i ++)
+    for (int handlerNr = 0 ; handlerNr < handlersToCreate ; handlerNr ++)
     {
-        NNTPCommandHandler * newCommandHandler = new NNTPCommandHandler 
+        NNTPCommandHandler * newCommandHandler = NULL;
+        
+        // Ok, this is a bit creative.
+        // Sometimes the internet provider refuses every other connection
+        // So for each connection we want we do a number of retries.
+        bool handlerOk = false;
+        int  attempt = 0; // We start with attempt 0
+        while (!handlerOk && (attempt <= maxNumberOfRetries ))
+        {
+            attempt++;
+
+            // Create the connection object.
+            newCommandHandler = new NNTPCommandHandler 
                         (this,&commands, &fKiller, fSettings);
 
-        // Check if the connect succeeded with the first one
-        // If the first one failed the the others will fail aswell.
-        if (i == 0)
-        {
+            // Check if the connect succeeded
             NNTPProxy * proxy = newCommandHandler->GetNNTPProxy();
             if (proxy == NULL ||
                 (proxy != NULL && !proxy->IsConnected()))
             {
-                Lerror << "Connection to server failed." << endl << flush;
-                return;
+                // Connection failed
+                delete newCommandHandler;
+                Lerror << "Connection to server failed (attempt "
+                       << attempt << " for handler " << handlerNr 
+                       << ")." << endl << flush;
+            }
+            else
+            {
+                handlerOk = true; // Connected
             }
         }
+
+        if (!handlerOk)
+        {
+            Lerror << "Connecting to server failed completely after "
+                   << attempt << " attempts." << endl << flush;
+            return false;
+        }
+
+        // Now we start the handler
+        newCommandHandler->Start();
         NNTPHandlers.push_back (newCommandHandler);
     }
-    
+    return true;
+}
+
+//-------------------------------------------------------------------------
+
+void
+NNTPRetrieveManager::AddGroupsToCommandQueue(list<string> &groups)
+{
     // Add commands for all groups.
     list<string>::const_iterator groupIter;
 
@@ -194,27 +248,55 @@ NNTPRetrieveManager::WaitForCompletion ()
 {
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
 
-    while (true) // Wait until the queue is empty
+    while (true) // Wait until the queue is empty or all handlers have died
     {
         omni_thread::sleep(0,100000); // 100000 nanoseconds = 0.1 seconds
 
+        // ----------    
         // Check if any of the handlers is still busy
         for(nntpHandlersIter  = NNTPHandlers.begin();
             nntpHandlersIter != NNTPHandlers.end();
             nntpHandlersIter ++)
         {
             if ((*nntpHandlersIter)->IsBusy())
-                break; // This one is still busy
+                break; // This atleast one is still busy
         }
 
         // If this is true the queue is empty and none are busy
         if (commands.empty() && (nntpHandlersIter == NNTPHandlers.end()))
             break;
 
+        // ----------    
         // This is here because it is not possible to call the AbortChildren
         // function from the sighandler because it will lockup otherwise
         if (!KeepRunning())
             AbortChildren();
+        
+        // ----------    
+        // Check if some of the handlers are still running
+        for(nntpHandlersIter  = NNTPHandlers.begin();
+            nntpHandlersIter != NNTPHandlers.end();
+            nntpHandlersIter ++)
+        {
+            if ((*nntpHandlersIter)->IsRunning())
+                break; // There is atleast one still running
+        }
+        
+        // If this is true none are left running
+        if (KeepRunning() && nntpHandlersIter == NNTPHandlers.end())
+        {
+            Linfo << "All connections died unexpectedly." << endl << flush;
+            Abort(); // Broadcast the decision to abort.
+            break;
+        }
+            
+        // ----------    
+        // This is here because it is not possible to call the AbortChildren
+        // function from the sighandler because it will lockup otherwise
+        if (!KeepRunning())
+            AbortChildren();
+
+        // ----------    
     }
 }
 
@@ -250,7 +332,7 @@ NNTPRetrieveManager::AbortChildren()
             nntpHandlersIter != NNTPHandlers.end();
             nntpHandlersIter ++)
         {
-            if ((*nntpHandlersIter)->IsBusy())
+            if ((*nntpHandlersIter)->IsRunning())
                 someAreBusy =true; // This one is still busy
         }
     }

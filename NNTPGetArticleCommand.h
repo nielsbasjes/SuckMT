@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:54:26 $
-//  $Revision: 1.6 $
+//  $Date: 2000/04/04 10:38:40 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPGetArticleCommand.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -42,6 +42,7 @@ public:
     virtual bool Execute(CommandHandler * currentHandler);
 private:
     NEWSArticle * article;
+    int           fProgress;
 };
 
 //-------------------------------------------------------------------------

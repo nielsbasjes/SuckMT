@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:04 $
-//  $Revision: 1.6 $
+//  $Date: 2000/04/04 10:39:47 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPProxy.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -63,7 +63,7 @@ class NNTPProxy  : public Abortable
 public:
     // All parameters required for construction are 
     // available in the IniFile.
-    NNTPProxy(IniFile  *settings, int connectionNr = 0);
+    NNTPProxy(IniFile  *settings);
     virtual ~NNTPProxy();
 
     bool
@@ -119,6 +119,7 @@ private:
     AsciiLineSocket * nntp;
     IniFile         * fSettings;
     string            currentGroup;
+    int               fConnectionNr;
 
     // Implements the common part of both versions of GetGroupOverview
     // returns 0 if error else returns 1 if OK or 2 if no messages.
@@ -134,6 +135,8 @@ private:
     // Returns false if failed ---> also disconnected.
     bool
     Login(string user,string pass);
+
+    static int Next_ID;
 };
 
 //------------------------------------------------------------------------

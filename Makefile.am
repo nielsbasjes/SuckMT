@@ -6,8 +6,8 @@
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2000/03/20 20:09:00 $
-#  $Revision: 1.23 $
+#  $Date: 2000/04/02 21:18:55 $
+#  $Revision: 1.24 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -121,7 +121,7 @@ EXTRA_DIST += TraceLog.h                TraceLog.cpp
 #ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 CXXFLAGS += $(ALLWARNINGS)
-CFLAGS += -Wall -W
+CFLAGS += 
 
 #Some flags for the regular expression library
 CXXFLAGS += -DSTDC_HEADERS -DREGEX_MALLOC

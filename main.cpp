@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/13 22:36:53 $
-//  $Revision: 1.21 $
+//  $Date: 2000/04/03 18:41:15 $
+//  $Revision: 1.23 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -118,6 +118,7 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/SuckMT-batch");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/tmp/SuckMT-restart");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_CONNECT_RETRIES, 0);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, false);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_LOGLEVEL,        LOGS_STATUS);
     
@@ -335,13 +336,18 @@ int main(int argc, char** argv, char **envp)
     // ======================
     // Start the downloads...
     // ======================
+    KeepStatistics(0); // 0 == Create objects but don't show the values
+    
     Linfo << "Beginning message download." << endl << flush;
     NNTPRetrieveManager * nntpRetrieveManager = 
             new NNTPRetrieveManager(settings);
 
     SetSuckmtSignalHandler(nntpRetrieveManager);
-
-    KeepStatistics(500000); // 500000 == Show every 0.5 second
+    
+    // Wait a short period before starting the logging.
+    // This way there will be a few less messages mixedup during startup.
+    omni_thread::sleep(0, 500000); // 500000 nanoseconds = 0.5 seconds
+    STAT_Start(500000); // 500000 == Show every 0.5 second
 
     nntpRetrieveManager->WaitForCompletion();
 

@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:45 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/28 20:06:19 $
+//  $Revision: 1.8 $
 //  $RCSfile: NNTPCommandHandler.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -71,6 +71,11 @@ public:
     // Forward the Abort command to all child objects
     void 
     AbortChildren();
+
+protected:
+
+    bool 
+    CommandHandlerCanContinue();
 
 private:
     NNTPRetrieveManager* fRetrieveManager;

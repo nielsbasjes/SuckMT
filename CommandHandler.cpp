@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:46 $
-//  $Revision: 1.8 $
+//  $Date: 2000/04/03 18:42:42 $
+//  $Revision: 1.11 $
 //  $RCSfile: CommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,9 +35,9 @@ CommandHandler::CommandHandler(CommandQueue * commandQueue)
 {
     myCommandQueue = commandQueue;
     Lcalls << "Starting Command Handler" << endl << flush;
+    running = false;
     busy = false;
     currentCommand = (Command*)NULL;
-    start_undetached();
 }
 
 //-------------------------------------------------------------------------
@@ -49,6 +49,21 @@ CommandHandler::~CommandHandler()
 
 //-------------------------------------------------------------------------
 
+bool 
+CommandHandler::CommandHandlerCanContinue()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------
+
+void
+CommandHandler::Start()
+{
+    start_undetached();
+}
+
+//-------------------------------------------------------------------------
 // Returns true if succes, false if failed
 bool
 CommandHandler::AddCommand(Command * newCommand)
@@ -66,13 +81,14 @@ CommandHandler::AddCommand(Command * newCommand)
 void* 
 CommandHandler::run_undetached(void* /*arg*/)
 {
+    running = true;
     busy = false;
 
     currentCommandMutex.lock();
     currentCommand = myCommandQueue->GetCommand();
     currentCommandMutex.unlock();
 
-    while (KeepRunning())
+    while (KeepRunning() && running)
     {
         if(currentCommand == NULL)
         {
@@ -89,14 +105,29 @@ CommandHandler::run_undetached(void* /*arg*/)
                 Lerror << "Command failed." << endl << flush;
 //                busy = false;
             }
-
-            currentCommandMutex.lock();
-            delete (currentCommand);
-            if (KeepRunning())
-                currentCommand = myCommandQueue->GetCommand();
-            else
+            
+            if (!CommandHandlerCanContinue())
+            {
+                // This instance of the command handler is broken
+                // Stop using this handler and put this command 
+                // back in the queue.
+                currentCommandMutex.lock();
+                myCommandQueue->AddCommand(currentCommand);
                 currentCommand = (Command*)NULL;
-            currentCommandMutex.unlock();
+                currentCommandMutex.unlock();
+                running = false;
+                Lerror << "Commandhandler CANNOT CONTINUE, current command was put back into the queue." << endl << flush;
+            }
+            else
+            {            
+                currentCommandMutex.lock();
+                delete (currentCommand);
+                if (KeepRunning())
+                    currentCommand = myCommandQueue->GetCommand();
+                else
+                    currentCommand = (Command*)NULL;
+                currentCommandMutex.unlock();
+            }
             busy = false;
         }
     }
@@ -106,6 +137,7 @@ CommandHandler::run_undetached(void* /*arg*/)
         delete (currentCommand);
     currentCommandMutex.unlock();
     
+    running = false;
     return NULL;
 }
 
@@ -115,6 +147,14 @@ bool
 CommandHandler::IsBusy()
 {
     return busy;
+}
+
+//-------------------------------------------------------------------------
+
+bool 
+CommandHandler::IsRunning()
+{
+    return running;
 }
 
 //-------------------------------------------------------------------------

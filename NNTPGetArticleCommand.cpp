@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:48 $
-//  $Revision: 1.9 $
+//  $Date: 2000/04/04 10:43:34 $
+//  $Revision: 1.12 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -43,6 +43,21 @@
 #include "TraceLog.h"
 #include "StatisticsKeeper.h"
 
+
+//-------------------------------------------------------------------------
+
+enum {
+    GAC_BEGIN = 0,              // Normal starting point
+    GAC_FILE_DOES_NOT_EXIST,    // We know the file doesn't exist
+    GAC_NEED_DOWNLOAD,          // We know we want to download this message
+    GAC_CHECKED_XOVER_HEADERS,  // We know we want to download this message
+    GAC_HAVE_ARTICLE_HEAD,      // We have the article head
+    GAC_CHECKED_HEADERS,        // We know we want to download this message
+    GAC_HAVE_ARTICLE_BODY,      // We have the article body
+    GAC_CHECKED_BODY,           // We know we want to download this message
+    GAC_WROTE_FILE              // The message has been written
+};
+
 //-------------------------------------------------------------------------
  
 static bool 
@@ -59,6 +74,7 @@ FileExists(string fileName)
 NNTPGetArticleCommand::NNTPGetArticleCommand(NEWSArticle * theArticle)
 {
     article = theArticle;
+    fProgress = GAC_BEGIN;
 }
 
 //-------------------------------------------------------------------------
@@ -108,89 +124,136 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     string fileName(tmpFileName);
     delete tmpFileName;
 
-    // First we check if the specified file already exists.
-    // This can happen when we restart a killed session
-    if (FileExists(fileName))
+    // This switch is required to be able to download
+    // this message if the connection failed.
+    // Without this switch the message will be skipped due to calling 
+    // DoWeNeedToDownloadThisArticle for the second time
+    switch(fProgress)
     {
-        STAT_AddValue("Articles Skipped",1);
-        
-        // Although this session didn't write the file it still needs
-        // to be post processed
+    case GAC_BEGIN: // Normal starting point
+        // First we check if the specified file already exists.
+        // This can happen when we restart a killed session
+        if (FileExists(fileName))
+        {
+            // Although this session didn't write the file it still needs
+            // to be post processed and therefor registered as 'stored'
+            myHandler->ArticleHasBeenStored(article,fileName);
+            STAT_AddValue("Articles Skipped",1);
+            return true; // Done
+        }
+
+        fProgress = GAC_FILE_DOES_NOT_EXIST;
+
+    //--------------------------
+    case GAC_FILE_DOES_NOT_EXIST: // We know the file doesn't exist
+        // Check if this article hasn't already been downloaded
+        if (!myHandler->DoWeNeedToDownloadThisArticle(article))
+        {
+            STAT_AddValue("Articles Skipped",1);
+            return true; 
+        }
+
+        fProgress = GAC_NEED_DOWNLOAD;
+
+    //--------------------------
+    case GAC_NEED_DOWNLOAD: // We know we want to download this message
+        // Based on the XOVER fields --> Do we continue or kill this one ?
+        if (!myHandler->DoWeKeepThisArticle(article))
+        {   
+            // The central handler must know the article has been killed
+            myHandler->ArticleHasBeenKilled(article);
+            STAT_AddValue("Articles Killed",1);
+            return true; // Done
+        }
+
+        fProgress = GAC_CHECKED_XOVER_HEADERS;
+
+    //--------------------------
+    case GAC_CHECKED_XOVER_HEADERS: // We know we want to download this message
+        // Continue running ??
+        if (!KeepRunning())
+        {   
+            return true; // Done
+        }
+
+        // Get the headers of the article
+        if (!nntpProxy->GetArticleHead(article))
+        {   
+            Lerror << "ERROR GETTING ARTICLE HEAD: " 
+                   << article->fMessageID << endl << flush;
+            STAT_AddValue("Articles ERROR",1);
+            return false; // Done
+        }
+
+        fProgress = GAC_HAVE_ARTICLE_HEAD;
+
+    //--------------------------
+    case GAC_HAVE_ARTICLE_HEAD: // We have the article head
+
+        // Based on the headers --> Do we continue or kill this one ?
+        if (!myHandler->DoWeKeepThisArticle(article))
+        {   
+            // The central handler must know the article has been killed
+            myHandler->ArticleHasBeenKilled(article);
+            STAT_AddValue("Articles Killed",1);
+            return true; // Done
+        }
+
+        fProgress = GAC_CHECKED_HEADERS;
+
+    //--------------------------
+    case GAC_CHECKED_HEADERS: // We know we want to download this message
+
+            // Continue running ??
+        if (!KeepRunning())
+        {   
+            return true; // Done
+        }
+
+        // Get the body of the article
+        if (!nntpProxy->GetArticleBody(article))
+        {   
+            Lerror << "ERROR GETTING ARTICLE BODY: " 
+                   << article->fMessageID << endl << flush;
+
+            STAT_AddValue("Articles ERROR",1);
+            return false; // Done
+        }
+
+        fProgress = GAC_HAVE_ARTICLE_BODY;
+
+    //--------------------------
+    case GAC_HAVE_ARTICLE_BODY: // We have the article body
+
+        // Based on the actual content --> Do we continue or kill this one ?
+        if (!myHandler->DoWeKeepThisArticle(article))
+        {   
+            // The central handler must know the article has been killed
+            myHandler->ArticleHasBeenKilled(article);
+            STAT_AddValue("Articles Killed",1);
+            return true; // Done
+        }
+
+        fProgress = GAC_CHECKED_BODY;
+
+    //--------------------------
+    case GAC_CHECKED_BODY: // We know we want to download this message
+        // Ok, we got the article. Now we store it.
+        {
+        ofstream outFile(fileName.c_str());
+        outFile << article->GetHeader()  << "\r\n";
+        outFile << article->GetBody()    << "\r\n";
+        }
+        // The central handler must know the article has been stored
         myHandler->ArticleHasBeenStored(article,fileName);
+        STAT_AddValue("Articles Written",1);
 
-        return true; // Done
+        fProgress = GAC_WROTE_FILE;
+
+    //--------------------------
+    case GAC_WROTE_FILE: // The message has been written
+    default: ; // Unknown value --> do nothing
     }
-
-    // Check if this article hasn't already been downloaded
-    if (!myHandler->DoWeNeedToDownloadThisArticle(article))
-    {
-        STAT_AddValue("Articles Skipped",1);
-        return true; 
-    }
-
-    // Based on the XOVER fields --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article))
-    {   
-        // The central handler must know the article has been killed
-        myHandler->ArticleHasBeenKilled(article);
-        return true; // Done
-    }
-
-    // Continue running ??
-    if (!KeepRunning())
-    {   
-        return true; // Done
-    }
-
-    // Get the headers of the article
-    if (!nntpProxy->GetArticleHead(article))
-    {   
-        Lerror << "ERROR GETTING ARTICLE HEAD: " 
-               << article->fMessageID << endl << flush;
-        STAT_AddValue("Articles ERROR",1);
-
-        return false; // Done
-    }
-
-    // Based on the headers --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article))
-    {   
-        // The central handler must know the article has been killed
-        myHandler->ArticleHasBeenKilled(article);
-        return true; // Done
-    }
-
-    // Continue running ??
-    if (!KeepRunning())
-    {   
-        return true; // Done
-    }
-
-    // Get the body of the article
-    if (!nntpProxy->GetArticleBody(article))
-    {   
-        Lerror << "ERROR GETTING ARTICLE BODY: " 
-               << article->fMessageID << endl << flush;
-        STAT_AddValue("Articles ERROR",1);
-
-        return false; // Done
-    }
-
-    // Based on the actual content --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article))
-    {   
-        // The central handler must know the article has been killed
-        myHandler->ArticleHasBeenKilled(article);
-        return true; // Done
-    }
-
-    // Ok, we got the article. Now we store it.
-    ofstream outFile(fileName.c_str());
-    outFile << article->GetHeader()  << "\r\n";
-    outFile << article->GetBody()    << "\r\n";
-
-    // The central handler must know the article has been stored
-    myHandler->ArticleHasBeenStored(article,fileName);
             
     return true;
 }

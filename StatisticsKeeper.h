@@ -6,8 +6,8 @@
 //  Filename  : StatisticsKeeper.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:27 $
-//  $Revision: 1.4 $
+//  $Date: 2000/04/03 18:41:13 $
+//  $Revision: 1.5 $
 //  $RCSfile: StatisticsKeeper.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -42,8 +42,10 @@ class StatisticsKeeper : public omni_thread,
                          public Abortable
 {
 public: 
-    StatisticsKeeper(long milliseconds);
+    StatisticsKeeper(long milliseconds = 0);
     ~StatisticsKeeper();
+    
+    void Start(long milliseconds);
     
     void SetValue(string name, string value);
     void SetValue(string name, long value);
@@ -72,14 +74,13 @@ private:
 void KeepStatistics(long milliseconds);
 void EndStatistics();
 
+void STAT_Start(long milliseconds);
 void STAT_SetValue(string name, string value);
 void STAT_SetValue(string name, long value);
 void STAT_AddValue(string name, long value);
     
 string STAT_GetStringValue(string name);
 long   STAT_GetNumericValue(string name);
-
-extern StatisticsKeeper * statisticsKeeper;
 
 //-------------------------------------------------------------------------
 

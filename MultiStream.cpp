@@ -6,8 +6,8 @@
 //  Filename  : MultiStream.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 22:19:31 $
-//  $Revision: 1.2 $
+//  $Date: 2000/04/04 10:44:54 $
+//  $Revision: 1.3 $
 //  $RCSfile: MultiStream.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -117,38 +117,78 @@ StopTraceLog()
 
 //-------------------------------------------------------------------------
 
+static char screenBuffer [MAX_LOGGER_SIZE + 100];
 static char loggerBuffer [MAX_LOGGER_SIZE + 100];
 
-omni_mutex loggerMutex;
+static omni_mutex loggerMutex;
+
+// ThreadID of the thread that 'owns' the current screen line
+// -1 means NO owner
+static int currentScreenLineOwner = -1; 
 
 static void Logger(int logLevel, long flags, string type, string message)
 {
     if (logLevel <= CurrentLoggingLevel)
     {
         omni_mutex_lock lock(loggerMutex);
-    
+        int thisThread = GetThisThreadId();
+        bool prependNewLine = false;
+        
+        // Is someone is the current owner ??
+        if (currentScreenLineOwner != -1)
+        {   // YES !!
+
+            // Am I that someone (i.e. the current owner) ??
+            if (thisThread != currentScreenLineOwner)
+            {   // NO !!
+                // In this case we prepend a newline to avoid mixing 
+                // lines with the other threads
+                prependNewLine = true;
+            }
+        }
+
+        // If the last character wasn't a newline this means this thread 
+        // must become the owner of this line
+        if (*(message.end()-1) != '\n')
+        {
+            currentScreenLineOwner = thisThread;
+        }
+        else
+        {
+            currentScreenLineOwner = -1;
+        }
+
         if (message.length() > 1000)
         {
+            sprintf(screenBuffer,
+                "Attempt to log a message that is MUCH too large (%d characters).\n",
+                message.length());
             sprintf(loggerBuffer,
-                "Attempt to log a message that is MUCH too large (%d characters).",
+                "Attempt to log a message that is MUCH too large (%d characters).\n",
                 message.length());
         }
         else
         {
             if ((flags & SHOW_TYPE)  != 0)
+            {
+                sprintf(screenBuffer,"%s[%-8s]:%s",prependNewLine?"\n":"",type.c_str(),message.c_str());
                 sprintf(loggerBuffer,"[%-8s]:%s",type.c_str(),message.c_str());
+            }
             else
+            {
+                sprintf(screenBuffer,"%s%s",prependNewLine?"\n":"",message.c_str());
                 sprintf(loggerBuffer,"%s",message.c_str());
- 
+            }
+
 #ifndef WIN32
             if ((flags & TO_SYSLOG)  != 0)
                 syslog(LOG_NOTICE,"%s",loggerBuffer);
 #endif                
             if ((flags & TO_COUT)    != 0)
-                cout << loggerBuffer << flush;
+                cout << screenBuffer << flush;
                 
             if ((flags & TO_CERR)   != 0)
-                cerr << loggerBuffer << flush;
+                cerr << screenBuffer << flush;
                 
             if ((flags & TO_FILE)   != 0)
                 if (traceLogFile.good())

@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/19 12:21:38 $
-//  $Revision: 1.3 $
+//  $Date: 2000/04/04 10:33:21 $
+//  $Revision: 1.7 $
 //  $RCSfile: DuplicatesChecker.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -26,11 +26,11 @@
 //-------------------------------------------------------------------------
 
 #include <time.h>
+#include <stdlib.h>
 #include "SuckDefines.h"
 #include "DuplicatesChecker.h"
 #include "Tokenize.h"
 #include "TraceLog.h"
-#include "StatisticsKeeper.h"
 
 //-------------------------------------------------------------------------
 // This class reads the specified restart filename from the specified IniFile
@@ -60,12 +60,22 @@ DuplicatesChecker::DuplicatesChecker(IniFile *settings)
                 {
                     inFile.getline(buffer,9999);
                     string work_buffer(buffer);
-                    fAllMessageIDs[work_buffer] = true;
-                    count++;
+                    if (work_buffer.length() > 3)
+                    {
+                        fAllMessageIDs[work_buffer] = true;
+                        count++;
+                    }
                 }
-                Linfo << "Loaded " << count 
-                      << " message-IDs from the restart file." 
-                      << endl << flush;
+
+                // Create a duplicate copy
+                fRestartMessageIDs = fAllMessageIDs;
+
+                if (count > 0)
+                {
+                    Linfo << "Loaded " << count 
+                          << " message-IDs from the restart file." 
+                          << endl << flush;
+                }
             }
             inFile.close();
         }
@@ -124,8 +134,13 @@ DuplicatesChecker::ArticleHasBeenStored(NEWSArticle * article)
 {   
     // The article has been downloaded so we append it to the restart file
     omni_mutex_lock lock(fRestartFileMutex);
+    if (fRestartMessageIDs[article->fMessageID] == true)
+        return; // We have this one -> don't append to restart file
+
+    // Store the newMessageID 
+    fRestartMessageIDs[article->fMessageID] = true;
+    
     fRestartFile << article->fMessageID << endl << flush;
-    STAT_AddValue("Articles Written",1);
 }
 
 //-------------------------------------------------------------------------
@@ -136,7 +151,6 @@ DuplicatesChecker::ArticleHasBeenKilled(NEWSArticle * article)
     // The article has been killed so we append it to the restart file
     omni_mutex_lock lock(fRestartFileMutex);
     fRestartFile << article->fMessageID << endl << flush;
-    STAT_AddValue("Articles Killed",1);
 }
 
 //-------------------------------------------------------------------------

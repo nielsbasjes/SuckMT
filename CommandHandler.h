@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/03 18:04:31 $
-//  $Revision: 1.4 $
+//  $Date: 2000/03/28 20:06:06 $
+//  $Revision: 1.5 $
 //  $RCSfile: CommandHandler.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -39,6 +39,9 @@ public:
     CommandHandler(CommandQueue * commandQueue);
     ~CommandHandler();
 
+    void
+    Start();
+
     // Add a new command to the TODO list
     // Returns true if succes, false if failed
     bool
@@ -47,14 +50,20 @@ public:
     bool
     IsBusy();
     
+    bool 
+    IsRunning();
+    
 protected:
     CommandQueue * myCommandQueue;
     void  AbortChildren();
+
+    virtual bool CommandHandlerCanContinue();
 
 private:
     omni_mutex currentCommandMutex;
     Command * currentCommand;
     void* run_undetached(void* arg);
+    bool  running;
     bool  busy;
 };
 

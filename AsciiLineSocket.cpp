@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:41 $
-//  $Revision: 1.6 $
+//  $Date: 2000/03/28 20:05:58 $
+//  $Revision: 1.7 $
 //  $RCSfile: AsciiLineSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -113,7 +113,7 @@ AsciiLineSocket::SendCommand(const char *buffer)
 int 
 AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
 {
-    if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1)
+    if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1 )
     {
         if (fVerbosePrintCommands)
             Lsocketdebug << "<< SOCKET ERROR" << endl << flush;
@@ -137,7 +137,13 @@ AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
 bool 
 AsciiLineSocket::GetLine (string &completeResponseLine,bool keepEOL)
 {
-    Receive(line_buffer,line_buffer_size,'\n',keepEOL);
+    if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1 )
+    {
+        if (fVerbosePrintCommands)
+            Lsocketdebug << "<< SOCKET ERROR" << endl << flush;
+        return false;
+    }
+
     completeResponseLine = line_buffer;
 
     if (keepEOL)

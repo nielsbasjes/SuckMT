@@ -6,8 +6,8 @@
 //  Filename  : SetProcTitle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:08 $
-//  $Revision: 1.2 $
+//  $Date: 2000/04/02 20:00:07 $
+//  $Revision: 1.3 $
 //  $RCSfile: SetProcTitle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -32,6 +32,7 @@
 //-------------------------------------------------------------------------
 
 #include "SetProcTitle.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 //#include "omnithread.h"

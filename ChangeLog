@@ -44,4 +44,15 @@ Version 0.51
     Fixed: The restart file didn't include the killed messages.
     Fixed: Constant size memory leak (unimportant but I fixed it anyway).
     Changed: The makefiles have been improved and it's now possible to enable debugging without having to change the makefiles.
-
+Version 0.52
+    Added: Retry option when the server says "Connection refused". The default value doesn't change 0.51 behaviour.
+    Fixed: In case some of the connections fail strange things happened. This exotic situation is handled better now.
+    Added: Better handling of "430 No such article"
+    Fixed: Some compiler errors in Mandrake 6.0 (querying www.deja.com helps)
+    Changed: Suppress the warnings from compiling the regex.c file (It's clear I didn't write that monstrosity).
+    Fixed: Some of the statistics didn't add up correctly.
+    Fixed: The messages on the screen from the different threads will no longer mix through each other even if one thread uses \r to stay on the same line.
+    Fixed: Invalid message of 1 restart ID when none were present (Win32).
+    Fixed: Didn't do a closesocket at the end.
+    Changed: The NNTPGetArticleCommand can now be restarted when the connection failed.
+    Changed: The way the connections got their number for the messages.
