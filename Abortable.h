@@ -6,14 +6,21 @@
 //  Filename  : Abortable.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:45:51 $
-//  $Revision: 1.3 $
+//  $Date: 1999/11/18 22:52:23 $
+//  $Revision: 1.5 $
 //  $RCSfile: Abortable.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef ABORTABLE_H
-#define ABORTABLE_H
+#ifndef __ABORTABLE_H__
+#define __ABORTABLE_H__
 
 //-------------------------------------------------------------------------
 
@@ -33,7 +40,7 @@ private:
 
 //-------------------------------------------------------------------------
 
-#endif
+#endif // __ABORTABLE_H__
 
 // End of the file Abortable.h
 //=========================================================================

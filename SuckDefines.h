@@ -6,25 +6,32 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/22 19:36:08 $
-//  $Revision: 1.8 $
+//  $Date: 1999/11/18 22:52:29 $
+//  $Revision: 1.9 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef SUCKDEFINES_H
-#define SUCKDEFINES_H
+#ifndef __SUCKDEFINES_H__
+#define __SUCKDEFINES_H__
 
 //-------------------------------------------------------------------------
 
 #ifndef SUCKMT_VERSION
-#define SUCKMT_VERSION "0.3g"
-#endif 
+#define SUCKMT_VERSION "0.3h"
+#endif
 
 //-------------------------------------------------------------------------
 
 #ifndef SUCK_CONFIG_FILE
-#define SUCK_CONFIG_FILE       "suckmt.ini" 
+#define SUCK_CONFIG_FILE       "suckmt.ini"
 #endif
 
 #define SUCK_COPYRIGHT         "Suck MT Copyright Information"
@@ -63,7 +70,7 @@
 
 //-------------------------------------------------------------------------
 
-#endif
+#endif // __SUCKDEFINES_H__
 
 // End of the file SuckDefines.h
 //=========================================================================

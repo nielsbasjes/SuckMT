@@ -262,10 +262,6 @@ SOURCE=.\TraceLog.h
 
 SOURCE=.\tsqueue.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\Vectorprint.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 

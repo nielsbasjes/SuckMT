@@ -6,14 +6,21 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:12 $
-//  $Revision: 1.7 $
+//  $Date: 1999/11/18 22:58:11 $
+//  $Revision: 1.8 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef NEWSKILLER_H
-#define NEWSKILLER_H
+#ifndef __NEWSKILLER_H__
+#define __NEWSKILLER_H__
 
 //-------------------------------------------------------------------------
 
@@ -140,9 +147,7 @@ DEFINE_PRINTABLE_OPERATORS(NewsKiller)
 
 //-------------------------------------------------------------------------
 
-#endif
-
-//-------------------------------------------------------------------------
+#endif // __NEWSKILLER_H__
 
 // End of the file NewsKiller.h
 //=========================================================================

@@ -6,14 +6,21 @@
 //  Filename  : tsqueue.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:28:11 $
-//  $Revision: 1.2 $
+//  $Date: 1999/11/18 22:52:31 $
+//  $Revision: 1.3 $
 //  $RCSfile: tsqueue.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef __tsqueue_h__
-#define __tsqueue_h__
+#ifndef __TSQUEUE_H__
+#define __TSQUEUE_H__
 
 #include <queue>
 #include <omnithread.h>
@@ -103,7 +110,7 @@ public:
 
 //-------------------------------------------------------------------------
 
-#endif // __tsqueue_h__
+#endif // __TSQUEUE_H__
 
 // End of the file tsqueue.h
 //=========================================================================

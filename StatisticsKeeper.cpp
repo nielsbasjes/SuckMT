@@ -6,10 +6,17 @@
 //  Filename  : StatisticsKeeper.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/20 18:01:15 $
-//  $Revision: 1.4 $
+//  $Date: 1999/11/18 22:52:26 $
+//  $Revision: 1.5 $
 //  $RCSfile: StatisticsKeeper.cpp,v $
 //  $Author: niels $
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
 //=========================================================================
 
 #ifdef WIN32
@@ -80,12 +87,13 @@ StatisticsKeeper::run_undetached(void* /*arg*/)
         omni_thread::sleep(0,sleepTime);
         if(valuesModified)
         {
+            unsigned long qlen    = GetNumericValue("Command Queue Length");
             unsigned long killed  = GetNumericValue("Articles Killed");
             unsigned long total   = GetNumericValue("Articles Present");
             unsigned long stored  = GetNumericValue("Articles Written");
             unsigned long skipped = GetNumericValue("Articles Skipped");
-            unsigned long qlen    = GetNumericValue("Command Queue Length");
-            unsigned long done    = killed+stored+skipped;
+            unsigned long msgerror= GetNumericValue("Articles ERROR");
+            unsigned long done    = killed+stored+skipped+msgerror;
             float precentage_done = (total==0?0.0:(((float)(done))/((float)total))*100.0);
 
             // I couldn't get the stream formatting to do what I wanted
@@ -94,12 +102,13 @@ StatisticsKeeper::run_undetached(void* /*arg*/)
             sprintf(percentage,"%3.0f",precentage_done);
 
             cout 
-                << "Q(" << setw(5) << qlen <<")," // Queue length
-                << "Total("  << setw(5) << total  <<")," // Total
-                << "Done (" << percentage <<"%)={" // Killed
-                << "Stor("  << setw(5) << stored  <<")," // Stored
-                << "Skip(" << setw(5) << skipped <<")," // Skipped
-                << "Kill("  << setw(5) << killed  <<")}   \r" // Killed
+                << "MSGS:"  << setw(4) << total      <<","    // Total
+                << "TODO:"  << setw(4) << qlen       <<","    // Queue length
+                << "DONE:"             << percentage << "%={" 
+                << "STOR:"  << setw(4) << stored     <<","    // Stored
+                << "SKIP:"  << setw(4) << skipped    <<","    // Skipped
+                << "KILL:"  << setw(4) << killed     <<","    // Killed
+                << "ERROR:" << setw(4) << msgerror   <<"} \r" // Error
                 << flush;
             
             valuesModified = false;

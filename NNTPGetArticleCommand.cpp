@@ -6,10 +6,17 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/22 20:37:41 $
-//  $Revision: 1.5 $
+//  $Date: 1999/11/18 22:54:25 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
 //=========================================================================
 
 #ifdef WIN32
@@ -76,7 +83,7 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     NNTPProxy * nntpProxy = 
             myHandler->GetNNTPProxy();
 
-    if (nntpProxy == NULL)
+    if (nntpProxy == NULL || !(nntpProxy->IsConnected()))
         return false;
 
     IniFile *iniFile = myHandler->GetIniFile();
@@ -122,7 +129,7 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     // Get the headers of the article
     if (!nntpProxy->GetArticleHead(article))
     {   
-        cout << endl << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
+//        cout << endl << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
@@ -132,9 +139,6 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     // Based on the headers --> Do we continue or kill this one ?
     if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
     {   
-        //cout << "KILLED ARTICLE: " << article->fMessageID << endl;
-        STAT_AddValue("Articles Killed",1);
-
         delete fileName;
         return true; // Done
     }
@@ -142,7 +146,7 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     // Get the body of the article
     if (!nntpProxy->GetArticleBody(article))
     {   
-        cout << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
+//        cout << "ERROR GETTING ARTICLE BODY: " << article->fMessageID << endl;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;

@@ -6,19 +6,29 @@
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 1999/09/29 20:12:29 $
-#  $Revision: 1.3 $
+#  $Date: 1999/11/19 21:52:06 $
+#  $Revision: 1.5 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#=========================================================================
 
-bin_PROGRAMS = suckmt
+bin_PROGRAMS = suckmt suckmtstatic
 
 suckmt_SOURCES = IniFile.cpp Abortable.cpp StatisticsKeeper.cpp posix.cc main.cpp TraceLog.cpp Printable.cpp NewsKiller.cpp NNTPRetrieveManager.cpp NNTPProxy.cpp NNTPGetXOVERCommand.cpp NNTPGetArticleCommand.cpp NNTPCommandHandler.cpp NEWSArticle.cpp GenericSocket.cpp CommandQueue.cpp CommandHandler.cpp Command.cpp AsciiLineSocket.cpp Tokenize.cpp
+suckmtstatic_SOURCES = IniFile.cpp Abortable.cpp StatisticsKeeper.cpp posix.cc main.cpp TraceLog.cpp Printable.cpp NewsKiller.cpp NNTPRetrieveManager.cpp NNTPProxy.cpp NNTPGetXOVERCommand.cpp NNTPGetArticleCommand.cpp NNTPCommandHandler.cpp NEWSArticle.cpp GenericSocket.cpp CommandQueue.cpp CommandHandler.cpp Command.cpp AsciiLineSocket.cpp Tokenize.cpp
 
-suckmt_LDADD   = -lpthread
+suckmt_LDADD          = -lpthread
+suckmtstatic_LDADD    = -lpthread 
+suckmtstatic_LDFLAGS  =  -static
 
-EXTRA_DIST = AsciiLineSocket.cpp AsciiLineSocket.h Command.cpp Command.h CommandHandler.cpp CommandHandler.h CommandQueue.cpp CommandQueue.h GenericSocket.cpp GenericSocket.h NEWSArticle.cpp NEWSArticle.h NNTPCommandHandler.cpp NNTPCommandHandler.h NNTPGetArticleCommand.cpp NNTPGetArticleCommand.h NNTPGetXOVERCommand.cpp NNTPGetXOVERCommand.h NNTPProxy.cpp NNTPProxy.h NNTPRetrieveManager.cpp NNTPRetrieveManager.h NewsKiller.cpp NewsKiller.h Printable.cpp Printable.h TraceLog.cpp TraceLog.h Vectorprint.h main.cpp omnithread.h posix.cc stacktrace.cpp tsqueue.h StatisticsKeeper.cpp StatisticsKeeper.h Abortable.cpp Abortable.h IniFile.cpp IniFile.h Tokenize.cpp Tokenize.h
+EXTRA_DIST = AsciiLineSocket.cpp AsciiLineSocket.h Command.cpp Command.h CommandHandler.cpp CommandHandler.h CommandQueue.cpp CommandQueue.h GenericSocket.cpp GenericSocket.h NEWSArticle.cpp NEWSArticle.h NNTPCommandHandler.cpp NNTPCommandHandler.h NNTPGetArticleCommand.cpp NNTPGetArticleCommand.h NNTPGetXOVERCommand.cpp NNTPGetXOVERCommand.h NNTPProxy.cpp NNTPProxy.h NNTPRetrieveManager.cpp NNTPRetrieveManager.h NewsKiller.cpp NewsKiller.h Printable.cpp Printable.h TraceLog.cpp TraceLog.h main.cpp omnithread.h posix.cc tsqueue.h StatisticsKeeper.cpp StatisticsKeeper.h Abortable.cpp Abortable.h IniFile.cpp IniFile.h Tokenize.cpp Tokenize.h
 
 # Optimization flags
 #CXXFLAGS=-O0  -g

@@ -6,10 +6,17 @@
 //  Filename  : Tokenize.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:46 $
-//  $Revision: 1.3 $
+//  $Date: 1999/11/18 22:51:39 $
+//  $Revision: 1.4 $
 //  $RCSfile: Tokenize.h,v $
 //  $Author: niels $
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
 //=========================================================================
 
 #ifndef __TOKENIZE_H__
@@ -43,7 +50,7 @@ RemoveTrailingSpaces(string &str);
 
 //-------------------------------------------------------------------------
 
-#endif// End of file
+#endif // __TOKENIZE_H__
 
 // End of the file Tokenize.h
 //=========================================================================

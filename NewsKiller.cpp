@@ -6,10 +6,17 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/11 18:24:01 $
-//  $Revision: 1.9 $
+//  $Date: 1999/11/18 22:58:10 $
+//  $Revision: 1.10 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
 //=========================================================================
 
 #ifdef WIN32
@@ -27,16 +34,6 @@
 #include "NewsKiller.h"
 #include "Tokenize.h"
 #include "StatisticsKeeper.h"
-
-//-------------------------------------------------------------------------
-
-// With   strstream foo;
-// Doing "foo << endl" or "foo << ends" in Visual C++ 6.0 results in foo 
-// getting the address of the function appended ...... sigh.
-//#ifdef __WIN32__
-//#define  endl  "\n"
-//#define  ends  char('\0')
-//#endif
 
 //-------------------------------------------------------------------------
 
@@ -162,8 +159,8 @@ NewsKiller::ReadHeaderRules
 
                 if (ruleValue=="")
                 {
-//                    string value = "New rule --- " + fNow + " --- ";
-                    string value = fNow + " ; 0 ";
+                    string value = fNow + " --- ";
+//                    string value = fNow + " ; 0 ";
                     fSettings->SetValue(iniSection,thisRule,value);
                 }
                 else
@@ -272,7 +269,7 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                 if (!StoreMessageID(article->fMessageID))
                 {
                     STAT_AddValue("Articles Skipped",1);
-                    return false; // We don't want this logged so we jump out here
+                    return false; 
                 }
 
                 break;                            

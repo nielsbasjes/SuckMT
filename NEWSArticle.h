@@ -6,14 +6,21 @@
 //  Filename  : NEWSArticle.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:11 $
-//  $Revision: 1.4 $
+//  $Date: 1999/11/18 22:52:25 $
+//  $Revision: 1.5 $
 //  $RCSfile: NEWSArticle.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef NEWSARTICLE_H
-#define NEWSARTICLE_H
+#ifndef __NEWSARTICLE_H__
+#define __NEWSARTICLE_H__
 
 //-------------------------------------------------------------------------
 
@@ -110,7 +117,7 @@ DEFINE_PRINTABLE_OPERATORS(NEWSArticle)
 
 //-------------------------------------------------------------------------
 
-#endif
+#endif // __NEWSARTICLE_H__
 
 // End of the file NEWSArticle.h
 //=========================================================================

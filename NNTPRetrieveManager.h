@@ -6,14 +6,21 @@
 //  Filename  : NNTPRetrieveManager.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:43:15 $
-//  $Revision: 1.3 $
+//  $Date: 1999/11/18 22:53:20 $
+//  $Revision: 1.4 $
 //  $RCSfile: NNTPRetrieveManager.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef NNTPRETRIEVEMANAGER_H
-#define NNTPRETRIEVEMANAGER_H
+#ifndef __NNTPRETRIEVEMANAGER_H__
+#define __NNTPRETRIEVEMANAGER_H__
 
 //-------------------------------------------------------------------------
 
@@ -82,7 +89,7 @@ private:
 
 //-------------------------------------------------------------------------
 
-#endif
+#endif // __NNTPRETRIEVEMANAGER_H__
 
 // End of the file NNTPRetrieveManager.h
 //=========================================================================

@@ -6,10 +6,17 @@
 //  Filename  : GenericSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:44:34 $
-//  $Revision: 1.5 $
+//  $Date: 1999/11/18 22:46:43 $
+//  $Revision: 1.6 $
 //  $RCSfile: GenericSocket.h,v $
 //  $Author: niels $
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
 //=========================================================================
 
 #ifndef __GENERICSOCKET_H__
@@ -81,6 +88,9 @@ public:
 
     bool
     Connect(string hostName, unsigned short portNumber);
+
+    bool
+    IsConnected();
 
     // Send 0x00 terminated ACSII string pointed to by 'buffer' 
     // Returns number of bytes sent or -1 in case of error.

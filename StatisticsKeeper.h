@@ -6,14 +6,21 @@
 //  Filename  : StatisticsKeeper.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:45:52 $
-//  $Revision: 1.3 $
+//  $Date: 1999/11/18 22:52:27 $
+//  $Revision: 1.4 $
 //  $RCSfile: StatisticsKeeper.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef STATISTICSKEEPER_H
-#define STATISTICSKEEPER_H
+#ifndef __STATISTICSKEEPER_H__
+#define __STATISTICSKEEPER_H__
 
 //-------------------------------------------------------------------------
 
@@ -76,7 +83,7 @@ extern StatisticsKeeper * statisticsKeeper;
 
 //-------------------------------------------------------------------------
 
-#endif
+#endif // __STATISTICSKEEPER_H__
 
 // End of the file StatisticsKeeper.h
 //=========================================================================

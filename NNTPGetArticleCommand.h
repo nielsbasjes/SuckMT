@@ -6,14 +6,21 @@
 //  Filename  : NNTPGetArticleCommand.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/22 20:37:41 $
-//  $Revision: 1.5 $
+//  $Date: 1999/11/18 22:54:26 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPGetArticleCommand.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef NNTPGetARTICLECOMMAND_H
-#define NNTPGetARTICLECOMMAND_H
+#ifndef __NNTPGETARTICLECOMMAND_H__
+#define __NNTPGETARTICLECOMMAND_H__
 
 //-------------------------------------------------------------------------
 
@@ -39,9 +46,7 @@ private:
 
 //-------------------------------------------------------------------------
 
-#endif
-
-//-------------------------------------------------------------------------
+#endif // __NNTPGETARTICLECOMMAND_H__
 
 // End of the file NNTPGetArticleCommand.h
 //=========================================================================

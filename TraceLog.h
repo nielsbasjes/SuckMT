@@ -6,14 +6,21 @@
 //  Filename  : TraceLog.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:28:01 $
-//  $Revision: 1.2 $
+//  $Date: 1999/11/18 22:51:42 $
+//  $Revision: 1.3 $
 //  $RCSfile: TraceLog.h,v $
 //  $Author: niels $
 //=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//=========================================================================
 
-#ifndef __TraceLog_h__
-#define __TraceLog_h__
+#ifndef __TRACELOG_H__
+#define __TRACELOG_H__
 
 //-------------------------------------------------------------------------
 
@@ -47,7 +54,7 @@ void StopTraceLog();
 
 //-------------------------------------------------------------------------
 
-#endif // __TraceLog_h__
+#endif // __TRACELOG_H__
 
 // End of the file TraceLog.h
 //=========================================================================

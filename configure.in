@@ -3,7 +3,7 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(sucknntp,0.1)
+AM_INIT_AUTOMAKE(suckmt,0.3)
 
 dnl Checks for programs.
 AC_PROG_CC
