@@ -22,4 +22,12 @@ Version 0.3j
     Changed the command syntax from just \n to \r\n and made this a 
     centralized issue. 
     Added a simple debug option to track the socket commands. 
-    
+Version 0.40
+    Inifile: Setting a boolean was seen as a long.
+    Regular expression matching of kill/keep rules.
+    Case insensitive matching of kill/keep rules.
+    Simple scoring system for all kill/keep rules.
+    Added "Minimum Lines in a Message" as requested by Petri Laihonen.
+Version 0.41
+    SERIOUS BUG FIXED regarding the conversion from string to long.
+    Fixed the creation of RPM files.

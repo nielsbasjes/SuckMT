@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NEWSArticle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:24 $
-//  $Revision: 1.8 $
+//  $Date: 2000/01/06 20:25:49 $
+//  $Revision: 1.11 $
 //  $RCSfile: NEWSArticle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -41,6 +41,7 @@ NEWSArticle::NEWSArticle():
 
     fKillMatched = false;
     fKeepMatched = false;
+    fKillKeepScore = 0;
 }
 
 //--------------------------------------------------------------------
@@ -61,6 +62,7 @@ NEWSArticle::NEWSArticle(string newsgroup, string serverLine):
 
     fKillMatched = false;
     fKeepMatched = false;
+    fKillKeepScore = 0;
 
     fPrimaryNewsGroup = newsgroup;
     SetXOVERLine(serverLine.c_str());
@@ -113,36 +115,11 @@ NEWSArticle::Print (ostream &os) const
 
 //--------------------------------------------------------------------
 
-bool 
-NEWSArticle::KillMatched()    
-{ 
-    return fKillMatched; 
-}
-
-//--------------------------------------------------------------------
-
-bool
-NEWSArticle::KillMatched(bool killMatched) 
-{ 
-    fKillMatched = killMatched;
-    return fKillMatched; 
-}
-
-//--------------------------------------------------------------------
-
-bool 
-NEWSArticle::KeepMatched()
-{ 
-    return fKeepMatched; 
-}
-
-//--------------------------------------------------------------------
-
-bool 
-NEWSArticle::KeepMatched(bool keepMatched) 
-{ 
-    fKeepMatched = keepMatched;
-    return fKeepMatched; 
+long 
+NEWSArticle::Score(long additionalScore)
+{
+    fKillKeepScore += additionalScore;
+    return fKillKeepScore;
 }
 
 //--------------------------------------------------------------------

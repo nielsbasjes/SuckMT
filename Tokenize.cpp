@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : Tokenize.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:51:38 $
-//  $Revision: 1.5 $
+//  $Date: 2000/01/08 22:26:16 $
+//  $Revision: 1.8 $
 //  $RCSfile: Tokenize.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -47,6 +47,36 @@ GetTokens(string theString, char separator)
         beginPos = ++endPos;
     }
     return foundStrings;
+}
+
+//-------------------------------------------------------------------------
+
+// Returns true if converted
+// Returns false if string was not convertable
+bool 
+StringToLong(const string &input, long &output)
+{
+    string       workinput = input;
+    RemoveLeadingSpaces(workinput);
+    RemoveTrailingSpaces(workinput);
+    
+    const char * beginptr = workinput.c_str();
+    char       * endptr   = NULL;
+
+    if (*beginptr != 0x00) 
+    {   // The existing value is not an empty string
+        long currentNumberValue = 
+                strtol(workinput.c_str(),&endptr, 10);
+
+        //  man strtol says: "Thus, if *nptr is not `\0' but **endptr 
+        //  is `\0' on return, the entire string is valid.
+        if (*endptr == 0x00 )
+        {
+            output = currentNumberValue;            
+            return true;
+        }
+    }
+    return false;
 }
 
 //-------------------------------------------------------------------------

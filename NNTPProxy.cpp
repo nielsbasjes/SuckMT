@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:41 $
-//  $Revision: 1.7 $
+//  $Date: 2000/01/06 20:25:52 $
+//  $Revision: 1.8 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -287,7 +287,7 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
     
     if (first > last)
     {
-        cout << endl << "There are no new messages present in " << groupName << endl << flush;
+//        cout << endl << "There are no new messages present in " << groupName << endl << flush;
         return 2; // No messages in this group at all.    
     }
     

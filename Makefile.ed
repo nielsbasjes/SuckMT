@@ -6,8 +6,8 @@
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 1999/12/13 22:16:30 $
-#  $Revision: 1.4 $
+#  $Date: 2000/01/08 22:24:00 $
+#  $Revision: 1.6 $
 #  $Author: niels $
 #=========================================================================
 #
@@ -23,10 +23,14 @@
 all: TheMakefile
 	${MAKE}
 
-easydist: TheMakefile
-	${MAKE} easydist
+dist: TheMakefile
+	${MAKE} dist
+
+rpm: TheMakefile
+	${MAKE} rpm
     
 TheMakefile:
+	aclocal
 	automake
 	autoconf
 	./configure

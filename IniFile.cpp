@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:22:46 $
-//  $Revision: 1.6 $
+//  $Date: 2000/01/06 20:25:47 $
+//  $Revision: 1.10 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -467,6 +467,42 @@ IniFile::SetValue(string section, string name, string value)
 // Returns true if succes
 // Returns false in case of error.
 bool
+IniFile::SetValue(string section, string name, char *value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+
+    string strvalue = value;
+
+    return SetValue(theSection,name,strvalue);
+}
+
+//------------------------------------------------------
+// Set the specified setting in the specified section
+// If the section doesn't exist it is created
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::SetValue(string section, string name, int value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+
+    return SetValue(theSection,name,(long)value);
+}
+
+//------------------------------------------------------
+// Set the specified setting in the specified section
+// If the section doesn't exist it is created
+// Returns true if succes
+// Returns false in case of error.
+bool
 IniFile::SetValue(string section, string name, long value)
 {
     omni_mutex_lock lock(valuesMutex);
@@ -491,6 +527,23 @@ IniFile::SetValue(Section * theSection, string name, long value)
     string newValue = cstr;
     
     return SetValue(theSection,name,newValue);
+}
+
+//------------------------------------------------------
+// Set the specified setting in the specified section
+// If the section doesn't exist it is created
+// Returns true if succes
+// Returns false in case of error.
+bool
+IniFile::SetValue(string section, string name, bool value)
+{
+    omni_mutex_lock lock(valuesMutex);
+    Section * theSection=AddSection(section);
+
+    if (theSection == NULL)
+        return false;
+
+    return SetValue(theSection,name,value);
 }
 
 //------------------------------------------------------

@@ -1,13 +1,13 @@
 #=========================================================================
-#                   Copyright (C) 1999 by Niels Basjes
+#                   Copyright (C) 2000 by Niels Basjes
 #                  Suck MT Website: http://go.to/suckmt
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 1999/12/13 21:02:04 $
-#  $Revision: 1.7 $
+#  $Date: 2000/01/08 22:23:58 $
+#  $Revision: 1.13 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -19,17 +19,46 @@
 #
 #=========================================================================
 
-bin_PROGRAMS = suckmt suckmtstatic
+bin_PROGRAMS = suckmt 
+EXTRA_PROGRAMS = suckmtstatic
 
-suckmt_SOURCES = IniFile.cpp Abortable.cpp StatisticsKeeper.cpp posix.cc main.cpp TraceLog.cpp Printable.cpp NewsKiller.cpp NNTPRetrieveManager.cpp NNTPProxy.cpp NNTPGetXOVERCommand.cpp NNTPGetArticleCommand.cpp NNTPCommandHandler.cpp NEWSArticle.cpp GenericSocket.cpp CommandQueue.cpp CommandHandler.cpp Command.cpp AsciiLineSocket.cpp Tokenize.cpp
-suckmtstatic_SOURCES = IniFile.cpp Abortable.cpp StatisticsKeeper.cpp posix.cc main.cpp TraceLog.cpp Printable.cpp NewsKiller.cpp NNTPRetrieveManager.cpp NNTPProxy.cpp NNTPGetXOVERCommand.cpp NNTPGetArticleCommand.cpp NNTPCommandHandler.cpp NEWSArticle.cpp GenericSocket.cpp CommandQueue.cpp CommandHandler.cpp Command.cpp AsciiLineSocket.cpp Tokenize.cpp
+DESTDIR=/usr/bin
+
+SUCKSOURCES  = main.cpp 
+SUCKSOURCES += posix.cc 
+SUCKSOURCES += Abortable.cpp 
+SUCKSOURCES += AsciiLineSocket.cpp 
+SUCKSOURCES += Command.cpp 
+SUCKSOURCES += CommandHandler.cpp 
+SUCKSOURCES += CommandQueue.cpp 
+SUCKSOURCES += GenericSocket.cpp 
+SUCKSOURCES += IniFile.cpp 
+SUCKSOURCES += NEWSArticle.cpp 
+SUCKSOURCES += NNTPCommandHandler.cpp 
+SUCKSOURCES += NNTPGetArticleCommand.cpp 
+SUCKSOURCES += NNTPGetXOVERCommand.cpp 
+SUCKSOURCES += NNTPProxy.cpp 
+SUCKSOURCES += NNTPRetrieveManager.cpp 
+SUCKSOURCES += ArticleImpactChecker.cpp
+SUCKSOURCES += HeaderMatcher.cpp 
+SUCKSOURCES += NewsKiller.cpp 
+SUCKSOURCES += regex.c
+SUCKSOURCES += Printable.cpp 
+SUCKSOURCES += StatisticsKeeper.cpp 
+SUCKSOURCES += Tokenize.cpp
+SUCKSOURCES += TraceLog.cpp 
+
+suckmt_SOURCES = $(SUCKSOURCES)
+suckmtstatic_SOURCES = $(SUCKSOURCES)
 
 suckmt_LDADD          = -lpthread
 suckmtstatic_LDADD    = -lpthread 
 suckmtstatic_LDFLAGS  =  -static
 
 # Extradist includes some generic files
-EXTRA_DIST  = Makefile.ed suckmt.ini.sample suckmt.lsm 
+EXTRA_DIST  = Makefile.ed suckmt.ini.sample 
+EXTRA_DIST += suckmt.lsm.in  suckmt.lsm 
+EXTRA_DIST += suckmt.spec.in suckmt.spec
 
 # The MS-Visual Studio Specific Project/Make files.
 EXTRA_DIST += SuckMT.dsp SuckMT.dsw SuckMT.plg 
@@ -46,7 +75,7 @@ EXTRA_DIST += SuckDefines.h main.cpp tsqueue.h
 EXTRA_DIST += AsciiLineSocket.h         AsciiLineSocket.cpp 
 EXTRA_DIST += Abortable.h               Abortable.cpp 
 EXTRA_DIST += Command.h                 Command.cpp 
-EXTRA_DIST += CommandHandler.h  	    CommandHandler.cpp 
+EXTRA_DIST += CommandHandler.h          CommandHandler.cpp 
 EXTRA_DIST += CommandQueue.h            CommandQueue.cpp 
 EXTRA_DIST += GenericSocket.h           GenericSocket.cpp 
 EXTRA_DIST += IniFile.h                 IniFile.cpp 
@@ -56,6 +85,9 @@ EXTRA_DIST += NNTPGetArticleCommand.h   NNTPGetArticleCommand.cpp
 EXTRA_DIST += NNTPGetXOVERCommand.h     NNTPGetXOVERCommand.cpp 
 EXTRA_DIST += NNTPProxy.h               NNTPProxy.cpp 
 EXTRA_DIST += NNTPRetrieveManager.h     NNTPRetrieveManager.cpp 
+EXTRA_DIST += ArticleImpactChecker.h    ArticleImpactChecker.cpp 
+EXTRA_DIST += HeaderMatcher.h           HeaderMatcher.cpp 
+EXTRA_DIST += regex.h                   regex.c
 EXTRA_DIST += NewsKiller.h              NewsKiller.cpp 
 EXTRA_DIST += Printable.h               Printable.cpp 
 EXTRA_DIST += StatisticsKeeper.h        StatisticsKeeper.cpp 
@@ -70,18 +102,45 @@ CXXFLAGS=-O3
 # Enable Compiler warnings
 CXXFLAGS+= -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 
-# Linux specific omnithread flags
+#Some flags for the regular expression library
+CXXFLAGS+=-DSTDC_HEADERS -DREGEX_MALLOC
+
+#echo @$(PLATFORM)@
+
+UNAME=`uname`
+
+#ifeq ($(UNAME),Linux)
 CXXFLAGS+=-D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
+#endif
+
+# IRIX FLAGS TO BE CHECKED
+#ifeq ($(UNAME),IRIX)
+#CXXFLAGS+=-D__irix__ -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
+#endif
+
+cxxflags:
+	echo @$(CXXFLAGS)@
+
 
 # This target makes the distribution easier to build for the end user.
-easydist: distdir
-	-chmod -R a+r $(distdir)
+dist-hook: suckmt.lsm suckmt.spec
 	rm $(distdir)/configure
 	rm $(distdir)/Makefile.in
 	cp Makefile.ed $(distdir)/Makefile
-	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
-	-rm -rf $(distdir)
 
-# End of the file Makefile.am
+suckmt.spec: suckmt.spec.in configure.in
+	sed "s/\#VERSION\#/$(VERSION)/g" < suckmt.spec.in > suckmt.spec
+
+suckmt.lsm: suckmt.lsm.in configure.in
+	cat suckmt.lsm.in \
+        | sed "s/\#VERSION\#/$(VERSION)/g" \
+        | sed "s/\#DATE\#/`date +%Y-%m-%d`/g" > suckmt.lsm
+
+rpm: suckmt.lsm suckmt.spec dist
+	rpm -ta $(distdir).tar.gz 
+	mv /usr/src/redhat/RPMS/i386/*.rpm ~
+	mv /usr/src/redhat/SRPMS/*.rpm ~
+	rm -rf /usr/src/redhat/BUILD/*
+
+#End of the file Makefile.am
 #=========================================================================
-

@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:43 $
-//  $Revision: 1.12 $
+//  $Date: 2000/01/02 15:33:01 $
+//  $Revision: 1.13 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -69,6 +69,7 @@
 #define SUCK_THREADS           "Number of threads"
 
 #define SUCK_GLOBAL_KILL_RULES "Global Kill Rules"
+#define SUCK_MIN_LINES         "Minimum Lines in a Message"
 #define SUCK_MAX_LINES         "Maximum Lines in a Message"
 #define SUCK_MAX_BYTES         "Maximum Bytes in a Message"
 #define SUCK_MAX_GROUPS        "Maximum Groups in a Message"

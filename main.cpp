@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:45 $
-//  $Revision: 1.12 $
+//  $Date: 2000/01/02 22:34:23 $
+//  $Revision: 1.15 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -107,9 +107,10 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, false);
     
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES,  -1);
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES,  -1);
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS, -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MIN_LINES, "-1 ; 100");
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES, "-1 ; 100");
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES, "-1 ; 100");
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,"-1 ; 100");
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    "/tmp/SuckMTKillLog.txt");
@@ -124,7 +125,6 @@ InitializeIniFile(IniFile &settings)
     list<string> groups;
     if (!settings.GetVariableNames(SUCK_GROUPS,groups))
         settings.CreateSection(SUCK_GROUPS);
-
 }
 
 //-------------------------------------------------------------------------
@@ -187,7 +187,7 @@ int main(int argc, char** argv)
             {
                 cout << "Invalid parameter: Expected a filename after -i" << endl;
                 Usage();
-                return -1;
+                return EXIT_FAILURE;
             }
         }
         else
@@ -206,7 +206,7 @@ int main(int argc, char** argv)
             {
                 cout << "Invalid parameter: Expected a filename after -n" << endl;
                 Usage();
-                return -1;
+                return EXIT_FAILURE;
             }
         }
 
@@ -226,7 +226,7 @@ int main(int argc, char** argv)
 
         cout << "Unknown commandline parameter " << argv[i] << endl;
         Usage();
-        return -1;
+        return EXIT_FAILURE;
     }
     
     cout << "Reading config file \"" << iniFileName.c_str() << "\"" << endl 
@@ -240,11 +240,11 @@ int main(int argc, char** argv)
             cout << "Remember to check the settings file." << endl;
             InitializeIniFile(settings);
             settings.WriteFile(iniFileName);
-            return -1;
+            return EXIT_SUCCESS;
         }
         cout << "Unable to read settings file \"" << iniFileName << "\"." << endl;
         Usage();
-        return -1;
+        return EXIT_FAILURE;
     }
     else
     if (writeDefaultInitFile)

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:58:11 $
-//  $Revision: 1.8 $
+//  $Date: 2000/01/06 20:25:54 $
+//  $Revision: 1.11 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -43,6 +43,7 @@ class NewsKiller; // Forward declaration
 #include "IniFile.h"
 #include "Printable.h"
 #include "omnithread.h"
+#include "HeaderMatcher.h"
 
 //-------------------------------------------------------------------------
 
@@ -88,59 +89,62 @@ private:
     // The current time and date as a string
     string            fNow;
 
+    //----------    
     // Kill Logfile    
     bool              fLogKilledMessages;
     string            fKillLogFileName;
     vector<string>    fHeadersToMentionInKillLog;
     ofstream          fKillLogFile;
     omni_mutex        fKillLogFileMutex;
+
+    void
+    InitializeLogFile();
+        
+    //----------    
+    long    fMinLines;
+    long    fMinLinesImpact;
+    long    fMaxLines;
+    long    fMaxLinesImpact;
+    long    fMaxBytes;
+    long    fMaxBytesImpact;
+    long    fMaxGroups;
+    long    fMaxGroupsImpact;
+
+    void 
+    ReadGlobalKillRule(string valueName,long &value, long &valueImpact);
+    void
+    ReadLinesBytesGroupsRules();
     
+    //----------    
     void 
     LogKillEvent(NEWSArticle *article,
                  const char * reason);
     
-    typedef struct 
-    {
-        string  keyName;
-        string  valueToMatch;
-        string  lastOcurrance;
-        long    count;
-    } headerMatchStruct;
-        
     // Pre parsed cache for the kill/keep rules
-    vector<string>                          fHeadersToCheck;
-    map<string,vector<headerMatchStruct*> > fKillHeaders;
-    map<string,vector<headerMatchStruct*> > fKeepHeaders;
+    vector<string>                      fHeadersToCheck;
+    map<string,vector<HeaderMatcher*> > fKillHeaders;
+    vector<HeaderMatcher*>              fKillOther;
+    map<string,vector<HeaderMatcher*> > fKeepHeaders;
+    vector<HeaderMatcher*>              fKeepOther;
 
     // This function reads the rules from the Inifile and stores 
     // them in the specified storage
     void
     ReadHeaderRules (string iniSection, vector<string>  &headersToCheck,
-                     map<string,vector<headerMatchStruct*> >    &headerRules);
+                     map<string,vector<HeaderMatcher*> > &headerRules,
+                     vector<HeaderMatcher*> &otherRules);
 
     void
-    EraseHeaderRules(map<string,vector<headerMatchStruct*> >    &headerRules);
+    EraseHeaderRules(map<string,vector<HeaderMatcher*> >    &headerRules);
+
+    void
+    EraseHeaderRules(vector<HeaderMatcher*> &headerRules);
 
     void
     CheckLinesAndBytesAndGroups(NEWSArticle * article, strstream &killReasons);
 
     void
-    MatchHeaders(NEWSArticle * article, strstream &killReasons);
-
-    void 
-    MatchOneHeader(NEWSArticle * article, strstream &killReasons, string headerName);
-
-    // The rule set is either the Kill (true) or the Keep (false) set
-    // The headername is the name of the header that is passed
-    // The headerValue is the value of the header that is passed
-    // The return value is true if this article should be killed
-    bool 
-    DoesTheHeaderMatch(bool   kill_keep,
-                       string headerName,
-                       string headerValue,
-                       string &matchedValue);
-    #define USE_KILL  true
-    #define USE_KEEP  false
+    ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons);
 };
 
 DEFINE_PRINTABLE_OPERATORS(NewsKiller)

@@ -1,7 +1,7 @@
 Begin3
 Title:          Suckmt 
-Version:        0.41
-Entered-date:   2000-01-08
+Version:        #VERSION#
+Entered-date:   #DATE#
 Description:    A multithreaded suck replacement
 Keywords:       NNTP
 Author:         Niels Basjes <SuckMT@Basjes.nl> 

@@ -6,32 +6,13 @@
 --------------------Configuration: SuckMT - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\TEMP\RSP4.tmp" with contents
+Creating temporary file "C:\TEMP\RSPB7.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /I "." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"W:\Software Development\suckmt\Abortable.cpp"
-"W:\Software Development\suckmt\AsciiLineSocket.cpp"
-"W:\Software Development\suckmt\Command.cpp"
-"W:\Software Development\suckmt\CommandHandler.cpp"
-"W:\Software Development\suckmt\CommandQueue.cpp"
-"W:\Software Development\suckmt\GenericSocket.cpp"
-"W:\Software Development\suckmt\IniFile.cpp"
-"W:\Software Development\suckmt\main.cpp"
-"W:\Software Development\suckmt\NEWSArticle.cpp"
 "W:\Software Development\suckmt\NewsKiller.cpp"
-"W:\Software Development\suckmt\NNTPCommandHandler.cpp"
-"W:\Software Development\suckmt\NNTPGetArticleCommand.cpp"
-"W:\Software Development\suckmt\NNTPGetXOVERCommand.cpp"
-"W:\Software Development\suckmt\NNTPProxy.cpp"
-"W:\Software Development\suckmt\NNTPRetrieveManager.cpp"
-"W:\Software Development\suckmt\nt.cpp"
-"W:\Software Development\suckmt\Printable.cpp"
-"W:\Software Development\suckmt\StatisticsKeeper.cpp"
-"W:\Software Development\suckmt\Tokenize.cpp"
-"W:\Software Development\suckmt\TraceLog.cpp"
 ]
-Creating command line "cl.exe @C:\TEMP\RSP4.tmp" 
-Creating temporary file "C:\TEMP\RSP5.tmp" with contents
+Creating command line "cl.exe @C:\TEMP\RSPB7.tmp" 
+Creating temporary file "C:\TEMP\RSPB8.tmp" with contents
 [
 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /profile /debug /debugtype:both /machine:I386 /out:"Debug/SuckMT.exe" 
 ".\Debug\Abortable.obj"
@@ -54,31 +35,13 @@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32
 ".\Debug\StatisticsKeeper.obj"
 ".\Debug\Tokenize.obj"
 ".\Debug\TraceLog.obj"
+".\Debug\HeaderMatcher.obj"
+".\Debug\ArticleImpactChecker.obj"
 ]
-Creating command line "link.exe @C:\TEMP\RSP5.tmp"
+Creating command line "link.exe @C:\TEMP\RSPB8.tmp"
 <h3>Output Window</h3>
 Compiling...
-Abortable.cpp
-AsciiLineSocket.cpp
-Command.cpp
-CommandHandler.cpp
-CommandQueue.cpp
-GenericSocket.cpp
-IniFile.cpp
-main.cpp
-NEWSArticle.cpp
 NewsKiller.cpp
-NNTPCommandHandler.cpp
-NNTPGetArticleCommand.cpp
-NNTPGetXOVERCommand.cpp
-NNTPProxy.cpp
-NNTPRetrieveManager.cpp
-nt.cpp
-Printable.cpp
-StatisticsKeeper.cpp
-Tokenize.cpp
-TraceLog.cpp
-Generating Code...
 Linking...
 
 

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NEWSArticle.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:25 $
-//  $Revision: 1.5 $
+//  $Date: 2000/01/06 20:25:50 $
+//  $Revision: 1.8 $
 //  $RCSfile: NEWSArticle.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -74,11 +74,8 @@ public:
     string 
     GetBody();
 
-    bool KillMatched();
-    bool KillMatched(bool killMatched);
-
-    bool KeepMatched();
-    bool KeepMatched(bool keepMatched);
+    long 
+    Score(long additionalScore = 0);
 
     bool operator== (const string& someMessageID) const;
 //private:
@@ -109,6 +106,7 @@ private:
 
     bool                fKillMatched;
     bool                fKeepMatched;
+    long                fKillKeepScore;
 
     NewsArticleState    fState;
 };

@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "." /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "." /D "NDEBUG" /D SUCKMT_VERSION=\"0.3j\" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /D "STDC_HEADERS" /D "REGEX_MALLOC" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "." /I "./re_lib" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /D "STDC_HEADERS" /D "REGEX_MALLOC" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -92,6 +92,10 @@ SOURCE=.\Abortable.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ArticleImpactChecker.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\AsciiLineSocket.cpp
 # End Source File
 # Begin Source File
@@ -109,6 +113,10 @@ SOURCE=.\CommandQueue.cpp
 # Begin Source File
 
 SOURCE=.\GenericSocket.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HeaderMatcher.cpp
 # End Source File
 # Begin Source File
 
@@ -153,6 +161,10 @@ SOURCE=.\nt.cpp
 # Begin Source File
 
 SOURCE=.\Printable.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\regex.c
 # End Source File
 # Begin Source File
 

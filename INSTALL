@@ -2,10 +2,10 @@ Basic Installation and use.
 ===========================
 
 1) Unpack the archive
-   tar xzf suckmt.*.tar.gz
+   tar xzf suckmt.<VERSION>.tar.gz
 
 2) Build the executable
-   cd suckmt.*
+   cd suckmt.<VERSION>
    make
 
 3) Copy the final executable to a usable location
@@ -13,56 +13,79 @@ Basic Installation and use.
 
 4) Create a default config file (you can put this file anywhere you like).
    suckmt -init -i /etc/suckmt.ini
+
+   A suckmt.ini.sample is included to get an idea on what a running suckmt.ini
+   file can look like.
    
 5) Add the news group(s) you want.
    You can just add them with a normal text editor or you can do 
    suckmt -i /etc/suckmt.ini -n nl.comp.os.linux
 
-6) Configure the settings
-   Manually edit the suckmt.ini file to something like this:
+6) Manually edit the settings in the "Suck MT Configuration" 
+   section of the suckmt.ini file. I tried to make the config 
+   file as self-documenting as possible so it shouldn't be a 
+   problem.
 
-[Suck MT Configuration]
-News server Hostname  = news.wirehub.nl
-Storage Directory     = /etc/ppp/news/Msgs
-Batch File            = /etc/ppp/news/batch
-Number of threads     = 5
+   -----------
+        News server Hostname            = news.wirehub.nl
+        
+   This is the hostname of the server you're downloading from.
 
-    I recommend you experiment with the "Number of threads" value (5 seems to
-    work best in my situation).
+   -----------
+        Storage Directory               = /etc/ppp/news/Msgs
+        Batch File                      = /etc/ppp/news/batch
+
+    The "Storage Directory" must be an existing directory that is used to 
+    store the downloaded messages into. The filename "Batch File" is the 
+    file that is created with all the names of the downloaded files.
+
+   -----------
+        Number of threads               = 5
+
+    This is the number of connections that are opened to the server.
+    I recommend you experiment with the "Number of threads" value .
+    5 seems to work best in my situation.
+
+   -----------
+        Connect with Port Number        = 119
+        
+    This is the portnumber on which the server listens.
+    Recommended : DON'T CHANGE IT.
+        
+   -----------
+        Connect with Username           = 
+        Connect with Password           = 
+
+    Use these values if you need to connect to the news server with 
+    a username and a password.
+
+   -----------
+        Debug SOCKET commands           = False
+
+    Setting this to True let's you see a LOT of what is communicated 
+    between suckmt and the server. If you turn this on I recommend you 
+    set the number of threads to 1 .
+
+   -----------
+        Send MODE READER to the server  = False
+
+    Sending the MODE READER command to the server is required for 
+    some servers.
 
 7) To actually use suckmt just run it
    suckmt -i /etc/suckmt.ini 
    and everything is handled automagically.
-   
-8) You can kill on ANY header field of a message.
-   To do this you add a line with
-   
-   headername:value
-   
-   in the [Kill Headers] section of the suckmt.ini.
-   If a message contains a header with the headername and the specified value
-   occurs somewhere in the actual value of the header the message will be
-   killed. Note that alle strings are compared CASE-SENSITIVE and leading and trailing spaces and tabs are ignored !!!
-   Example:
-   
-   Content-Type:text/html
-   
-   After you run suckmt this line will have been changed into something like
-   this:
-   
-   Content-Type:text/html = Wed Sep 29 20:46:51 1999 ; 6
 
-   The date is the start time of the suckmt run when this header was found. 
-   The number after the ';' is the number of occurrances this rule has been 
-   applied since it was put in the suckmt.ini file.
-   
-   The reason I added this is that if I manually inspect the suckmt.ini file I
-   can see how often a kill rule has been applied and when the last occurrance
-   was. This system isn't perfect (yet) because if multiple headers would be
-   reason to kill a message only the status of the first one will be updated.
+   If suckmt is successfull it returns 0, in case of error it will return 
+   something else.
+      
+   If and error situation occurs the suckmt.ini file will NOT be updated.
+   If you remove the already downloaded files from the "Storage Directory"
+   the next time suckmt is run it will download the same files AGAIN !!!
 
-9) [Keep Headers] is the section of the headers that overrule all kill headers.
-   The way this is used is identical to the kill headers.
+   
+8) Add some kill/keep rules (see further below)
+
 
 Content of the suckmt.ini file
 ==============================
@@ -97,7 +120,7 @@ Jill = !Man
 William = Man
 
 
-will be rewritten into
+will be automagically rewritten into
 
 [foo]
 Harry    = Man
@@ -111,39 +134,114 @@ Jill   = !Man
 
 Used contents of suckmt.ini
 ===========================
-You can put a lot of settings into the suckmt.ini that are not used by the software.
-I will only describe the actually used values. Please examine the suckmt.ini.sample file to get an idea how to store the information.
+You can put a lot of settings into the suckmt.ini that are not used by the 
+software. I will only describe the actually used values. Please examine the
+suckmt.ini.sample file to get an idea how to store the information.
 
-[Suck MT Copyright Information] contains some unimportant general information about suckmt.
+[Suck MT Copyright Information] 
+    contains some unimportant general information about suckmt.
 
-[Suck MT Installation] contains some unimportant statistics about how often you have run suckmt. 
+[Suck MT Installation] 
+    contains some unimportant statistics about how often you have run suckmt. 
 
-[Suck MT Configuration] contains the connection and storage information you'll know what they mean when you see them.
+[Suck MT Configuration] 
+    contains the connection and storage information you'll know what they 
+    mean when you see them.
 
-[News Groups] is a list of all the newsgroups that should be downloaded. The value that is stored is the article number where to start the next download.
+[News Groups] 
+    is a list of all the newsgroups that should be downloaded. The value that 
+    is stored is the article number where to start the next download.
 
-[Kill Headers] are the headers that are cause to kill a message. Each line consists of 4 items:
-- The header name
-- The value to look for
-- The date when the last ocurrence was found
-- The number of matches that have been found till now
+[Kill Headers] 
+    are the headers that are cause to kill a message. Each line consists of 
+    5 items:
+    - The header name
+    - The value to look for (this is a regular expression)
+    - The date when the last ocurrence was found
+    - The number of matches that have been found till now
+    - The weight of this rule
 
-Examples:
-Content-Type:multipart/alternative        = Wed Oct  6 20:27:51 1999 ; 25
-Content-Type:multipart/mixed              = Wed Oct  6 20:27:51 1999 ; 8
-Subject:TKA                               = Wed Oct  6 23:32:53 1999 ; 15
-Subject:TKG                               = Wed Oct  6 20:27:51 1999 ; 7
-Subject:overklok                          = Sun Oct  3 22:53:12 1999 ; 5
-Subject:overclock                         = Mon Oct  4 20:34:45 1999 ; 3
-From:droid@spam.free.net                  = Mon Oct  4 20:34:45 1999 ; 0
+[Keep Headers] 
+    are the headers that are cause to keep a message even if a kill match 
+    was found. The format and use of these line are identical to the Kill 
+    Headers. Read the next section on how the weights of rules affect the
+    outcome of the kill/keep action.
 
 
-NOTES:
-1) You can specify ANY header field.
-2) All matches are case sensitive
-3) If you want to specify a new rule you can just put something like this in here.
-Subject:TKA
-   Suckmt will automagically create the rest of the information for you.
+USING KILL AND KEEP RULES
+=========================
 
-[Keep Headers] are the headers that are cause to keep a message no matter if a kill match was found. The format and use of these line are identical to the Kill Headers.
+  GLOBAL KILL RULES
+  =================
+
+[Global Kill Rules]
+Minimum Lines in a Message   =    -1 ;   100
+Maximum Lines in a Message   =   300 ;   100
+Maximum Bytes in a Message   = 15000 ;   100
+Maximum Groups in a Message  =     6 ;   100
+
+With these killrules the value -1 means that this rule is not applied.
+Any other value means what is clearly stated in the name of the rule.
+The second value on each line is the weight of this rule. 
+The default weight value is 100 but can be changed manually.
+This weight value will be explained later.
+
+
+  KILL AND KEEP BASED ON HEADERS 
+  ==============================
+
+You can kill based on ANY header field of a message.
+To do this you add a line with
+
+headername:value
+
+in the [Kill Headers] section of the suckmt.ini. 
+The section [Keep Headers] is the section of the headers that are used to 
+keep messages. The way this is used is identical to the kill headers.
+
+If a message contains a header with the headername and the specified value
+occurs somewhere in the actual value of the header the message will be
+killed. The value is always interpreted as a regular expression. Note that 
+all strings are matched case-sensitive and leading and trailing spaces and 
+tabs are ignored !!!
+Example:
+
+    Content-Type:text/html
+or 
+    Subject:over[ck]lo(k|ck)
+
+If you want the line to be matched case-IN-sensitive put a ~ as the 
+first character of the line.
+Example:
+
+    ~Subject:over[ck]lo(k|ck)
+
+After you run suckmt this line will have been changed into something like
+this:
+
+    ~Subject:over[ck]lo(k|ck)  = Thu Jan  6 19:49:06 2000 ;     3 ;   100
+
+The date is the start time of the suckmt run when this header was found. 
+The number after the first ';' (in this example 3) is the number of 
+occurrances this rule has been applied since it was put in the suckmt.ini 
+file. Using this information (the date and the number) you can manually inspect 
+the suckmt.ini file and you can see how often a kill rule has been applied 
+and when the last occurrance was. 
+
+The second number is the weight of this rule. 
+The default weight value is 100 but can be changed manually.
+This weight value will be explained later.
+
+
+  KILL KEEP WEIGHT VALUE
+  ======================
+
+For all messages the following is done:
+1)  Check the lines, bytes and groups against the ALL kill rules in the 
+    "Global Kill Rules" section. 
+2)  Check the headers against ALL kill and keep rules.
+3)  The matched keep weights are added and the matched kill weights are 
+    substracted from 0. 
+    If the resulting number is negative the message is killed.
+    If the resulting number is 0 or larger the message is NOT killed.
 

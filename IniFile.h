@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:22:48 $
-//  $Revision: 1.6 $
+//  $Date: 2000/01/06 20:25:48 $
+//  $Revision: 1.10 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -89,7 +89,31 @@ public:
     // Returns true if succes
     // Returns false in case of error.
     bool
+    SetValue(string section, string name, char *value);
+
+    //------------------------------------------------------
+    // Set the specified setting in the specified section
+    // If the section doesn't exist it is created
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    SetValue(string section, string name, int value);
+
+    //------------------------------------------------------
+    // Set the specified setting in the specified section
+    // If the section doesn't exist it is created
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
     SetValue(string section, string name, long value);
+
+    //------------------------------------------------------
+    // Set the specified setting in the specified section
+    // If the section doesn't exist it is created
+    // Returns true if succes
+    // Returns false in case of error.
+    bool
+    SetValue(string section, string name, bool value);
 
     //------------------------------------------------------
     // Get the specified setting from the specified section

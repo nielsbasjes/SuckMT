@@ -1,9 +1,30 @@
+dnl =========================================================================
+dnl                    Copyright (C) 2000 by Niels Basjes
+dnl                   Suck MT Website: http://go.to/suckmt
+dnl                         Author: SuckMT@Basjes.nl
+dnl -------------------------------------------------------------------------
+dnl   Filename  : HeaderMatcher.h
+dnl   Sub-system: SuckMT, a multithreaded suck replacement
+dnl   Language  : Automake
+dnl   $Date: 2000/01/08 22:25:11 $
+dnl   $Revision: 1.7 $
+dnl   $RCSfile: configure.in,v $
+dnl   $Author: niels $
+dnl =========================================================================
+dnl 
+dnl    This program is free software; you can redistribute it and/or modify
+dnl    it under the terms of the GNU General Public License as published by
+dnl    the Free Software Foundation; either version 2 of the License, or
+dnl    (at your option) any later version.
+dnl 
+dnl =========================================================================
+
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(suckmt,0.3j)
+AM_INIT_AUTOMAKE(suckmt,0.41)
 
 dnl Checks for programs.
 AC_PROG_CC

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:22:51 $
-//  $Revision: 1.11 $
+//  $Date: 2000/01/06 20:25:53 $
+//  $Revision: 1.15 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -22,8 +22,6 @@
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 
 #endif
-
-#define TRY_ALL_KILL_MATCHES 1
 
 //-------------------------------------------------------------------------
 
@@ -53,64 +51,113 @@ NewsKiller::NewsKiller(IniFile * settings)
 
     if (fSettings != NULL)
     {
-        //=====================
-
-        if (fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE,fLogKilledMessages))
-        {
-            if (fLogKilledMessages)
-            {
-                if (!fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME, fKillLogFileName))
-                {
-                    fKillLogFileName = "/tmp/SuckMTKillLog.txt";
-                }
-
-                string headersToLog;
-
-                if (!fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS, headersToLog))
-                {
-                    headersToLog = "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID";
-                }
-
-                fHeadersToMentionInKillLog = GetTokens(headersToLog,' ');
-
-                fKillLogFile.open(fKillLogFileName.c_str(),ofstream::app); // Open the logfile in append mode
-
-                if (!fKillLogFile.is_open())
-                {
-                    cout << "Unable to open the file \"" << fKillLogFileName 
-                         << "\" for appending the kill statistics log file." << endl << flush;
-                    fLogKilledMessages = false;
-                }                
-                else
-                {
-                    // Place header in the logfile
-                    fKillLogFile 
-                         << "====================================================" << endl
-                         << "Suck MT "<< SUCKMT_VERSION <<" - A Multi Threaded suck replacement." << endl
-                         << "Run started at : " << fNow << endl << flush;
-                }        
-            }
-        }
-
-        //=====================
-
-        ReadHeaderRules(SUCK_KILL_HEADERS,fHeadersToCheck,fKillHeaders);
-        ReadHeaderRules(SUCK_KEEP_HEADERS,fHeadersToCheck,fKeepHeaders);
+        InitializeLogFile();
+        ReadLinesBytesGroupsRules();
+        ReadHeaderRules(SUCK_KILL_HEADERS,fHeadersToCheck,fKillHeaders,fKillOther);
+        ReadHeaderRules(SUCK_KEEP_HEADERS,fHeadersToCheck,fKeepHeaders,fKeepOther);
     }
     
 //cout << this;
     
 }
 
+//-------------------------------------------------------------------------
+
+void
+NewsKiller::InitializeLogFile()
+{
+    if (fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE,fLogKilledMessages))
+    {
+        if (fLogKilledMessages)
+        {
+            if (!fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME, fKillLogFileName))
+            {
+                fKillLogFileName = "/tmp/SuckMTKillLog.txt";
+            }
+
+            string headersToLog;
+
+            if (!fSettings->GetValue(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS, headersToLog))
+            {
+                headersToLog = "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID";
+            }
+
+            fHeadersToMentionInKillLog = GetTokens(headersToLog,' ');
+
+            fKillLogFile.open(fKillLogFileName.c_str(),ofstream::app); // Open the logfile in append mode
+
+            if (!fKillLogFile.is_open())
+            {
+                cout << "Unable to open the file \"" << fKillLogFileName 
+                     << "\" for appending the kill statistics log file." << endl << flush;
+                fLogKilledMessages = false;
+            }                
+            else
+            {
+                // Place header in the logfile
+                fKillLogFile 
+                     << "====================================================" << endl
+                     << "Suck MT "<< SUCKMT_VERSION <<" - A Multi Threaded suck replacement." << endl
+                     << "Run started at : " << fNow << endl << flush;
+            }        
+        }
+    }
+}
+
+//-------------------------------------------------------------------------
+
+void
+NewsKiller::ReadGlobalKillRule(string valueName,long &value, long &valueImpact)
+{
+    string iniLine;
+    vector<string> iniLineList;
+
+    // ==========
+    value       = -1;
+    valueImpact = 100;
+    fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
+                        valueName,
+                        iniLine);
+
+    // Split the value into the required parts
+    iniLineList = GetTokens(iniLine,';');
+    switch (iniLineList.size())
+    {
+        case 2: StringToLong(iniLineList[1],valueImpact);
+        case 1: StringToLong(iniLineList[0],value);
+    }
+
+    char valuestr[50];
+    sprintf(valuestr,"%5ld ; %5ld",value,valueImpact);
+    fSettings->SetValue(SUCK_GLOBAL_KILL_RULES, valueName, valuestr);
+}
+
+//-------------------------------------------------------------------------
+
+void
+NewsKiller::ReadLinesBytesGroupsRules()
+{
+    ReadGlobalKillRule(SUCK_MIN_LINES, fMinLines, fMinLinesImpact);
+    ReadGlobalKillRule(SUCK_MAX_LINES, fMaxLines, fMaxLinesImpact);
+    ReadGlobalKillRule(SUCK_MAX_BYTES, fMaxBytes, fMaxBytesImpact);
+    ReadGlobalKillRule(SUCK_MAX_GROUPS,fMaxGroups,fMaxGroupsImpact);
+
+    if (fMinLines > 0 && fMaxLines > 0 && fMinLines >= fMaxLines)
+    {
+        cerr << "The specified minimum number of lines in a message "
+             << "is LARGER than the maximum." << endl;
+    }
+}
 
 //-------------------------------------------------------------------------
 
 void
 NewsKiller::ReadHeaderRules
-    (string                                     iniSection,
-     vector<string>                            &headersToCheck,
-     map<string,vector<headerMatchStruct*> >   &headerRules)
-{
+    (string                               iniSection,
+     vector<string>                      &headersToCheck,
+     map<string,vector<HeaderMatcher*> > &headerRules,
+     vector<HeaderMatcher*>              &otherRules)
+{   
     list<string> variableNames;
     if (fSettings->GetVariableNames(iniSection,variableNames))
     {
@@ -119,58 +166,12 @@ NewsKiller::ReadHeaderRules
             itemIter != variableNames.end();
             itemIter ++)
         {
-            string thisRule = (*itemIter);
-            unsigned long position = thisRule.find(":");
+            string variableName = (*itemIter);
+            HeaderMatcher * rule = new HeaderMatcher(fSettings,iniSection,variableName);
 
-            if (position != thisRule.npos)
-            {   // We have a legal kill line
-                headerMatchStruct * rule = new headerMatchStruct();
-
-                rule->keyName = thisRule;
-                rule->count = 0;
-
-                string fieldName(thisRule,0,position);
-                rule->valueToMatch.assign(thisRule.begin() + position + 1,thisRule.end());
-
-                string ruleValue;
-                if (!fSettings->GetValue(iniSection,thisRule,ruleValue))
-                {
-                    cerr << "STRANGE ERROR" << endl;
-                    continue;
-                }
-
-                if (ruleValue=="")
-                {
-                    string value = fNow + " --- ";
-//                    string value = fNow + " ; 0 ";
-                    fSettings->SetValue(iniSection,thisRule,value);
-                }
-                else
-                {
-                    unsigned long position = ruleValue.find(";");
-
-                    if (position != ruleValue.npos)
-                    {
-                        rule->lastOcurrance.assign(ruleValue,0,position);
-
-                        string count(ruleValue.begin() + position + 1,ruleValue.end());
-
-                        const char * beginptr = count.c_str();
-                        char       * endptr   = NULL;
-
-                        if (*beginptr != 0x00) 
-                        {   // The existing value is not an empty string
-                            long currentNumberValue = 
-                                    strtol(count.c_str(),&endptr, 10);
-
-                            //  man strtol says: "Thus, if *nptr is not `\0' but **endptr 
-                            //  is `\0' on return, the entire string is valid.
-                            if (*endptr == 0x00 )
-                                rule->count = currentNumberValue;
-                        }
-                    }
-                }
-
+            string fieldName;
+            if (rule->GetMatchingHeader(fieldName))
+            {
                 // Store the field kill rule
                 if (headerRules.find(fieldName) == headerRules.end() &&
                     std::find(headersToCheck.begin(),
@@ -182,6 +183,10 @@ NewsKiller::ReadHeaderRules
 
                 headerRules[fieldName].push_back(rule);
             }
+            else
+            {
+                otherRules.push_back(rule);
+            }
         }
     }
 }
@@ -191,7 +196,9 @@ NewsKiller::ReadHeaderRules
 NewsKiller::~NewsKiller()
 {
     EraseHeaderRules(fKillHeaders);
+    EraseHeaderRules(fKillOther);
     EraseHeaderRules(fKeepHeaders);
+    EraseHeaderRules(fKeepOther);
     
     fKillLogFile 
         << "----------------------------------------------------" << endl
@@ -202,22 +209,28 @@ NewsKiller::~NewsKiller()
 //-------------------------------------------------------------------------
 
 void
-NewsKiller::EraseHeaderRules(map<string,vector<headerMatchStruct*> > &headerRules)
+NewsKiller::EraseHeaderRules(map<string,vector<HeaderMatcher*> > &headerRules)
 {
-    for(map<string,vector<headerMatchStruct*> >::iterator
+    for(map<string,vector<HeaderMatcher*> >::iterator
         mapIter  = headerRules.begin();
         mapIter != headerRules.end();
         mapIter ++)
     {
-        vector<headerMatchStruct*> * headerStructs = &(mapIter->second);
+        EraseHeaderRules(mapIter->second);
+    }
+}
 
-        for(vector<headerMatchStruct*>::iterator
-            headerIter  = headerStructs->begin();
-            headerIter != headerStructs->end();
-            headerIter ++)
-        {
-            delete *headerIter;
-        }
+//-------------------------------------------------------------------------
+
+void
+NewsKiller::EraseHeaderRules(vector<HeaderMatcher*> &headerRules)
+{
+    for(vector<HeaderMatcher*>::iterator
+        headerIter  = headerRules.begin();
+        headerIter != headerRules.end();
+        headerIter ++)
+    {
+        delete *headerIter;
     }
 }
 
@@ -263,13 +276,9 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 
                 CheckLinesAndBytesAndGroups(article,killReasons);
 
-#ifndef TRY_ALL_KILL_MATCHES
-                if (article->KeepMatched())
-                    break
-#endif
                 //=========================================
                 // Check for the headers to kill or keep
-                MatchHeaders(article,killReasons);
+                ExecuteHeaderMatchers(article,killReasons);
                             
                 break;
             }
@@ -280,11 +289,12 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                          // if we have already downloaded the complete message
     }
 
-    // If a kill matched and NO keep the kill.
-    if ( article->KillMatched() && 
-        !article->KeepMatched())
+    // If a the score is above 0 we keep the message.
+    if ( article->Score() < 0)
     {
-        killReasons << ends << flush; // Terminate the string
+        killReasons 
+            << "Total :" << article->Score() << endl
+            << ends << flush; // Terminate the string
         char * cstr_reasons = killReasons.str();
         LogKillEvent(article,cstr_reasons);
         STAT_AddValue("Articles Killed",1);
@@ -296,13 +306,15 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 }
 
 //-------------------------------------------------------------------------
+/*
 bool 
 NewsKiller::DoesTheHeaderMatch(bool   kill_keep,
+                               NEWSArticle * article,
                                string headerName,
                                string headerValue,
                                string &matchedValue)
 {
-    vector<headerMatchStruct *> *rules;
+    vector<headerMatchers *> *rules;
     string sectionName;
 
     if (kill_keep == true)
@@ -322,12 +334,15 @@ NewsKiller::DoesTheHeaderMatch(bool   kill_keep,
         sectionName = SUCK_KEEP_HEADERS;
     }
 
-    for(vector<headerMatchStruct *>::const_iterator
+    for(vector<HeaderMatcher *>::const_iterator
         ruleIter  = rules->begin();
         ruleIter != rules->end();
         ruleIter ++)
     {
-        headerMatchStruct * rule = *ruleIter;
+        HeaderMatcher * rule = *ruleIter;
+
+
+
         if (headerValue.find(rule->valueToMatch) != headerValue.npos)
         {   // Found a matching rule
             valuesMutex.lock();
@@ -347,84 +362,69 @@ NewsKiller::DoesTheHeaderMatch(bool   kill_keep,
     
     return false;
 }
-
+*/
 //-------------------------------------------------------------------------
 
-void 
+void
 NewsKiller::CheckLinesAndBytesAndGroups(NEWSArticle * article,strstream &killReasons)
 {
     //=========================================
-    // Check the maximum number of lines limit.
-    long maxLines;
-    if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
-                            SUCK_MAX_LINES,
-                            maxLines))
-    {   // Maxlines has been set
-        if (maxLines > 0 && 
-            article->fLines > (unsigned long)maxLines)
-        {
-            killReasons 
-                << "KILLED FOR: Number of lines (" << article->fLines 
-                << ") exceeds the maximum number of lines (" 
-                << maxLines << ")." << endl;
-            article->KillMatched(true);
+    // Check the minimum number of lines limit.
+    if (fMinLines > 0 && 
+        article->fLines <= (unsigned long)fMinLines)
+    {
+        killReasons 
+            << "[KILL](-" << fMinLinesImpact << "): Number of lines (" << article->fLines 
+            << ") is less than the minimum number of lines (" 
+            << fMinLines << ")." << endl;
+        article->Score(-1*fMinLinesImpact);
+    }
 
-#ifndef TRY_ALL_KILL_MATCHES
-            return;
-#endif
-        
-        }
+    //=========================================
+    // Check the maximum number of lines limit.
+    if (fMaxLines > 0 && 
+        article->fLines > (unsigned long)fMaxLines)
+    {
+        killReasons 
+            << "[KILL](-" << fMaxLinesImpact << "): Number of lines (" << article->fLines 
+            << ") exceeds the maximum number of lines (" 
+            << fMaxLines << ")." << endl;
+        article->Score(-1*fMaxLinesImpact);
     }
 
     //=========================================
     // Check the maximum number of bytes limit.
-    long maxBytes;
-    if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
-                            SUCK_MAX_BYTES,
-                            maxBytes))
-    {   // maxBytes has been set
-        if (maxBytes > 0 && 
-            article->fBytes > (unsigned long)maxBytes)
-        {
-            killReasons
-                << "KILLED FOR: Number of bytes (" << article->fBytes
-                << ") exceeds the maximum number of bytes ("
-                << maxBytes << ")."<< endl;
-            article->KillMatched(true);
-#ifndef TRY_ALL_KILL_MATCHES
-            return;
-#endif
-        }
+    if (fMaxBytes > 0 && 
+        article->fBytes > (unsigned long)fMaxBytes)
+    {
+        killReasons
+            << "[KILL](-" << fMaxBytesImpact << "): Number of bytes (" << article->fBytes
+            << ") exceeds the maximum number of bytes ("
+            << fMaxBytes << ")."<< endl;
+        article->Score(-1*fMaxBytesImpact);
     }
 
     //==========================================
     // Check the maximum number of groups limit.
-    long maxGroups;
-    if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
-                            SUCK_MAX_GROUPS,
-                            maxGroups))
-    {   // maxBytes has been set
-        if (maxGroups > 0 && 
-            article->fNrOfNewsGroups > (unsigned long)maxGroups)
-        {
-            killReasons 
-                << "KILLED FOR: Number of groups (" << article->fNrOfNewsGroups 
-                << ") exceeds the maximum number of groups (" 
-                << maxGroups << ")." << endl;
-            article->KillMatched(true);
-#ifndef TRY_ALL_KILL_MATCHES
-            return;
-#endif
-        }
+    if (fMaxGroups > 0 && 
+        article->fNrOfNewsGroups > (unsigned long)fMaxGroups)
+    {
+        killReasons 
+            << "[KILL](-" << fMaxGroupsImpact  <<"): Number of groups (" << article->fNrOfNewsGroups 
+            << ") exceeds the maximum number of groups (" 
+            << fMaxGroups << ")." << endl;
+        article->Score(-1*fMaxGroupsImpact);
     }
 }
 
 //-------------------------------------------------------------------------
 
 void 
-NewsKiller::MatchHeaders(NEWSArticle * article, strstream &killReasons)
+NewsKiller::ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons)
 {
     string matchedValue;
+    string headerValue;
+    vector<HeaderMatcher*>::iterator matchIter;
 
     //=========================================
     // Check for the headers to kill and keep.
@@ -433,39 +433,73 @@ NewsKiller::MatchHeaders(NEWSArticle * article, strstream &killReasons)
         headerIter != fHeadersToCheck.end();
         headerIter ++)
     {
-        MatchOneHeader(article, killReasons, *headerIter);
-
-#ifndef TRY_ALL_KILL_MATCHES
-        if (article->KeepMatched())
-            return;
-#endif
-    }
-}
-
-//-------------------------------------------------------------------------
-
-void 
-NewsKiller::MatchOneHeader(NEWSArticle * article, strstream &killReasons ,string headerName)
-{
-    string matchedValue;
-    string headerValue;
-    if (article->GetHeaderField(headerName,headerValue))
-    {
-        if (DoesTheHeaderMatch(USE_KEEP,headerName,headerValue,matchedValue))
+        string headerName = *headerIter;
+        
+        if (article->GetHeaderField(headerName,headerValue))
         {
-            article->KeepMatched(true);
-#ifndef TRY_ALL_KILL_MATCHES
-            return;
-#endif
+            vector<HeaderMatcher*> *rules = NULL;
+
+            if(fKillHeaders.find(headerName) != fKillHeaders.end())
+            {
+                rules = &(fKillHeaders[headerName]);
+                for(matchIter  = rules->begin();
+                    matchIter != rules->end();
+                    matchIter ++)
+                {
+                    string logentry;
+                    long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
+                    if ( score != 0)
+                    {
+                        article->Score(-1*score);
+                        killReasons << "[KILL](-" << score << ") " << logentry << endl;
+                    }
+                }
+            }
+
+            if(fKeepHeaders.find(headerName) != fKeepHeaders.end())
+            {
+                rules = &(fKeepHeaders[headerName]);
+                for(matchIter  = rules->begin();
+                    matchIter != rules->end();
+                    matchIter ++)
+                {
+                    string logentry;
+                    long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
+                    if ( score != 0)
+                    {
+                        article->Score(score);
+                        killReasons << "[KEEP](+" << score << ") " << logentry << endl;
+                    }
+                }
+            }
         }
+    }
 
-        if (DoesTheHeaderMatch(USE_KILL,headerName,headerValue,matchedValue))
+    //=========================================
+    for(matchIter  = fKillOther.begin();
+        matchIter != fKillOther.end();
+        matchIter ++)
+    {
+        string logentry;
+        long score = (*matchIter)->GetImpactValue(article,"",logentry);
+        if ( score != 0)
         {
-            killReasons 
-                << "KILLED FOR: The header \"" << headerName 
-                << ":" << headerValue << "\" contains the string \"" 
-                << matchedValue << "\"." << endl;
-            article->KillMatched(true);
+            article->Score(-1*score);
+            killReasons << "[KILL](-" << score << ") " << logentry << endl;
+        }
+    }
+
+    //=========================================
+    for(matchIter  = fKeepOther.begin();
+        matchIter != fKeepOther.end();
+        matchIter ++)
+    {
+        string logentry;
+        long score = (*matchIter)->GetImpactValue(article,"",logentry);
+        if ( score != 0)
+        {
+            article->Score(score);
+            killReasons << "[KEEP](+" << score << ") " << logentry << endl;
         }
     }
 }
@@ -530,30 +564,6 @@ NewsKiller::Print (ostream &os) const
 {
     os  << "NewsKiller= {" << endl;
 
-/*    for(vector<string>::const_iterator
-        headerIter  = fHeadersToCheck.begin();
-        headerIter != fHeadersToCheck.end();
-        headerIter ++)
-    {
-        string fieldName = *headerIter;
-//      vector<headerMatchStruct *> killers = fKillHeaders[fieldName];
-        map<string,vector<headerMatchStruct *> >::const_iterator killers = 
-                fKillHeaders.find(fieldName);
-        os << "######" << fieldName << "######" << endl;
-        
-        for(vector<headerMatchStruct *>::const_iterator
-            killIter  = killers->second.begin();
-            killIter != killers->second.end();
-            killIter ++)
-        {
-            headerMatchStruct * killer = *killIter;
-            os << killer->keyName << "(==\""<<fieldName<<"\")"<< "\t" 
-               << killer->valueToMatch << "\t" 
-               << killer->lastOcurrance << "\t"
-               << killer->count << endl;
-        }
-    }    
-*/
     os  << "}" << endl << flush ;
 }
 
