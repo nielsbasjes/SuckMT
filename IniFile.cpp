@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2003 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2001/08/26 20:40:51 $
-//  $Revision: 1.16 $
+//  $Date: 2003/04/13 20:51:55 $
+//  $Revision: 1.21 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -22,7 +22,7 @@
 //
 //=========================================================================
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 ) 
 #endif
 
@@ -138,29 +138,29 @@ IniFile::ReadFile(string filename)
 
         if (*(work_buffer.begin()) == '[')
         {
-            // Skip the '['
+            // Skip leading and trailing spaces and tabs
+            RemoveLeadingSpaces(work_buffer);
+            RemoveTrailingSpaces(work_buffer);
+	    
+            // Remove the  '[' and  ']'
             work_buffer.erase(work_buffer.begin());
+            work_buffer.erase(work_buffer.find("]"));
 
-            // Skip leading spaces and tabs
+            // Skip leading and trailing spaces and tabs (within the [ ])
             RemoveLeadingSpaces(work_buffer);
             RemoveTrailingSpaces(work_buffer);
             
-            // This is the start of a new section
-            string token(work_buffer.begin(),work_buffer.find("]"));
-
-            RemoveTrailingSpaces(token);
-
             // Get or Make the requested section
-            currentSection = AddSection(token);
+            currentSection = AddSection(work_buffer);
 
             if (showWhatIsRead)
             {
-                LiniRead << "" << endl << "[" << token << "]" << endl << flush;
+                LiniRead << "" << endl << "[" << work_buffer << "]" << endl << flush;
             }
 
             if (currentSection == NULL)
             {   // Fatal error.
-                Lerror << "Couldn't find or create section \"" << token
+                Lerror << "Couldn't find or create section \"" << work_buffer
                        << "\" in file \"" << filename 
                        << "\" at line " << lineNr << "." << endl << flush;
                 return false;

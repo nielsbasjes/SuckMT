@@ -1,13 +1,13 @@
 #=========================================================================
 #                   Copyright (C) 1999 by Niels Basjes
-#                  Suck MT Website: http://go.to/suckmt
+#              SuckMT Website : http://oss.basjes.nl/SuckMT/
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 2000/10/22 19:13:20 $
-#  $Revision: 1.15 $
+#  $Date: 2003/04/13 20:37:11 $
+#  $Revision: 1.25 $
 #  $RCSfile: Makefile.ed,v $
 #  $Author: niels $
 #=========================================================================
@@ -19,51 +19,70 @@
 #
 #=========================================================================
 
-.PHONY: CopyrightMessage debug nodebug TheMakefile
+.PHONY: CopyrightMessage debug nodebug 
 
-all: CopyrightMessage TheMakefile
+all: CopyrightMessage GNUmakefile
 	${MAKE}
 
-install: CopyrightMessage TheMakefile
+install: CopyrightMessage GNUmakefile
 	${MAKE} install
+
+dist: CopyrightMessage GNUmakefile
+	${MAKE} dist
+
+rpm: CopyrightMessage GNUmakefile
+	${MAKE} rpm
+
+full-distribution-set: CopyrightMessage GNUmakefile
+	${MAKE} full-distribution-set
+
+suckmt: CopyrightMessage GNUmakefile
+	${MAKE} suckmt
+
+suckmtstatic: CopyrightMessage GNUmakefile
+	${MAKE} suckmtstatic 
 
 debug: CopyrightMessage configure
 	./configure --enable-debug
+	rm -f Makefile
+	cp Makefile.nognumake Makefile
 	@echo The makefile has been created with debugging ENABLED
 	@echo Run make again to actually start building suckmt.
 
 nodebug: CopyrightMessage configure
 	./configure --disable-debug
+	rm -f Makefile
+	cp Makefile.nognumake Makefile
 	@echo The makefile has been created with debugging DISABLED
 	@echo Run make again to actually start building suckmt.
-
-dist: CopyrightMessage TheMakefile
-	${MAKE} dist
-
-rpm: CopyrightMessage TheMakefile
-	${MAKE} rpm
 
 aclocal.m4: configure.in
 	aclocal
 
-Makefile.in: Makefile.am configure.in config.h.in
-	automake
+config.h.in:configure.in aclocal.m4
+	autoheader
 
-configure: configure.in Makefile.in aclocal.m4
+GNUmakefile.in: GNUmakefile.am configure.in config.h.in
+	automake --add-missing GNUmakefile
+
+configure: configure.in GNUmakefile.in aclocal.m4 
 	autoconf
 	
-TheMakefile: configure
+GNUmakefile: configure
 	./configure
+	rm -f Makefile
+	cp Makefile.nognumake Makefile
 
 configure.in: configure.in_ VERSION
-	sed s/VERSION/`cat VERSION`/g < configure.in_ > configure.in
+	sed s/\#VERSION\#/`cat VERSION`/g < configure.in_ > configure.in
 
 CopyrightMessage: VERSION
 	@echo "+==================================================+"
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement  |"
-	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "| (C)2003 by Niels Basjes - http://niels.basjes.nl |"
+	@echo "| http://oss.basjes.nl/SuckMT/                     |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"
@@ -76,3 +95,12 @@ CopyrightMessage: VERSION
 	@echo "- dist    : Create a suckmt-`cat VERSION`.tar.gz source distribution."
 	@echo "- rpm     : Create an RPM and SRPM for suckmt."
 	@echo 
+
+clean:
+	rm -f *.o core *.core suckmt suckmt-static
+	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h*
+	rm -rf autom4te* depcomp install-sh missing
+	rm -f GNUmakefile GNUmakefile.in 
+	rm -f suckmt.lsm suckmt.spec suckmt.ini.sample suckmt.ini.sample.win32 
+	rm -rf .deps
+	cp Makefile.ed Makefile

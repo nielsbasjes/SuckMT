@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2003 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2001/02/11 20:47:39 $
-//  $Revision: 1.21 $
+//  $Date: 2003/04/13 20:51:55 $
+//  $Revision: 1.25 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -22,7 +22,7 @@
 //
 //=========================================================================
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 ) 
 #endif
 
@@ -506,6 +506,9 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
         case 411: // Group doesn't exist
             Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
+        case 423: // Article number doesn't exist in this group (probably bad overview DB)
+            Lerror << "NO SUCH ARTICLE NUMBER: " << responseLine << endl << flush;
+            return false;
         case 430: // Article doesn't exist (probably bad overview DB)
             Lerror << "NO SUCH ARTICLE: " << responseLine << endl << flush;
             return false;
@@ -564,6 +567,9 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
             break;
         case 411: // Group doesn't exist
             Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
+            return false;
+        case 423: // Article number doesn't exist in this group (probably bad overview DB)
+            Lerror << "NO SUCH ARTICLE NUMBER: " << responseLine << endl << flush;
             return false;
         case 430: // Article doesn't exist (probably bad overview DB)
             Lerror << "NO SUCH ARTICLE: " << responseLine << endl << flush;

@@ -1,13 +1,13 @@
 dnl =========================================================================
 dnl                    Copyright (C) 2000 by Niels Basjes
-dnl                   SuckMT Website: http://go.to/suckmt
+dnl               SuckMT Website : http://oss.basjes.nl/SuckMT/
 dnl                         Author: SuckMT@Basjes.nl
 dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2001/08/28 16:22:44 $
-dnl   $Revision: 1.13 $
+dnl   $Date: 2003/04/13 20:37:12 $
+dnl   $Revision: 1.26 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -20,15 +20,15 @@ dnl
 dnl =========================================================================
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(Makefile.am)
+AC_INIT(GNUmakefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(suckmt,VERSION)
+AM_INIT_AUTOMAKE(suckmt,#VERSION#)
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug    Turn debugging on
-  --disable-debug   Turn debugging off],
+   --disable-debug   Turn debugging off],
 [case "${enableval}" in
   yes) debug=true ;;
    no) debug=false ;;
@@ -37,38 +37,145 @@ AC_ARG_ENABLE(debug,
 
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-dnl Detect the operating system and set the correct flag
+AC_ARG_ENABLE(regexpp,
+[  --enable-regexpp    Choose RegEx++
+   --disable-regexpp   Choose old Regexp libary],
+[case "${enableval}" in
+  yes) regexpp=true ;;
+   no) regexpp=false ;;
+    *) regexpp=false ;;
+ esac],[regexpp=true])
 
-AM_CONDITIONAL(UNAME_LINUX,   test x`uname` = xLinux)
-AM_CONDITIONAL(UNAME_IRIX,    test x`uname` = xIRIX)
-AM_CONDITIONAL(UNAME_IRIX64,  test x`uname` = xIRIX64)
-AM_CONDITIONAL(UNAME_SOLARIS, test x`uname` = xSunOS)
+AM_CONDITIONAL(REGEXPP, test x$regexpp = xtrue)
+
+dnl Detect the operating system and set the correct flag
+AC_MSG_CHECKING(for support of the current OS)
+
+uname=`uname`
+
+PLATFORM=Unknown
+
+if test -z $uname ;
+then
+    uname=Unknown
+fi
+
+dnl ----------------------------------------
+dnl Platform dependend flags for omnithread
+
+dnl Linux ?
+if test $uname = Linux ;
+then
+    OMNITHREADFLAGS=" -D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10 "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -lpthread "
+    PLATFORM=Linux
+    EXEEXT=
+fi
+
+dnl IRIX ?
+if test $uname = IRIX ;
+then
+    OMNITHREADFLAGS=" -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -lpthread "
+    PLATFORM=Irix
+    EXEEXT=
+fi
+
+dnl IRIX 64 bits ?
+if test $uname = IRIX64 ;
+then
+    OMNITHREADFLAGS=" -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -lpthread "
+    PLATFORM=Irix64
+    EXEEXT=
+fi
+
+dnl Solaris ?
+if test $uname = SunOS ;
+then
+    OMNITHREADFLAGS=" -D__sunos__ -D__sparc__ -D__OSVERSION__=5 -DSVR4 -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -lpthread "
+    PLATFORM=Solaris
+    EXEEXT=
+fi
+
+dnl OpenBSD ?
+if test $uname = OpenBSD ;
+then
+    OMNITHREADFLAGS=" -D__x86__ -D__freebsd__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10 "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -pthread "
+    PLATFORM=OpenBSD
+    EXEEXT=
+fi
+
+dnl FreeBSD ?
+if test $uname = FreeBSD ;
+then
+    OMNITHREADFLAGS=" -D__x86__ -D__freebsd__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10 "
+    OMNITHREADIMPL=posix
+    OMNITHREADLINKFLAG=" -pthread "
+    PLATFORM=FreeBSD
+    EXEEXT=
+fi
+
+dnl  Cygwin ?
+dnl NOTE: I use this clumsy method because AC_CYGWIN is broken (on my systems anyway).
+if test    $uname = CYGWIN_NT-4.0 -o $uname = CYGWIN_NT-5.0 -o $uname = CYGWIN_NT-5.1  ;
+then
+    OMNITHREADFLAGS=" -D__MSVCRT__ -I/usr/include/mingw -D__x86__ -D__WIN32__ -DWIN32 "
+    OMNITHREADIMPL=nt
+    OMNITHREADLINKFLAG=" -L/usr/lib/mingw -lmsvcrt40 -lws2_32 "
+    PLATFORM=Cygwin
+    EXEEXT=".exe"
+fi
+
+dnl  PLATFORM not set --> not supported
+if test -z $PLATFORM ;
+then
+    AC_MSG_ERROR($uname is not yet supported)
+else
+    AC_MSG_RESULT($uname is supported)
+fi
+
+AM_CONDITIONAL(OMNITHREADIMPL_POSIX,   test x$OMNITHREADIMPL = xposix)
+AM_CONDITIONAL(OMNITHREADIMPL_MACH,    test x$OMNITHREADIMPL = xmach)    
+AM_CONDITIONAL(OMNITHREADIMPL_SOLARIS, test x$OMNITHREADIMPL = xsolaris)    
+AM_CONDITIONAL(OMNITHREADIMPL_NT,      test x$OMNITHREADIMPL = xnt)    
+
+AC_SUBST(EXEEXT)
+AC_SUBST(OMNITHREADFLAGS)
+AC_SUBST(OMNITHREADLINKFLAG)
+
+
+dnl ----------------------------------------
 
 dnl Checks for programs.
-AC_PROG_CC
+
+dnl Uncomment next line to try to use gcc version 3 
+dnl CCC="gcc3"
 AC_PROG_CXX
-AC_PROG_RANLIB
+
+if test x$regexpp = xfalse;
+then
+dnl The regular C compiler is needed
+dnl Use the selected C++ compiler for C code aswell
+CC=$CXX
+AC_PROG_CC
+fi
+
+
+dnl AC_PROG_RANLIB
 dnl Checks for libraries.
 
 dnl Checks for header files.
-
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING(for <ostream>)
-AC_TRY_COMPILE(
-[ 
-#include <ostream>
-],
-[
-cout << "Hello World";
-],
-[AC_MSG_RESULT(yes)
-],
-[AC_MSG_RESULT(no)
-AC_DEFINE(OLD_OSTREAM, [])
-])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(GNUmakefile)

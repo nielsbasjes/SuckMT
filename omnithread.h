@@ -35,6 +35,9 @@
 #ifndef __omnithread_h_
 #define __omnithread_h_
 
+// Ensure we have the local version of NULL if it exists.
+#include <iostream>
+
 #ifndef NULL
 #define NULL (void*)0
 #endif

@@ -1,0 +1,62 @@
+#!/bin/sh
+BASEDIR=/var/lib/suckmt                 # base directory for scripts
+. ${BASEDIR}/NewsParams
+
+trap 'rm -f ${LOCKFILE} ; echo "Aborting" ; exit 1' 1 2 3 15
+${SHLOCK} -p $$ -f ${LOCKFILE}
+if [ $? -ne 0 ]; then
+        echo "Already running, can't run two at one time"
+        exit
+fi
+
+# now upload messages
+if [ -s ${OUTGOING}  -o -s ${OUTGOINGNEW} ]; then
+
+        ${TESTHOST} ${REMOTE_HOST} -s
+
+        if [ $? -ne 0 ]; then
+                echo "Remote posting host not responding"
+        else
+                # this is needed by INND so that the outgoing file will be
+                # properly flushed and we have a new blank file to work with
+                # when we are done
+                # First mv the current one to a new file name
+                # Since innd already has the file open, it doesn't care 
+                # about the rename.
+                # The flush will ensure that all messages to be posted have
+                # been written out, close off the old one (already renamed)
+                # and create a new one.
+
+                # if the outgoingnew already exists, it means we aborted last time
+                # so don't try to do it again
+                if [ ! -s ${OUTGOINGNEW} ]; then
+                        mv ${OUTGOING} ${OUTGOINGNEW}
+                        ${CTLINND} flush ${SITE}
+                fi
+
+                # outgoing messages to post
+                ${RPOST} ${REMOTE_HOST} -d -b ${OUTGOINGNEW} -f \$\$o=${OUTFILE} ${SCRIPT} \$\$i ${OUTFILE}
+
+                ERRLEV=$?
+                if [ ${ERRLEV} -eq 0 ]; then
+                        echo "Remotely posted articles"
+                        rm ${OUTFILE}
+                elif [ ${ERRLEV} -eq 1 ]; then
+                        echo "Error posting a message"
+                elif [ ${ERRLEV} -eq 2 ]; then
+                        echo "Unable to do NNTP authorization with remote server"
+                elif [ ${ERRLEV} -eq 3 ]; then
+                        echo "Unexpected answer from remote server to a command while doing NNTP authorization"
+                elif [ ${ERRLEV} -eq -1 ]; then
+                        echo "Fatal error"
+                fi
+
+                if [ -f ${OUTGOINGFAIL} ]; then
+                        mv ${OUTGOINGFAIL} ${OUTGOINGNEW}       # so we can re do it
+                        chown news.${NEWSGROUP} ${OUTGOINGNEW}
+                        chmod 664 ${OUTGOINGNEW}
+                fi
+        fi
+fi      
+
+rm -f ${LOCKFILE}

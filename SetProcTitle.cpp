@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2003 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : SetProcTitle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:12 $
-//  $Revision: 1.4 $
+//  $Date: 2003/04/13 20:51:55 $
+//  $Revision: 1.8 $
 //  $RCSfile: SetProcTitle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,7 +28,7 @@
 //
 //=========================================================================
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 ) 
 #endif
 
@@ -300,12 +300,17 @@ InitSetProcTitle(int argc,char **argv,char **envp,
 
 #if SPT_TYPE != SPT_BUILTIN
 
-
+#ifdef WIN32
+void
+setproctitle(const char * /*fmt*/, ...)
+{
+    // Not implemented on Windows
+}
+#else
 /*VARARGS1*/
 void
 setproctitle(const char *fmt, ...)
 {
-#ifndef WIN32
 # if SPT_TYPE != SPT_NONE
 	register char *p;
 	register int i;
@@ -379,8 +384,8 @@ setproctitle(const char *fmt, ...)
 	Argv[1] = 0;
 #  endif
 # endif /* SPT_TYPE != SPT_NONE */
-# endif // WIN32
 }
+# endif // WIN32
 
 #endif /* SPT_TYPE != SPT_BUILTIN */
 
@@ -399,10 +404,15 @@ setproctitle(const char *fmt, ...)
 **		none.
 */
 
+#ifdef WIN32
+void
+SetProcTitle(const char */*fmt*/, ...)
+{
+}
+#else
 void
 SetProcTitle(const char *fmt, ...)
 {
-#ifndef WIN32
 	char buf[SPT_BUFSIZE];
 
 	VA_LOCAL_DECL
@@ -412,5 +422,5 @@ SetProcTitle(const char *fmt, ...)
 	VA_END;
 
 	setproctitle("%s", buf);
-#endif
 }
+#endif

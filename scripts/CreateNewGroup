@@ -1,0 +1,15 @@
+#!/bin/bash
+BASEDIR=/var/lib/suckmt                 # base directory for scripts
+. ${BASEDIR}/NewsParams
+SUCKMT=/usr/bin/suckmt
+SUCKMT_INI=/etc/suckmt.ini
+CTLINND=/usr/lib/news/bin/ctlinnd
+grep -E "^$1[ \t]+" ${SUCKMT_INI} >/dev/null
+
+if [ $? -ne 0 ]; then
+	${CTLINND} newgroup $1
+	${SUCKMT} -i ${SUCKMT_INI} -n "$1"
+else
+	echo "Error: Newsgroup \"$1\" allready exists."
+	echo "Nothing done."
+fi

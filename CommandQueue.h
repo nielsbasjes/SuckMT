@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2003 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : CommandQueue.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:16 $
-//  $Revision: 1.4 $
+//  $Date: 2003/04/13 20:51:55 $
+//  $Revision: 1.6 $
 //  $RCSfile: CommandQueue.h,v $
 //  $Author: niels $
 //=========================================================================

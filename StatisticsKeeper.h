@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2003 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : StatisticsKeeper.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/05/05 20:03:12 $
-//  $Revision: 1.6 $
+//  $Date: 2003/04/13 20:51:55 $
+//  $Revision: 1.9 $
 //  $RCSfile: StatisticsKeeper.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -57,7 +57,7 @@ public:
     string GetStringValue(string name);
     long GetNumericValue(string name);
 
-    void Print(ostream &os);
+    virtual void Print(ostream &os) const;
 
 private:
     omni_mutex          valuesMutex;

@@ -140,7 +140,7 @@ public:
    typedef lock_guard<critical_section> ro_guard;
    typedef lock_guard<critical_section> rw_guard;
 
-   friend lock_guard<critical_section>;
+   friend class lock_guard<critical_section>;
 };
 
 inline bool BOOST_RE_CALL operator==(const critical_section&, const critical_section&)

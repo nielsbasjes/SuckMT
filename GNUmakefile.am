@@ -1,14 +1,14 @@
 #=========================================================================
-#                   Copyright (C) 2000 by Niels Basjes
-#                  SuckMT Website: http://go.to/suckmt
+#                   Copyright (C) 2003 by Niels Basjes
+#              SuckMT Website : http://oss.basjes.nl/SuckMT/
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2001/08/27 20:41:31 $
-#  $Revision: 1.36 $
-#  $RCSfile: Makefile.am,v $
+#  $Date: 2003/04/29 23:09:49 $
+#  $Revision: 1.17 $
+#  $RCSfile: GNUmakefile.am,v $
 #  $Author: niels $
 #=========================================================================
 #
@@ -23,10 +23,14 @@ bin_PROGRAMS = suckmt
 EXTRA_PROGRAMS = suckmtstatic
 
 DOCS=README ChangeLog INSTALL suckmt.lsm suckmt.ini.sample AUTHORS COPYING README NEWS
-datadir=${prefix}/var/spool/suckmt
-docdir=${prefix}/usr/doc/packages/suckmt
-configdir=${prefix}/etc
-bindir=${prefix}/usr/bin
+datadir=/var/spool/suckmt
+scriptdir=/var/lib/suckmt
+
+#RedHat 9 expands ${sysconfdir} to  /usr/etc instead of /etc
+#So we do not use ${sysconfdir}
+#configdir=${sysconfdir}
+configdir=/etc
+bindir=${prefix}/bin
 #-------------------------
 
 if DEBUG
@@ -45,7 +49,6 @@ CFLAGS = $(COMPILER_DEBUG)
 #-------------------------
 
 SUCKSOURCES  = main.cpp 
-SUCKSOURCES += posix.cc 
 SUCKSOURCES += SetProcTitle.cpp 
 SUCKSOURCES += Abortable.cpp 
 SUCKSOURCES += AsciiLineSocket.cpp 
@@ -70,29 +73,51 @@ SUCKSOURCES += Tokenize.cpp
 SUCKSOURCES += MultiStream.cpp 
 SUCKSOURCES += TraceLog.cpp 
 
-SUCKSOURCES += regex.c
-#SUCKSOURCES += c_regex_traits.cpp
-#SUCKSOURCES += c_regex_traits_common.cpp
-#SUCKSOURCES += cpp_regex_traits.cpp
-#SUCKSOURCES += cregex.cpp
-#SUCKSOURCES += fileiter.cpp
-#SUCKSOURCES += posix_api.cpp
-#SUCKSOURCES += regex.cpp
-#SUCKSOURCES += regex_debug.cpp
-#SUCKSOURCES += regex_synch.cpp
-#SUCKSOURCES += w32_regex_traits.cpp
-#SUCKSOURCES += wide_posix_api.cpp
+# Under development: support for RegEx++
+if REGEXPP
+REGEXPSOURCES  = c_regex_traits.cpp
+REGEXPSOURCES += c_regex_traits_common.cpp
+REGEXPSOURCES += cpp_regex_traits.cpp
+REGEXPSOURCES += cregex.cpp
+REGEXPSOURCES += fileiter.cpp
+REGEXPSOURCES += posix_api.cpp
+REGEXPSOURCES += regex_.cpp
+REGEXPSOURCES += regex_debug.cpp
+REGEXPSOURCES += regex_synch.cpp
+REGEXPSOURCES += w32_regex_traits.cpp
+REGEXPSOURCES += wide_posix_api.cpp
+else
+REGEXPSOURCES  = regex.c
+endif
 
-suckmt_SOURCES = $(SUCKSOURCES)
-suckmtstatic_SOURCES = $(SUCKSOURCES)
+SUCKSOURCES += $(REGEXPSOURCES)
 
-suckmt_LDADD          = -lpthread 
-suckmt_LDFLAGS        = $(LD_OMIT_SYMBOLS)
-suckmtstatic_LDADD    = -lpthread
-suckmtstatic_LDFLAGS  = $(LD_OMIT_SYMBOLS) -static
+# Omnithread specific flags
+if OMNITHREADIMPL_POSIX
+OMNITHREADIMPL_P = posix.cc
+endif
+SUCKSOURCES += $(OMNITHREADIMPL_P)
+
+if OMNITHREADIMPL_MACH
+OMNITHREADIMPL_M = mach.cc
+endif
+SUCKSOURCES += $(OMNITHREADIMPL_M)
+
+if OMNITHREADIMPL_SOLARIS
+OMNITHREADIMPL_S = solaris.cc
+endif
+SUCKSOURCES += $(OMNITHREADIMPL_S)
+
+if OMNITHREADIMPL_NT
+OMNITHREADIMPL_N = nt.cpp
+endif
+SUCKSOURCES += $(OMNITHREADIMPL_N)
+
+CXXFLAGS += @OMNITHREADFLAGS@
+CFLAGS += @OMNITHREADFLAGS@
 
 # Extradist includes some generic files
-EXTRA_DIST  = Makefile.ed suckmt.ini.sample.in suckmt.ini.sample
+EXTRA_DIST  = Makefile.nognumake Makefile.ed suckmt.ini.sample.in suckmt.ini.sample
 EXTRA_DIST += configure.in_ VERSION
 EXTRA_DIST += suckmt.lsm.in  suckmt.lsm 
 EXTRA_DIST += suckmt.spec.in suckmt.spec
@@ -108,7 +133,7 @@ EXTRA_DIST += omnithread/posix.h    posix.cc
 EXTRA_DIST += omnithread/solaris.h  solaris.cc 
 
 # All the C++ sources and header files.
-EXTRA_DIST += SuckDefines.h config.h main.cpp tsqueue.h  
+EXTRA_DIST += SuckDefines.h main.cpp tsqueue.h  
 EXTRA_DIST += SetProcTitle.h            SetProcTitle.cpp 
 EXTRA_DIST += AsciiLineSocket.h         AsciiLineSocket.cpp 
 EXTRA_DIST += Abortable.h               Abortable.cpp 
@@ -188,7 +213,7 @@ EXTRA_DIST += posix_api.cpp
 EXTRA_DIST += regex++/libs/regex/src/primary_transform.hpp
 EXTRA_DIST += primary_transform.hpp
 EXTRA_DIST += regex++/libs/regex/src/regex.cpp
-EXTRA_DIST += regex.cpp
+EXTRA_DIST += regex_.cpp
 EXTRA_DIST += regex++/libs/regex/src/regex_debug.cpp
 EXTRA_DIST += regex_debug.cpp
 EXTRA_DIST += regex++/libs/regex/src/regex_synch.cpp
@@ -212,48 +237,50 @@ EXTRA_DIST += regex++/libs/regex/syntax.htm
 EXTRA_DIST += regex++/libs/regex/template_class_ref.htm
 EXTRA_DIST += regex++/libs/regex/traits_class_ref.htm
 
+# Sample scripts
+SAMPLESCRIPTS  = scripts/CreateNewGroup
+SAMPLESCRIPTS += scripts/NewsParams
+SAMPLESCRIPTS += scripts/PostProcessNews
+SAMPLESCRIPTS += scripts/put.news
+SAMPLESCRIPTS += scripts/put.news.sm
+SAMPLESCRIPTS += scripts/ReceiveNews
+SAMPLESCRIPTS += scripts/SendNews
+SAMPLESCRIPTS += scripts/TransferNews
+
+EXTRA_DIST += $(SAMPLESCRIPTS)
+
 # Enable Compiler warnings
 #ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
-ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
+ALLWARNINGS = -Wall -W -Wpointer-arith -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Woverloaded-virtual -Wsynth 
+
+# GCC 3.2 supports the new C++ standard templates but this code 
+# contains some older code that hasn't been ported yet.
+ALLWARNINGS += -Wno-deprecated
+
 CXXFLAGS += $(ALLWARNINGS)
 CFLAGS += 
 
 #Some flags for the regular expression library
-#CXXFLAGS += -I ./regex++ -DBOOST_RE_NO_LIB
-#CFLAGS   += -I ./regex++ -DBOOST_RE_NO_LIB
+if REGEXPP
+REGEXP_CXXFLAGS = -I ./regex++ -DBOOST_RE_NO_LIB
+REGEXP_CFLAGS   = -I ./regex++ -DBOOST_RE_NO_LIB
+else
+REGEXP_CXXFLAGS = -DSTDC_HEADERS -DREGEX_MALLOC
+REGEXP_CFLAGS   = -DSTDC_HEADERS -DREGEX_MALLOC
+endif
 
-#Some flags for the regular expression library
-CXXFLAGS += -DSTDC_HEADERS -DREGEX_MALLOC
-CFLAGS   += -DSTDC_HEADERS -DREGEX_MALLOC
+CXXFLAGS += $(REGEXP_CXXFLAGS)
+CFLAGS   += $(REGEXP_CFLAGS)
 
 #------------------------------
-# Platform dependend flags for omnithread
-# Linux ?
-if UNAME_LINUX
-OMNITHREADFLAGS = -D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
-PLATFORM=Linux
-endif
 
-# IRIX ?
-if UNAME_IRIX
-OMNITHREADFLAGS = -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority
-PLATFORM=Irix
-endif
+suckmt_SOURCES = $(SUCKSOURCES)
+suckmtstatic_SOURCES = $(SUCKSOURCES)
 
-# IRIX 64 bits ?
-if UNAME_IRIX64
-OMNITHREADFLAGS = -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority
-PLATFORM=Irix64
-endif
-
-# Solaris ?
-if UNAME_SOLARIS
-OMNITHREADFLAGS = -D__sunos__ -D__sparc__ -D__OSVERSION__=5 -DSVR4 -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10
-PLATFORM=Solaris
-endif
-
-CXXFLAGS += $(OMNITHREADFLAGS)
-CFLAGS += $(OMNITHREADFLAGS)
+suckmt_LDFLAGS        = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) 
+suckmt_LDADD          = $(OMNITHREADLINKFLAG)
+suckmtstatic_LDFLAGS  = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) -static 
+suckmtstatic_LDADD    = $(OMNITHREADLINKFLAG) 
 
 #------------------------------
 # Explicit dependency
@@ -266,25 +293,26 @@ cxxflags:
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo PLATFORM=$(PLATFORM)
 
-full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
+#full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
+full-distribution-set: all rpm bin-dist bin-static-dist 
 	
-bin-dist: all suckmt.ini.sample
+bin-dist: all suckmt.ini.sample $(DOCS) 
 	rm -rf suckmt-`cat VERSION`
 	mkdir suckmt-`cat VERSION`
 	cp suckmt.ini.sample $(DOCS) suckmt-`cat VERSION`
-	cp suckmt suckmt-`cat VERSION`/suckmt
+	cp suckmt@EXEEXT@ suckmt-`cat VERSION`/suckmt
 	tar czf suckmt-`cat VERSION`-bin-`uname --sysname`-`uname --machine`.tar.gz suckmt-`cat VERSION`
 	rm -rf suckmt-`cat VERSION`
 
-bin-static-dist: all suckmtstatic suckmt.ini.sample
+bin-static-dist: all suckmtstatic suckmt.ini.sample $(DOCS) 
 	rm -rf suckmt-`cat VERSION`
 	mkdir suckmt-`cat VERSION`
 	cp suckmt.ini.sample $(DOCS) suckmt-`cat VERSION`
-	cp suckmtstatic suckmt-`cat VERSION`/suckmt
+	cp suckmtstatic@EXEEXT@ suckmt-`cat VERSION`/suckmt
 	tar czf suckmt-`cat VERSION`-static-bin-`uname --sysname`-`uname --machine`.tar.gz suckmt-`cat VERSION`
 	rm -rf suckmt-`cat VERSION`
 
-bin-win32-dist: SuckMT.exe suckmt.ini.sample.win32
+bin-win32-dist: SuckMT.exe suckmt.ini.sample.win32 $(DOCS) 
 	rm -rf suckmt-`cat VERSION` 
 	mkdir suckmt-`cat VERSION` 
 	cp $(DOCS) suckmt-`cat VERSION` 
@@ -295,12 +323,20 @@ bin-win32-dist: SuckMT.exe suckmt.ini.sample.win32
 
 # This target makes the distribution easier to build for the end user.
 dist-hook: suckmt.lsm suckmt.spec suckmt.ini.sample
-	rm $(distdir)/configure
-	rm $(distdir)/Makefile.in
+	rm -f $(distdir)/GNUmakefile.in
+	rm -f $(distdir)/GNUmakefile
+	rm -f   $(distdir)/aclocal.m4 \
+            $(distdir)/configure \
+            $(distdir)/configure.in \
+            $(distdir)/config.status \
+            $(distdir)/config.cache \
+            $(distdir)/config.log \
+            $(distdir)/config.h.in \
+            $(distdir)/config.h
 	cp Makefile.ed $(distdir)/Makefile
 
 configure.in: configure.in_ VERSION
-	sed s/VERSION/`cat VERSION`/g < configure.in_ > configure.in
+	sed s/\#VERSION\#/`cat VERSION`/g < configure.in_ > configure.in
 
 suckmt.spec: suckmt.spec.in configure.in
 	sed "s/\#VERSION\#/$(VERSION)/g" < suckmt.spec.in > suckmt.spec
@@ -318,39 +354,47 @@ suckmt.ini.sample.win32:suckmt.ini.sample
 	sed "s/\/var\/spool\/suckmt\//C:\\\\TEMP\\\\SuckMT\\\\/g" < suckmt.ini.sample \
         | sed "s/\/tmp\//C:\\\\TEMP\\\\SuckMT\\\\/g" > suckmt.ini.sample.win32
 
-install: rpminstall 
-	if [ -s $(configdir)/suckmt.ini ];
-	then
-	    NOW=`date`
-	    cp -f $(configdir)/suckmt.ini "$(configdir)/suckmt.ini-backup-${NOW}"
-	    echo Your original $(configdir)/suckmt.ini has been backed up as "$(configdir)/suckmt.ini-backup-${NOW}"
+# This target is the rpminstall (i.e. everything) and the things the post install
+# script from the spec file takes care of.
+install: rpminstall suckmt.ini.sample 
+	if [ -s $(DESTDIR)$(configdir)/suckmt.ini ]; then \
+	    NOW=`date`; \
+	    cp -f $(DESTDIR)$(configdir)/suckmt.ini "$(DESTDIR)$(configdir)/suckmt.ini-backup-${NOW}"; \
+	    echo Your original $(DESTDIR)$(configdir)/suckmt.ini has been backed up as "$(DESTDIR)$(configdir)/suckmt.ini-backup-${NOW}"; \
 	fi
-	suckmt -init -i $(configdir)/suckmt.ini
-
-rpminstall: all suckmt.ini.sample
-	@echo "Creating directories..."
-	$(INSTALL) -d $(bindir) $(datadir) $(datadir)/in.coming $(docdir) 
-	@echo "Installing $(bin_PROGRAMS) executable..."
-	$(INSTALL_PROGRAM) $(bin_PROGRAMS) $(bindir)/$(bin_PROGRAMS)
-	@echo "Creating default configuration file..."
-	[ -d $(configdir) ] || $(INSTALL) -d $(configdir)
-	touch $(configdir)/suckmt.ini
+	./suckmt -init -i $(DESTDIR)$(configdir)/suckmt.ini
 	@echo "Installing documentation..."
-	#$(INSTALL_DATA) suckmt.1 $(man1dir)/suckmt.1
-	for f in $(DOCS); do $(INSTALL_DATA) $$f $(docdir)/$$f; done
+	for f in $(DOCS); do $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; done
+
+# This targets installs everything that needs to be installed for buidling an RPM.
+# This is everything except the ini files (which in generated in the post install) 
+# and the documentation (which is handled differently by the spec file).
+rpminstall: all 
+	@echo "Creating directories..."
+	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(datadir) $(DESTDIR)$(datadir)/in.coming $(DESTDIR)$(docdir) $(DESTDIR)$(scriptdir) $(DESTDIR)/var/log/suckmt
+	@echo "Installing $(bin_PROGRAMS) executable..."
+	$(INSTALL_PROGRAM) $(bin_PROGRAMS) $(DESTDIR)$(bindir)/$(bin_PROGRAMS)
+	@echo "Creating default configuration file..."
+	[ -d $(DESTDIR)$(configdir) ] || $(INSTALL) -d $(DESTDIR)$(configdir)
+	touch $(DESTDIR)$(configdir)/suckmt.ini
+	@echo "Installing sample scripts..."
+	for f in $(SAMPLESCRIPTS) ; do $(INSTALL_DATA) $$f $(DESTDIR)$(scriptdir)/; done
 
 rpm: CopyrightMessage suckmt.lsm suckmt.spec suckmt.ini.sample dist 
-	rpm -ta $(distdir).tar.gz  
-	mv `rpm --showrc | grep ^rpmdir | awk  '{print$$3}'`/*/$(distdir)*.rpm .
-	mv `rpm --showrc | grep ^srcrpmdir | awk  '{print$$3}'`/$(distdir)*.rpm .
+	-@mkdir -p RPM_BUILDING/BUILD  RPM_BUILDING/RPMS  RPM_BUILDING/SOURCES  RPM_BUILDING/SPECS  RPM_BUILDING/SRPMS
+	rpmbuild --define="_topdir `pwd`/RPM_BUILDING" -ta $(distdir).tar.gz  
 
 debug: CopyrightMessage configure
 	./configure --enable-debug
+	@rm -f Makefile
+	@cp Makefile.nognumake Makefile
 	@echo The makefile has been created with debugging ENABLED
 	@echo Run make again to actually start building suckmt.
 
 nodebug: CopyrightMessage configure
 	./configure --disable-debug
+	@rm -f Makefile
+	@cp Makefile.nognumake Makefile
 	@echo The makefile has been created with debugging DISABLED
 	@echo Run make again to actually start building suckmt.
 
@@ -359,7 +403,8 @@ CopyrightMessage: VERSION
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement. |"
-	@echo "| (C)2001 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "| (C)2003 by Niels Basjes - http://niels.basjes.nl |"
+	@echo "| http://oss.basjes.nl/SuckMT/                     |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"
@@ -374,8 +419,12 @@ CopyrightMessage: VERSION
 	@echo 
 
 full-revert: clean
-	rm -f configure configure.in config.status config.log config.h 
-	cp Makefile.bootstrap Makefile
+	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h*
+	rm -f GNUmakefile GNUmakefile.in 
+	rm -f suckmt.lsm suckmt.spec suckmt.ini.sample suckmt.ini.sample.win32 
+	rm -rf .deps
+	rm -rf autom4te* depcomp install-sh missing mkinstalldirs
+	cp Makefile.ed Makefile
 
 #End of the file Makefile.am
 #=========================================================================

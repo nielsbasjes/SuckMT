@@ -1,14 +1,14 @@
 [Suck MT Copyright Information]
-Author                         = SuckMT was written by ir. Niels Basjes (C) 1999-2001
+Author                         = SuckMT was written by ir. Niels Basjes (C) 1999-2003
 Suck MT License                = SuckMT is distributed under the GNU Public License.
-The Suck MT website            = http://go.to/suckmt
+The Suck MT website            = http://oss.basjes.nl/SuckMT/
 You can email the author at    = SuckMT@Basjes.nl
-This file created by version   = 0.54
-This file modified by version  = 0.54
+This file created by version   = 0.55
+This file modified by version  = 0.55
 
 [Suck MT Installation]
-Date of first run  = Tue Aug 28 20:21:42 2001
-Date of last run   = Tue Aug 28 20:21:42 2001
+Date of first run  = Wed Apr 30 01:40:23 2003
+Date of last run   = Wed Apr 30 01:40:23 2003
 Run number         = 1
 
 [Suck MT Configuration]
@@ -28,7 +28,7 @@ Logging amount [0(nothing)..7(noise)]       = 2
 
 [Kill Log File]
 Enable Kill Logfile   = False
-Kill Log Filename     = /tmp/SuckMT-KillLog.txt
+Kill Log Filename     = /var/log/suckmt/KillLog.txt
 Kill Logfile Headers  = From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID
 
 [Global Kill Rules]

@@ -1,13 +1,13 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
+//                 Copyright (C)1999-2002 by Niels Basjes
+//             SuckMT Website : http://oss.basjes.nl/SuckMT/
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2001/08/26 21:05:10 $
-//  $Revision: 1.32 $
+//  $Date: 2003/04/29 23:09:49 $
+//  $Revision: 1.38 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -22,7 +22,7 @@
 //
 //=========================================================================
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 ) 
 #endif
 
@@ -59,7 +59,8 @@ Copyright()
           << "| SuckMT " << SUCKMT_VERSION 
                         <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
-          << "| (C)2001 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+          << "| (C)2003 by Niels Basjes - http://niels.basjes.nl |" << endl
+          << "| http://oss.basjes.nl/SuckMT/                     |" << endl
           << "+==================================================+" << endl
           << flush;
 }
@@ -109,13 +110,13 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            "SuckMT was written by ir. Niels Basjes (C) 1999-2001");
+            string("SuckMT was written by ir. Niels Basjes (C) 1999-2003"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
-            "SuckMT is distributed under the GNU Public License.");
+            string("SuckMT is distributed under the GNU Public License."));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
-            "http://go.to/suckmt");
+            string("http://oss.basjes.nl/SuckMT/"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
-            "SuckMT@Basjes.nl");
+            string("SuckMT@Basjes.nl"));
     
     // Setting default values if they don't exist yet
     SET_UNDEF_STR(SUCK_COPYRIGHT,SUCK_FIRST_VERSION,  SUCKMT_VERSION);
@@ -150,12 +151,12 @@ InitializeIniFile(IniFile &settings)
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
     SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
-        "/tmp/SuckMT-KillLog.txt");
+        "/var/log/suckmt/KillLog.txt");
     SET_UNDEF_STR(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,
         "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 
     // Keep statistics
-    settings.SetValue(SUCK_COPYRIGHT,SUCK_LATEST_VERSION,SUCKMT_VERSION);
+    settings.SetValue(SUCK_COPYRIGHT,SUCK_LATEST_VERSION,string(SUCKMT_VERSION));
     settings.SetValue(SUCK_INSTALL,SUCK_LASTRUN_DATE,nowStr);
     settings.AddValue(SUCK_INSTALL,SUCK_RUN,1);
 
