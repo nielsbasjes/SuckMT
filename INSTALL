@@ -7,8 +7,8 @@ Basic Installation and use.
 2) Build and install
    cd suckmt.<VERSION>
    make install
-   A working config file (/etc/suckmt.ini) has now been created or 
-   your existing /etc/suckmt.ini has been backedup and updated.
+   A working config file (/etc/suckmt/suckmt.ini) has now been created or 
+   your existing /etc/suckmt/suckmt.ini has been backedup and updated.
 
    With a new version of suckmt it is very likely new settings have been added.
 
@@ -17,7 +17,8 @@ Basic Installation and use.
 
 3) Add the news group(s) you want.
    You can just add them with a normal text editor or you can do 
-   suckmt -i /etc/suckmt.ini -n nl.comp.os.linux
+   suckmt -n nl.comp.os.linux
+   (add the -i <configfile path> parameter if your config file is not /etc/suckmt/suckmt.ini)
 
 4) Manually edit the settings in the "Suck MT Configuration" 
    section of the suckmt.ini file. I tried to make the config 
@@ -30,8 +31,8 @@ Basic Installation and use.
    This is the hostname of the server you're downloading from.
 
    -----------
-        Storage Directory               = /etc/ppp/news/Msgs
-        Batch File                      = /etc/ppp/news/batch
+        Storage Directory               = /var/spool/suckmt/in.coming
+        Batch File                      = /var/spool/suckmt/batch
 
     The "Storage Directory" must be an existing directory that is used to 
     store the downloaded messages into. The filename "Batch File" is the 
@@ -71,7 +72,7 @@ Basic Installation and use.
     some servers and is considered to be good practise.
 
    -----------
-         Restart File  = /tmp/suckmtrestart
+         Restart File  = /var/spool/suckmt/restart
          
     This is the name of the temporary file that is used to restart 
     when suckmt was stopped before all downloads were completed.
@@ -87,7 +88,8 @@ Basic Installation and use.
     Note that some of the logged information is also sent to the syslogd.
 
 7) To actually use suckmt just run it
-   suckmt -i /etc/suckmt.ini 
+   suckmt 
+   (add the -i <configfile path> parameter if your config file is not /etc/suckmt/suckmt.ini)
    and everything is handled automagically.
 
    If suckmt is successfull it returns 0, in case of error it will return 

@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: RedHat RPM spec file.
-#  $Id: suckmt.spec.in 10 2004-12-26 19:40:18Z niels $
-#  $Date: 2004-12-26 20:40:18 +0100 (Sun, 26 Dec 2004) $
-#  $Revision: 10 $
+#  $Id: suckmt.spec.in 11 2004-12-26 20:06:37Z niels $
+#  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
+#  $Revision: 11 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #
@@ -67,11 +67,11 @@ if [ "${RPM_BUILD_ROOT}" != '/' ] ; then rm -rf ${RPM_BUILD_ROOT} ; fi
 /usr/doc/packages/suckmt/suckmt.lsm
 
 %attr(- root root) /usr/bin/suckmt
-%config /etc/suckmt.ini
+%config /etc/suckmt/suckmt.ini
 
 %post
 echo "Creating default configuration file..."
-CONFIG_FILE=/etc/suckmt.ini
+CONFIG_FILE=/etc/suckmt/suckmt.ini
 
 if [ -s ${CONFIG_FILE} ];
 then

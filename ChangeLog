@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language: English
-//  $Id: ChangeLog 10 2004-12-26 19:40:18Z niels $
-//  $Date: 2004-12-26 20:40:18 +0100 (Sun, 26 Dec 2004) $
-//  $Revision: 10 $
+//  $Id: ChangeLog 11 2004-12-26 20:06:37Z niels $
+//  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
+//  $Revision: 11 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -114,3 +114,4 @@ Version 0.58
     Updated: With Fedora Core 3 the bundeled version of Boost didn't compile any more. The nice thing of FC3 is that it comes with the most recent version of Boost as a standard RPM. SuckMT was modified to rely on this RPM.
     Updated: Copyright info updated to reflect current year.
     Updated: Changed CVS tags into SVN tags.
+    Changed: The default config file location has been changed from /etc/suckmt.ini to /etc/suckmt/suckmt.ini

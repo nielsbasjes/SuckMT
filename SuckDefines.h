@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: SuckDefines.h 6 2004-12-20 20:53:20Z niels $
-//  $Date: 2004-12-20 21:53:20 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 6 $
+//  $Id: SuckDefines.h 11 2004-12-26 20:06:37Z niels $
+//  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
+//  $Revision: 11 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -44,7 +44,7 @@
 //-------------------------------------------------------------------------
 
 #ifndef SUCK_CONFIG_FILE
-#define SUCK_CONFIG_FILE       "/etc/suckmt.ini"
+#define SUCK_CONFIG_FILE       "/etc/suckmt/suckmt.ini"
 #endif
 
 #define SUCK_COPYRIGHT         "Suck MT Copyright Information"

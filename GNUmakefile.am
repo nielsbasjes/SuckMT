@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: automake
-#  $Id: GNUmakefile.am 10 2004-12-26 19:40:18Z niels $
-#  $Date: 2004-12-26 20:40:18 +0100 (Sun, 26 Dec 2004) $
-#  $Revision: 10 $
+#  $Id: GNUmakefile.am 11 2004-12-26 20:06:37Z niels $
+#  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
+#  $Revision: 11 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #
@@ -27,7 +27,7 @@ EXTRA_PROGRAMS = suckmtstatic
 DOCS=README ChangeLog INSTALL suckmt.lsm suckmt.ini.sample AUTHORS COPYING README NEWS
 datadir=${prefix}/var/spool/suckmt
 docdir=${prefix}/usr/doc/packages/suckmt
-configdir=${prefix}/etc
+configdir=${prefix}/etc/suckmt/
 bindir=${prefix}/usr/bin
 #-------------------------
 
