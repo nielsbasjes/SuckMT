@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:42 $
-//  $Revision: 1.3 $
+//  $Date: 1999/09/30 17:35:00 $
+//  $Revision: 1.4 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -79,6 +79,13 @@ private:
     // Pre parsed cache for the kill rules
     vector<string>                  fHeadersToCheck;
     map<string,vector<killStruct*> > fKillHeaders;
+    
+    // The headername is the name of the header that is passed
+    // The headerValue is the value of the header that is passed
+    // The return value is false if this article should be killed
+    bool 
+    DoWeKeepThisArticle(string headername,string headerValue);
+    
 };
 
 DEFINE_PRINTABLE_OPERATORS(NewsKiller)

@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:49 $
-//  $Revision: 1.3 $
+//  $Date: 1999/09/30 17:56:05 $
+//  $Revision: 1.5 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -40,12 +40,11 @@ void
 Copyright()
 {
     cout << setprecision(2) // for the version displaying
-         << "+=================================================+" << endl
+         << "+==================================================+" << endl
          << "| Suck MT "<< SUCKMT_VERSION <<" - A Multi Threaded suck replacement |" << endl
-         << "+=================================================+" << endl
-         << "| (C) 1999 by ir. Niels Basjes                    |" << endl
-         << "| http://www.wirehub.nl/~basjesn/suckmt           |" << endl
-         << "+=================================================+" << endl;
+         << "+--------------------------------------------------+" << endl
+         << "| (C)1999 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+         << "+==================================================+" << endl;
 }
 
 //-------------------------------------------------------------------------
@@ -53,13 +52,13 @@ Copyright()
 void
 Usage()
 {
-    cout << "+=================================================+" << endl
-         << "| Usage: suckmt [-i <file>] [-n <group>] [-init]  |" << endl
-         << "| -i <filename>   Use specified file as ini file  |" << endl
-         << "| -n <groupname>  Add the specied group           |" << endl
-         << "| -init           Fill ini file with defaults     |" << endl
-         << "| -q              quiet: don't show the progress  |" << endl
-         << "+=================================================+" << endl;
+    cout << "+==================================================+" << endl
+         << "| Usage: suckmt [-i <file>] [-n <group>] [-init]   |" << endl
+         << "| -i <filename>   Use specified file as ini file   |" << endl
+         << "| -n <groupname>  Add the specied group            |" << endl
+         << "| -init           Fill ini file with defaults      |" << endl
+         << "| -q              quiet: don't show the progress   |" << endl
+         << "+==================================================+" << endl;
 }
 
 //-------------------------------------------------------------------------

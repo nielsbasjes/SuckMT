@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:44 $
-//  $Revision: 1.3 $
+//  $Date: 1999/09/30 17:35:02 $
+//  $Revision: 1.4 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -18,7 +18,7 @@
 //-------------------------------------------------------------------------
 
 #ifndef SUCKMT_VERSION
-#define SUCKMT_VERSION "0.3c"
+#define SUCKMT_VERSION "0.3d"
 #endif 
 
 //-------------------------------------------------------------------------

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:40 $
-//  $Revision: 1.3 $
+//  $Date: 1999/09/30 17:34:59 $
+//  $Revision: 1.4 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -96,7 +96,7 @@ NewsKiller::NewsKiller(IniFile * settings)
 
                             //  man strtol says: "Thus, if *nptr is not `\0' but **endptr 
                             //  is `\0' on return, the entire string is valid.
-                            if (*endptr != 0x00 /*|| errno == ERANGE*/ )
+                            if (*endptr == 0x00 )
                                 killer->count = currentNumberValue;
                         }
                     }
@@ -144,13 +144,17 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
         // ----------------
         case NA_ONLY_XOVER:
             {
+                // Check if this article isn't already downloaded from
+                // an other newsgroup
                 if (!StoreMessageID(article->fMessageID))
                 {
-                    STAT_AddValue("Articles Killed",1);
-                    //cout << "KILLED DUPLICATE" << endl;
+                    STAT_AddValue("Articles Skipped",1);
+                    //cout << "SKIPPED DUPLICATE" << endl;
                     return false;
                 }
 
+                //=========================================
+                // Check the maximum number of lines limit.
                 long maxLines;
                 if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
                                         SUCK_MAX_LINES,
@@ -165,6 +169,8 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                     }
                 }
 
+                //=========================================
+                // Check the maximum number of bytes limit.
                 long maxBytes;
                 if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
                                         SUCK_MAX_BYTES,
@@ -178,6 +184,22 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                         return false;
                     }
                 }
+
+                //==================================================
+                // Check for From lines to be killed
+                if (!DoWeKeepThisArticle("From",article->fSender))
+                {
+//cout << endl << "KILLED From:" << article->fSender << endl << flush;
+                    return false;
+                }
+
+                //==================================================
+                // Check for From lines to be killed
+                if (!DoWeKeepThisArticle("Subject",article->fSubject))
+                {
+//cout << endl << "KILLED Subject:" << article->fSubject << endl << flush;
+                    return false;
+                }
                                 
                 return true;
             }
@@ -185,6 +207,8 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
         // ----------------
         case NA_ONLY_HEADER:
             {
+                //==========================================
+                // Check the maximum number of groups limit.
                 long maxGroups;
                 if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
                                         SUCK_MAX_GROUPS,
@@ -199,40 +223,27 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                     }
                 }
                 
-                
+                //=========================================
+                // Check for the headers to kill .
                 for(vector<string>::const_iterator
                     headerIter  = fHeadersToCheck.begin();
                     headerIter != fHeadersToCheck.end();
                     headerIter ++)
                 {
-                    string headerValue;
-                    if (article->GetHeaderField(*headerIter,headerValue))
+                    string headerName = *headerIter;
+                    
+                    if (headerName == "From"    ||
+                        headerName == "Subject")
                     {
-                        vector<killStruct *> killers = fKillHeaders[*headerIter];
-
-                        for(vector<killStruct *>::const_iterator
-                            killIter  = killers.begin();
-                            killIter != killers.end();
-                            killIter ++)
-                        {
-                            killStruct * killer = *killIter;
-                            if (headerValue.find(killer->valueToKill) != headerValue.npos)
-                            {   // Found a matching kill entry
-                                valuesMutex.lock();
-                                killer->lastOcurrance = fNow;
-                                killer->count ++;
-                                
-                                char countstr[50];
-                                sprintf(countstr,"%ld",killer->count);
-                                fSettings->SetValue(SUCK_KILL_HEADERS,
-                                                    killer->keyName,
-                                                    killer->lastOcurrance + " ; " + countstr);
-                                valuesMutex.unlock();
-//cout << endl << "KILLED " << *headerIter << ":" << headerValue << endl << flush;
-                                STAT_AddValue("Articles Killed",1);
-                                return false;
-                            }
-                        }
+//cout << endl << "OPTIMIZED SKIP "<< headerName<< endl << flush;
+                        continue; // These two headers have already been checked.
+                    }
+                    
+                    string headerValue;
+                    if (article->GetHeaderField(headerName,headerValue))
+                    {
+                        if (!DoWeKeepThisArticle(headerName,headerValue))
+                            return false;
                     }
                 }
                 return true;
@@ -242,6 +253,39 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
         case NA_COMPLETE: 
             return true; // There is no need to kill any more 
                          // if we have already downloaded the complete message
+    }
+    
+    return true;
+}
+
+//-------------------------------------------------------------------------
+bool 
+NewsKiller::DoWeKeepThisArticle(string headerName,string headerValue)
+{
+    vector<killStruct *> killers = fKillHeaders[headerName];
+
+    for(vector<killStruct *>::const_iterator
+        killIter  = killers.begin();
+        killIter != killers.end();
+        killIter ++)
+    {
+        killStruct * killer = *killIter;
+        if (headerValue.find(killer->valueToKill) != headerValue.npos)
+        {   // Found a matching kill entry
+            valuesMutex.lock();
+            killer->lastOcurrance = fNow;
+            killer->count ++;
+
+            char countstr[50];
+            sprintf(countstr,"%ld",killer->count);
+            fSettings->SetValue(SUCK_KILL_HEADERS,
+                                killer->keyName,
+                                killer->lastOcurrance + " ; " + countstr);
+            valuesMutex.unlock();
+cout << endl << "KILLED " << headerName << ":" << headerValue << endl << flush;
+            STAT_AddValue("Articles Killed",1);
+            return false;
+        }
     }
     
     return true;
