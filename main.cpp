@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: main.cpp 7 2004-12-20 22:10:29Z niels $
-//  $Date: 2004-12-20 23:10:29 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 7 $
+//  $Id: main.cpp 8 2004-12-20 22:15:34Z niels $
+//  $Date: 2004-12-20 23:15:34 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 8 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -58,7 +58,7 @@ Copyright()
           << "| SuckMT " << SUCKMT_VERSION 
                         <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
-          << "| (C)2005 by Niels Basjes http://suckmt.basjes.nl  |" << endl
+          << "| (C)2005 by Niels Basjes  http://suckmt.basjes.nl |" << endl
           << "+==================================================+" << endl
           << flush;
 }

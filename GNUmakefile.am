@@ -274,7 +274,7 @@ CopyrightMessage: VERSION
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement. |"
-	@echo "| (C)2002 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "| (C)2005 by Niels Basjes  http://suckmt.basjes.nl |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"

@@ -24,7 +24,7 @@
 all: 
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement  |"
-	@echo "| (C)2005 by Niels Basjes http://suckmt.basjes.nl  |"
+	@echo "| (C)2005 by Niels Basjes  http://suckmt.basjes.nl |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"
