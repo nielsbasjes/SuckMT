@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/04 11:13:23 $
-//  $Revision: 1.15 $
+//  $Date: 2000/10/22 22:06:48 $
+//  $Revision: 1.20 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -82,14 +85,20 @@ NNTPProxy::NNTPProxy(IniFile *settings)
     //----------
     // Get the server ID message
     string serverIdentification = "An unknown fatal error occurred.";
-    
-    if (nntp->GetResponse(serverIdentification) != 200)
+
+    switch (nntp->GetResponse(serverIdentification))
     {
+    case 200: // Posting Ok
+        break;
+    case 201: // No Posting ... also Ok
+        break;
+    default:  // Anything else ... not Ok
         Linfo << "Connection " << fConnectionNr 
               << " FAILED: \"" 
               << serverIdentification << "\"" << endl << flush;
         delete (nntp);
         nntp = NULL;
+        break;
     }
 
     //----------
@@ -310,6 +319,26 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
     {
 //        Linfo << "There are no new messages present in " << groupName << endl << flush;
         return 2; // No messages in this group at all.    
+    }
+
+    long maximumMessages          = -1;
+    long maximumMessagesDownload  = -1;
+    if (fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
+                            SUCK_MAX_MSG_THRESHOLD,
+                            maximumMessages))
+    {
+        if (maximumMessages > 0 && (last - maximumMessages > first))
+        {
+            if (!fSettings->GetValue(SUCK_GLOBAL_KILL_RULES,
+                                     SUCK_MAX_MSG_DOWNLOAD,
+                                     maximumMessagesDownload))
+                maximumMessagesDownload = maximumMessages;
+            
+            Linfo << "Downloading only the last " << maximumMessagesDownload 
+                  << " messages of " << last - first << " messages available in " << groupName 
+                  << " (threshold is " << maximumMessages << ")." << endl << flush;
+            first = last - maximumMessagesDownload;
+        }
     }
     
     if (first == last)

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/04 11:22:36 $
-//  $Revision: 1.9 $
+//  $Date: 2000/10/22 16:29:16 $
+//  $Revision: 1.11 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -47,10 +50,10 @@ static char THIS_FILE[]=__FILE__;
 
 //------------------------------------------------------------------------
 
-#ifdef WIN32
 /* remove all alarm() calls neatly */
 #   define alarm(x)
 
+#ifdef WIN32
 #   define SocketRead(x,y,z) recv(x,y,z,0)
 #   define SocketWrite(x,y,z) send(x,y,z,0)
 #   define strcasecmp(x,y) stricmp(x,y)

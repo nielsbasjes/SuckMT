@@ -56,3 +56,17 @@ Version 0.52
     Fixed: Didn't do a closesocket at the end.
     Changed: The NNTPGetArticleCommand can now be restarted when the connection failed.
     Changed: The way the connections got their number for the messages.
+Version 0.53
+    Fixed: Uninitialized Memory Read in regular expression library.
+    Changed: Can now use a "no posting" server (Thanks to Stephane Lentz)
+    Updated: Some unimportant code layout stuff.
+    Added: Compiler flags for IRIX (not fully tested).
+    Added: The ini file can now contain comments that will be written back again.
+    Fixed: forgotten #include <unistd.h> in DuplicatesChecker.cpp which didn't show up in SuSE 6.1
+    Added: Maximum messages per group download feature if over limit.
+    Changed: Default config file (if nothing is specified) is now /etc/suckmt.ini
+    Changed: Default value for "Send MODE READER to the server" is now True.
+    Improved: Installation prcedure now automagically includes a working config file.
+    Fixed ?: Removed alarm call from GenericSocket.cpp, perhaps this solves the SIG_ALRM problem.
+    Fixed ?: Removed regfree call from HeaderMatcher.cpp, perhaps this solves some unexplained crashes. It does introduce memory leaks at exit.
+    Fixed: The mutexes in MultiStream.cpp which still allowed some race conditions.

@@ -329,6 +329,10 @@ SOURCE=.\ChangeLog
 # End Source File
 # Begin Source File
 
+SOURCE=.\config.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\COPYING
 # End Source File
 # Begin Source File
@@ -354,6 +358,10 @@ SOURCE=.\suckmt.lsm
 # Begin Source File
 
 SOURCE=.\TODO
+# End Source File
+# Begin Source File
+
+SOURCE=.\VERSION
 # End Source File
 # End Group
 # End Target

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 2000 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : MultiStream.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/04 10:44:54 $
-//  $Revision: 1.3 $
+//  $Date: 2000/10/23 18:15:15 $
+//  $Revision: 1.7 $
 //  $RCSfile: MultiStream.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -39,7 +42,7 @@
 #include <fstream.h>
 #include "MultiStream.h"
 #include "TraceLog.h"
-#include "omnithread.h"
+#include <omnithread.h>
 
 //#define _DEBUG_MULTISTREAM_ 1
 
@@ -130,7 +133,7 @@ static void Logger(int logLevel, long flags, string type, string message)
 {
     if (logLevel <= CurrentLoggingLevel)
     {
-        omni_mutex_lock lock(loggerMutex);
+//        omni_mutex_lock lock(loggerMutex);
         int thisThread = GetThisThreadId();
         bool prependNewLine = false;
         
@@ -218,6 +221,7 @@ Multibuf::~Multibuf()
 int 
 Multibuf::underflow()
 {
+    omni_mutex_lock lock(loggerMutex);
     D(cout << "UNDERFLOW" << endl << flush;)
     return 500;
 }
@@ -226,6 +230,7 @@ Multibuf::underflow()
 int 
 Multibuf::overflow(int ch)
 {
+    omni_mutex_lock lock(loggerMutex);
     D(cout << "OVERFLOW(\'" << (char)ch << "\')" << endl << flush;)
     fBuffers[GetThisThreadId()] += (char)ch;
     return !EOF;
@@ -236,6 +241,7 @@ Multibuf::overflow(int ch)
 int 
 Multibuf::xsputn(char const *str, int size)
 {
+    omni_mutex_lock lock(loggerMutex);
     D(cout << "XSPUTN(\"" << str << "\"," << size << ")" << endl << flush;)
     string realStr(str,size);
     fBuffers[GetThisThreadId()] += realStr;
@@ -246,6 +252,7 @@ Multibuf::xsputn(char const *str, int size)
 int 
 Multibuf::sync()
 {
+    omni_mutex_lock lock(loggerMutex);
     int thisThreadId = GetThisThreadId();
     D(cout << "SYNC: buffer = \""<< fBuffers[thisThreadId].c_str() << "\"." << endl << flush;)
     if (fBuffers[thisThreadId] == "")
@@ -261,7 +268,7 @@ MultiStream_pbase::MultiStream_pbase(int logLevel,string type, long flags)
     :fSbuf(logLevel,type,flags)
 {
     // Nothing else to do
-};
+}
 
 //-------------------------------------------------------------------------
 

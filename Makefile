@@ -6,8 +6,8 @@
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 2000/03/20 21:32:35 $
-#  $Revision: 1.13 $
+#  $Date: 2000/10/22 19:13:20 $
+#  $Revision: 1.15 $
 #  $RCSfile: Makefile.ed,v $
 #  $Author: niels $
 #=========================================================================
@@ -25,7 +25,7 @@ all: CopyrightMessage TheMakefile
 	${MAKE}
 
 install: CopyrightMessage TheMakefile
-	${MAKE} dist
+	${MAKE} install
 
 debug: CopyrightMessage configure
 	./configure --enable-debug
@@ -62,7 +62,7 @@ CopyrightMessage: VERSION
 	@echo "+==================================================+"
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
-	@echo "| Suck MT `cat VERSION` - A Multi Threaded suck replacement |"
+	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement  |"
 	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
@@ -70,8 +70,9 @@ CopyrightMessage: VERSION
 	@echo 
 	@echo "Available targets to build:"
 	@echo "- all     : Just build it all."
+	@echo "- install : Build and install."
 	@echo "- debug   : ENABLE  source debugging for all following compile sessions."
 	@echo "- nodebug : DISABLE source debugging for all following compile sessions."
-	@echo "- dist    : Create a suckmt.`cat VERSION`.tar.gz source distribution."
+	@echo "- dist    : Create a suckmt-`cat VERSION`.tar.gz source distribution."
 	@echo "- rpm     : Create an RPM and SRPM for suckmt."
 	@echo 

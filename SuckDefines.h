@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/28 20:06:29 $
-//  $Revision: 1.17 $
+//  $Date: 2000/10/22 20:18:08 $
+//  $Revision: 1.20 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -31,6 +34,7 @@
 //-------------------------------------------------------------------------
 
 #ifdef VERSION
+#undef  SUCKMT_VERSION 
 #define SUCKMT_VERSION VERSION
 #else
 #ifndef SUCKMT_VERSION
@@ -41,7 +45,7 @@
 //-------------------------------------------------------------------------
 
 #ifndef SUCK_CONFIG_FILE
-#define SUCK_CONFIG_FILE       "suckmt.ini"
+#define SUCK_CONFIG_FILE       "/etc/suckmt.ini"
 #endif
 
 #define SUCK_COPYRIGHT         "Suck MT Copyright Information"
@@ -76,6 +80,8 @@
 #define SUCK_MAX_LINES         "Maximum Lines in a Message"
 #define SUCK_MAX_BYTES         "Maximum Bytes in a Message"
 #define SUCK_MAX_GROUPS        "Maximum Groups in a Message"
+#define SUCK_MAX_MSG_THRESHOLD "Maximum messages per newsgroup threshold"
+#define SUCK_MAX_MSG_DOWNLOAD  "Only download N messages when over threshold"
 
 #define SUCK_KILL_HEADERS      "Kill Headers"
 #define SUCK_KEEP_HEADERS      "Keep Headers"

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 2000 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/02 20:51:28 $
-//  $Revision: 1.11 $
+//  $Date: 2000/07/08 14:13:00 $
+//  $Revision: 1.13 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -28,7 +31,7 @@
 #include <list>
 #include <string>
 #include <iostream.h>
-#include "omnithread.h"
+#include <omnithread.h>
 
 //-------------------------------------------------------------------------
 
@@ -231,6 +234,7 @@ private:
             // in alphabetical order we need an extra storage 
             // to keep the current order
             list<string> variablesOrder;
+            list<string> realVariablesOrder; // Without the comments
             unsigned int maxVariableNameLen;
     };
     map <string,Section*> fSections;

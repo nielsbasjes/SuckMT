@@ -1,13 +1,13 @@
 dnl =========================================================================
 dnl                    Copyright (C) 2000 by Niels Basjes
-dnl                   Suck MT Website: http://go.to/suckmt
+dnl                   SuckMT Website: http://go.to/suckmt
 dnl                         Author: SuckMT@Basjes.nl
 dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2000/03/19 21:31:37 $
-dnl   $Revision: 1.9 $
+dnl   $Date: 2000/07/08 14:11:55 $
+dnl   $Revision: 1.10 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -40,7 +40,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 dnl Detect the operating system and set the correct flag
 
 AM_CONDITIONAL(UNAME_LINUX, test x`uname` = xLinux)
-AM_CONDITIONAL(UNAME_IRIX,  test x`uname` = xIrix)
+AM_CONDITIONAL(UNAME_IRIX,  test x`uname` = xIRIX)
 
 dnl Checks for programs.
 AC_PROG_CC

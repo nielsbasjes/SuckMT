@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : StatisticsKeeper.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/03 18:41:13 $
-//  $Revision: 1.5 $
+//  $Date: 2000/05/05 20:03:12 $
+//  $Revision: 1.6 $
 //  $RCSfile: StatisticsKeeper.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -17,6 +17,9 @@
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
 //
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
+//
 //=========================================================================
 
 #ifndef __STATISTICSKEEPER_H__
@@ -25,7 +28,7 @@
 //-------------------------------------------------------------------------
 
 #include <map>
-#include "omnithread.h"
+#include <omnithread.h>
 #include "Printable.h"
 #include "Abortable.h"
 

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : DuplicatesChecker.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/04 10:33:21 $
-//  $Revision: 1.7 $
+//  $Date: 2000/10/22 19:03:55 $
+//  $Revision: 1.10 $
 //  $RCSfile: DuplicatesChecker.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -17,6 +17,9 @@
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
 //
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
+//
 //=========================================================================
 
 #ifdef WIN32
@@ -24,6 +27,10 @@
 #endif
 
 //-------------------------------------------------------------------------
+
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 #include <time.h>
 #include <stdlib.h>

@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 2000 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:54 $
-//  $Revision: 1.12 $
+//  $Date: 2000/10/20 21:30:44 $
+//  $Revision: 1.15 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -17,6 +17,9 @@
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
 //
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
+//
 //=========================================================================
 
 #ifdef WIN32
@@ -24,6 +27,12 @@
 #endif
 
 //-------------------------------------------------------------------------
+
+#ifdef WIN32
+#include <strstrea.h>
+#else
+#include <strstream.h>
+#endif
 
 #include <fstream.h>
 #include <stdio.h>  
@@ -36,6 +45,8 @@
 //-------------------------------------------------------------------------
 
 static MultiStream LiniRead(LOGS_ALWAYS,"INI-READ",TO_COUT|TO_FILE);
+#define COMMENT_HEADER_SECTION_NAME  "Comment Header Section"
+
 
 //-------------------------------------------------------------------------
 
@@ -75,6 +86,8 @@ IniFile::ReadFile(string filename)
     char buffer[10000];
     int lineNr = 0;
 
+    int commentNr = 0; // Used to create unique commentNames
+
     while(!inFile.eof())
     {
         lineNr++;
@@ -101,8 +114,29 @@ IniFile::ReadFile(string filename)
         if (*(work_buffer.begin()) == '#')
         {   
             // This is a comment line
-            // Comments are NOT stored an will NOT be 
-            // written back to any new file.
+
+            commentNr ++;
+            strstream commentNameStr;
+            commentNameStr << "#" << commentNr << ends;
+            char * tmpCommentName = commentNameStr.str();
+            string commentName(tmpCommentName);
+            delete tmpCommentName;
+
+            Section * commentSection = currentSection;
+
+            if (currentSection == NULL)
+                // Get or Make a dummy section for header comments
+                commentSection = AddSection(COMMENT_HEADER_SECTION_NAME);
+
+            if (!SetValue(commentSection,commentName,work_buffer))
+            {
+                Lerror << "Unable to set or create the comment \"" << commentName 
+                       << "\" with content \"" << work_buffer.c_str() 
+                       << "\" in file \"" << filename.c_str() 
+                       << "\" at line " << lineNr << "." << endl << flush;
+                return false;
+            }
+            
             continue;
         }
 
@@ -175,7 +209,6 @@ IniFile::ReadFile(string filename)
                 }
             }
 
-
             if (showWhatIsRead)
             {
                 LiniRead << settingName << " = " <<  settingValue << endl << flush;
@@ -209,17 +242,7 @@ IniFile::WriteFile(string filename)
 
     if (!outFile.good())
         return false;
-
-//    outFile 
-//      << "#=====================================" << endl
-//      << "# This file was read and written using" << endl
-//      << "# Niels Basjes` C++ IniFile class     " << endl
-//      << "#-------------------------------------" << endl
-//      << "# (C) 2000 by ir. Niels Basjes        " << endl
-//      << "# http://www.wirehub.nl/~basjesn      " << endl
-//      << "#=====================================" << endl
-//      << endl;
-    
+   
     return Print(outFile);
 }
 
@@ -247,7 +270,8 @@ IniFile::Print(ostream & os)
             return false;
         }
         
-        os << "[" << (*sectionIter).c_str() << "]" << endl;
+        if ((*sectionIter) != COMMENT_HEADER_SECTION_NAME)
+            os << "[" << (*sectionIter).c_str() << "]" << endl;
         
         int sectionMaxVarNameLen = thisSection->maxVariableNameLen;
         
@@ -255,12 +279,19 @@ IniFile::Print(ostream & os)
             valuesIter != thisSection->variablesOrder.end();
             valuesIter ++)
         {
-            os << (*valuesIter).c_str();
-            for (int i  = valuesIter->length() ; 
-                     i <= sectionMaxVarNameLen ; 
-                     i++)
-                 os << " ";
-            os << " = " << ((*thisSection)[*valuesIter]).c_str() << endl;
+            if ((*valuesIter)[0] == '#')
+            { // This is a comment
+                os << ((*thisSection)[*valuesIter]).c_str() << endl;
+            }
+            else
+            { // This is a regular setting
+                os << (*valuesIter).c_str();
+                for (int i  = valuesIter->length() ; 
+                         i <= sectionMaxVarNameLen ; 
+                         i++)
+                     os << " ";
+                os << " = " << ((*thisSection)[*valuesIter]).c_str() << endl;
+            }
         }
         os << endl;
     }
@@ -431,7 +462,7 @@ IniFile::GetVariableNames(string section,list<string> &variableNames)
         return false; // Section doesn't exist
     
     variableNames.clear();
-    variableNames = theSection->variablesOrder;
+    variableNames = theSection->realVariablesOrder;
 
     return true;
 }
@@ -594,11 +625,16 @@ IniFile::SetValue(Section * theSection, string name, string value)
     if (theSection == NULL)
         return false;
     
-    // If it doesn't exist yte we need to add an entry to the
+    // If it doesn't exist yet we need to add an entry to the
     // variables order thingy. 
     if (theSection->find(name) == theSection->end())
     {
         theSection->variablesOrder.push_back(name);
+        if (name[0] != '#')
+        {   // If it's not a comment then add it here aswell
+            theSection->realVariablesOrder.push_back(name);
+        }
+
         if (theSection->maxVariableNameLen < name.length())
         {
             theSection->maxVariableNameLen = name.length();
@@ -742,10 +778,22 @@ IniFile::EraseValue(string section, string name)
         if (*listIter == name)
         {
             theSection->variablesOrder.erase(listIter);
+            break;
+        }
+    }    
+
+    for(listIter  = theSection->realVariablesOrder.begin();
+        listIter != theSection->realVariablesOrder.end();
+        listIter ++)
+    {
+        if (*listIter == name)
+        {
+            theSection->realVariablesOrder.erase(listIter);
             return true;
         }
     }    
-   
+        
+
     // We shouldn't get here
     
     return false;

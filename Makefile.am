@@ -1,13 +1,13 @@
 #=========================================================================
 #                   Copyright (C) 2000 by Niels Basjes
-#                  Suck MT Website: http://go.to/suckmt
+#                  SuckMT Website: http://go.to/suckmt
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2000/04/02 21:18:55 $
-#  $Revision: 1.24 $
+#  $Date: 2000/10/23 20:28:22 $
+#  $Revision: 1.33 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -22,6 +22,11 @@
 bin_PROGRAMS = suckmt 
 EXTRA_PROGRAMS = suckmtstatic
 
+DOCS=README ChangeLog INSTALL suckmt.lsm suckmt.ini.sample AUTHORS COPYING README NEWS
+datadir=${prefix}/var/spool/suckmt
+docdir=${prefix}/usr/doc/packages/suckmt
+configdir=${prefix}/etc
+bindir=${prefix}/usr/bin
 #-------------------------
 
 if DEBUG
@@ -75,13 +80,13 @@ suckmtstatic_LDADD    = -lpthread
 suckmtstatic_LDFLAGS  = $(LD_OMIT_SYMBOLS) -static
 
 # Extradist includes some generic files
-EXTRA_DIST  = Makefile.ed suckmt.ini.sample 
+EXTRA_DIST  = Makefile.ed suckmt.ini.sample.in suckmt.ini.sample
 EXTRA_DIST += configure.in_ VERSION
 EXTRA_DIST += suckmt.lsm.in  suckmt.lsm 
 EXTRA_DIST += suckmt.spec.in suckmt.spec
 
 # The MS-Visual Studio Specific Project/Make files.
-EXTRA_DIST += SuckMT.dsp SuckMT.dsw SuckMT.plg 
+EXTRA_DIST += SuckMT.dsp SuckMT.dsw 
 
 # The omni_thread sources for all platforms
 EXTRA_DIST += omnithread.h 
@@ -136,11 +141,11 @@ PLATFORM=Linux
 endif
 
 # IRIX ?
-# IRIX FLAGS TO BE CHECKED
 if UNAME_IRIX
-OMNITHREADFLAGS = -D__irix__ -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
+OMNITHREADFLAGS = -D__mips__ -D__irix__ -D__OSVERSION__=6  -DUsePthread -D_REENTRANT -DPthreadDraftVersion=10 -DPthreadSupportThreadPriority
 PLATFORM=Irix
 endif
+
 
 CXXFLAGS += $(OMNITHREADFLAGS)
 CFLAGS += $(OMNITHREADFLAGS)
@@ -156,9 +161,35 @@ cxxflags:
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo PLATFORM=$(PLATFORM)
 
+full-distribution-set: all rpm bin-dist bin-static-dist bin-win32-dist
+
+bin-dist: all suckmt.ini.sample
+	rm -rf suckmt-`cat VERSION`
+	mkdir suckmt-`cat VERSION`
+	cp suckmt.ini.sample $(DOCS) suckmt-`cat VERSION`
+	cp suckmt suckmt-`cat VERSION`/suckmt
+	tar czf suckmt-`cat VERSION`-bin-`uname --sysname`-`uname --machine`.tar.gz suckmt-`cat VERSION`
+	rm -rf suckmt-`cat VERSION`
+
+bin-static-dist: all suckmtstatic suckmt.ini.sample
+	rm -rf suckmt-`cat VERSION`
+	mkdir suckmt-`cat VERSION`
+	cp suckmt.ini.sample $(DOCS) suckmt-`cat VERSION`
+	cp suckmtstatic suckmt-`cat VERSION`/suckmt
+	tar czf suckmt-`cat VERSION`-static-bin-`uname --sysname`-`uname --machine`.tar.gz suckmt-`cat VERSION`
+	rm -rf suckmt-`cat VERSION`
+
+bin-win32-dist: SuckMT.exe suckmt.ini.sample.win32
+	rm -rf suckmt-`cat VERSION` 
+	mkdir suckmt-`cat VERSION` 
+	cp $(DOCS) suckmt-`cat VERSION` 
+	cp suckmt.ini.sample.win32 suckmt-`cat VERSION`/suckmt.ini.sample 
+	cp SuckMT.exe suckmt-`cat VERSION` 
+	zip suckmt-`cat VERSION`-win32.zip suckmt-`cat VERSION`/*
+	rm -rf suckmt-`cat VERSION` 
 
 # This target makes the distribution easier to build for the end user.
-dist-hook: suckmt.lsm suckmt.spec
+dist-hook: suckmt.lsm suckmt.spec suckmt.ini.sample
 	rm $(distdir)/configure
 	rm $(distdir)/Makefile.in
 	cp Makefile.ed $(distdir)/Makefile
@@ -174,10 +205,39 @@ suckmt.lsm: suckmt.lsm.in configure.in
         | sed "s/\#VERSION\#/$(VERSION)/g" \
         | sed "s/\#DATE\#/`date +%Y-%m-%d`/g" > suckmt.lsm
 
-rpm: CopyrightMessage suckmt.lsm suckmt.spec dist
-	rpm -ta $(distdir).tar.gz 
-	mv /usr/src/*/RPMS/i386/suckmt*.rpm .
-	mv /usr/src/*/SRPMS/suckmt*.rpm .
+suckmt.ini.sample: suckmt.ini.sample.in configure.in suckmt 
+	cp -f suckmt.ini.sample.in suckmt.ini.sample
+	./suckmt -init -i ./suckmt.ini.sample
+
+suckmt.ini.sample.win32:suckmt.ini.sample
+	sed "s/\/var\/spool\/suckmt\//C:\\\\TEMP\\\\SuckMT\\\\/g" < suckmt.ini.sample \
+        | sed "s/\/tmp\//C:\\\\TEMP\\\\SuckMT\\\\/g" > suckmt.ini.sample.win32
+
+install: rpminstall 
+	if [ -s $(configdir)/suckmt.ini ];
+	then
+	    NOW=`date`
+	    cp -f $(configdir)/suckmt.ini "$(configdir)/suckmt.ini-backup-${NOW}"
+	    echo Your original $(configdir)/suckmt.ini has been backed up as "$(configdir)/suckmt.ini-backup-${NOW}"
+	fi
+	suckmt -init -i $(configdir)/suckmt.ini
+
+rpminstall: all suckmt.ini.sample
+	@echo "Creating directories..."
+	$(INSTALL) -d $(bindir) $(datadir) $(datadir)/in.coming $(docdir) 
+	@echo "Installing $(bin_PROGRAMS) executable..."
+	$(INSTALL_PROGRAM) $(bin_PROGRAMS) $(bindir)/$(bin_PROGRAMS)
+	@echo "Creating default configuration file..."
+	[ -d $(configdir) ] || $(INSTALL) -d $(configdir)
+	touch $(configdir)/suckmt.ini
+	@echo "Installing documentation..."
+	#$(INSTALL_DATA) suckmt.1 $(man1dir)/suckmt.1
+	for f in $(DOCS); do $(INSTALL_DATA) $$f $(docdir)/$$f; done
+
+rpm: CopyrightMessage suckmt.lsm suckmt.spec suckmt.ini.sample dist 
+	rpm -ta $(distdir).tar.gz  
+	mv `rpm --showrc | grep ^rpmdir | awk  '{print$$3}'`/*/$(distdir)*.rpm .
+	mv `rpm --showrc | grep ^srcrpmdir | awk  '{print$$3}'`/$(distdir)*.rpm .
 
 debug: CopyrightMessage configure
 	./configure --enable-debug
@@ -193,7 +253,7 @@ CopyrightMessage: VERSION
 	@echo "+==================================================+"
 	@echo "| ----------- GETTING READY TO BUILD ------------- |"
 	@echo "+==================================================+"
-	@echo "| Suck MT `cat VERSION` - A Multi Threaded suck replacement |"
+	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement. |"
 	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
@@ -201,11 +261,16 @@ CopyrightMessage: VERSION
 	@echo 
 	@echo "Available targets to build:"
 	@echo "- all     : Just build it all."
+	@echo "- install : Build and install."
 	@echo "- debug   : ENABLE  source debugging for all following compile sessions."
 	@echo "- nodebug : DISABLE source debugging for all following compile sessions."
-	@echo "- dist    : Create a suckmt.`cat VERSION`.tar.gz source distribution."
+	@echo "- dist    : Create a suckmt-`cat VERSION`.tar.gz source distribution."
 	@echo "- rpm     : Create an RPM and SRPM for suckmt."
 	@echo 
+
+full-revert: clean
+	rm -f configure configure.in config.status config.log config.h 
+	cp Makefile.bootstrap Makefile
 
 #End of the file Makefile.am
 #=========================================================================

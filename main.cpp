@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
-//                  Suck MT Website: http://go.to/suckmt
+//                 Copyright (C)1999-2000 by Niels Basjes
+//                  SuckMT Website : http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/04/03 18:41:15 $
-//  $Revision: 1.23 $
+//  $Date: 2000/10/22 20:18:08 $
+//  $Revision: 1.29 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -16,6 +16,9 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation; either version 2 of the License, or
 //   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
 //
 //=========================================================================
 
@@ -53,8 +56,8 @@ Copyright()
     Lsyslog << "Starting SuckMT v" << SUCKMT_VERSION << endl << flush;
 
     Lcout << "+==================================================+" << endl
-          << "| Suck MT " << SUCKMT_VERSION 
-                         <<" - A Multi Threaded suck replacement |" << endl
+          << "| SuckMT " << SUCKMT_VERSION 
+                        <<" - A Multi Threaded suck replacement. |" << endl
           << "+--------------------------------------------------+" << endl
           << "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |" << endl
           << "+==================================================+" << endl
@@ -97,9 +100,9 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            "Suck MT was written by ir. Niels Basjes (C) 1999-2000");
+            "SuckMT was written by ir. Niels Basjes (C) 1999-2000");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
-            "Suck MT is distributed under the GNU Public License.");
+            "SuckMT is distributed under the GNU Public License.");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
             "http://go.to/suckmt");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
@@ -114,18 +117,26 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_NNTP_PASSWORD,   "");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DEBUG_SOCKET ,   false);
 
+#ifdef WIN32
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/SuckMT-batch");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/tmp/SuckMT-restart");
+#else
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/var/spool/suckmt/in.coming");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/var/spool/suckmt/batch");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/var/spool/suckmt/restart");
+#endif    
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_CONNECT_RETRIES, 0);
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, false);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, true);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_LOGLEVEL,        LOGS_STATUS);
     
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MIN_LINES, "-1 ; 100");
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES, "-1 ; 100");
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES, "-1 ; 100");
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,"-1 ; 100");
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_MSG_THRESHOLD,-1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_MSG_DOWNLOAD, -1);
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
@@ -138,10 +149,31 @@ InitializeIniFile(IniFile &settings)
     settings.SetValue(SUCK_INSTALL,SUCK_LASTRUN_DATE,nowStr);
     settings.AddValue(SUCK_INSTALL,SUCK_RUN,1);
 
+    list<string> dummy_string_list;
+    
     // Check if the groups section exists
     list<string> groups;
-    if (!settings.GetVariableNames(SUCK_GROUPS,groups))
+    if (!settings.GetVariableNames(SUCK_GROUPS,dummy_string_list))
         settings.CreateSection(SUCK_GROUPS);
+
+
+    // Check if the kill headers section exists
+    if (!settings.GetVariableNames(SUCK_KILL_HEADERS,dummy_string_list))
+    {
+        // Hmmm, new to kill rules ?
+        // Ok, creating one sample rule
+        SET_UNDEFINED(SUCK_KILL_HEADERS,"Content-Type:text/html","not yet ; 0 ; 10000");
+        Lalways << "Created a sample kill rule in your config file." << endl << flush;
+    }
+
+    // Check if the kill headers section exists
+    if (!settings.GetVariableNames(SUCK_KEEP_HEADERS,dummy_string_list))
+    {
+        // Hmmm, new to keep rules ?
+        // Ok, creating one sample rule ... ;-)
+        SET_UNDEFINED(SUCK_KEEP_HEADERS,"~From:Niels Basjes","not yet ; 0 ; 10000");
+        Lalways << "Created a sample keep rule in your config file." << endl << flush;
+    }
 }
 
 //-------------------------------------------------------------------------
@@ -151,8 +183,22 @@ static NNTPRetrieveManager *retrieveManagerToSignal = NULL;
 static void 
 SuckmtSignalHandler(int /*sig_num*/)
 {
+    static int aborting = false;
+    static omni_mutex abortMutex;
+    abortMutex.lock();
+    if (aborting)
+    {
+        Levent << "Received STOP signal again (ignoring)." << endl << flush;
+        abortMutex.unlock();
+        return;
+    }
+
     Levent << "Received STOP signal." << endl << flush;
 
+    aborting = true;
+    
+    abortMutex.unlock();
+    
     if (retrieveManagerToSignal == NULL)
         exit(1); // No clean signalling option .. just die now.
 

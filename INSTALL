@@ -4,28 +4,22 @@ Basic Installation and use.
 1) Unpack the archive
    tar xzf suckmt.<VERSION>.tar.gz
 
-2) Build the executable
+2) Build and install
    cd suckmt.<VERSION>
-   make
-
-3) Copy the final executable to a usable location
-   cp suckmt /usr/bin          
-
-4) Create a default config file (you can put this file anywhere you like).
-   suckmt -init -i /etc/suckmt.ini
+   make install
+   A working config file (/etc/suckmt.ini) has now been created or 
+   your existing /etc/suckmt.ini has been backedup and updated.
 
    With a new version of suckmt it is very likely new settings have been added.
-   You can use the above commandline to add the new options to your suckmt.ini
-   file with an appropriate default value without running the actual download.
 
    A suckmt.ini.sample is included to get an idea on what a running suckmt.ini
-   file can look like.
+   file can look like. This file can be found in /usr/doc/packages/suckmt
 
-5) Add the news group(s) you want.
+3) Add the news group(s) you want.
    You can just add them with a normal text editor or you can do 
    suckmt -i /etc/suckmt.ini -n nl.comp.os.linux
 
-6) Manually edit the settings in the "Suck MT Configuration" 
+4) Manually edit the settings in the "Suck MT Configuration" 
    section of the suckmt.ini file. I tried to make the config 
    file as self-documenting as possible so it shouldn't be a 
    problem.
@@ -71,10 +65,10 @@ Basic Installation and use.
     set the number of threads to 1 .
 
    -----------
-        Send MODE READER to the server  = False
+        Send MODE READER to the server  = True
 
     Sending the MODE READER command to the server is required for 
-    some servers.
+    some servers and is considered to be good practise.
 
    -----------
          Restart File  = /tmp/suckmtrestart
@@ -152,6 +146,15 @@ William  = Man
 Harry  = Man
 Jill   = !Man
 
+This feature can be used to update the ini file by just appending a few 
+lines using an extremely simple shell script. If in the above example I 
+would want to force a new value for Jill in section foo I could do this 
+by just appending the following two lines to the file:
+[foo]
+Jill = Woman
+
+The next time the application is run this new value will be automagically 
+intergrated into the existing parts of the config file.
 
 Used contents of suckmt.ini
 ===========================
@@ -206,6 +209,19 @@ Any other value means what is clearly stated in the name of the rule.
 The second value on each line is the weight of this rule. 
 The default weight value is 100 but can be changed manually.
 This weight value will be explained later.
+
+Maximum messages per newsgroup threshold     = 1000
+Only download N messages when over threshold = 50
+
+When I return from a few weeks of vacation I don't want to spend too much
+time downloading all the messages from that period. These two settings 
+determine what to do when a group has more messages than I care to read or
+download. The above example values will make sure that only 50 messages are 
+downloaded in each group when the total number of messages exceeds 1000. 
+So if there are 950 messages they will still all be downloaded, if there 
+are 1001 then only the last 50 will be downloaded. This should probably be 
+a per group setting but that isn't possible yet.
+With these killrules the value -1 also means that this rule is not applied.
 
 
   KILL AND KEEP BASED ON HEADERS 
