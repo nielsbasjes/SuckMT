@@ -1,13 +1,13 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Filename  : TraceLog.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:51:42 $
-//  $Revision: 1.3 $
+//  $Date: 2000/03/12 21:31:16 $
+//  $Revision: 1.4 $
 //  $RCSfile: TraceLog.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -22,35 +22,22 @@
 #ifndef __TRACELOG_H__
 #define __TRACELOG_H__
 
-//-------------------------------------------------------------------------
+#include "MultiStream.h"
 
-// Sets the current log level
-void SetCurrentLogLevel(int newLogLevel);
-
-// This function only prints if the current loglevel 
-// is higher or equal to the specified loglevel
-// This means that increasing the loglevel will let more messages through.
-// The information is output through cout
-int lprintf(int logLevel, const char *format, ...);
-
-// This adds an additional trace of all information that is printed by lprintf
-bool StartTraceLog(const char * fileName);
-void StopTraceLog();
-
-//-------------------------------------------------------------------------
-
-// Set of predefined log levels (just for convienience)
-// These are just some values I find convenient.
-#define LOG_MESSAGE      0
-#define LOG_FATAL        0
-#define LOG_ERROR       10
-#define LOG_ALERT       20
-#define LOG_WARNING     30
-#define LOG_NOTICE      40
-#define LOG_DEBUG       50
-#define LOG_CALLTRACE   60
-#define LOG_SOCKET      70
-#define LOG_EVERYTHING  65000
+// These are a few default system wide streams
+extern MultiStream Lalways  ;//(LOGS_ALWAYS,  "INFO",              TO_COUT|TO_SYSLOG);
+extern MultiStream Linfo    ;//(LOGS_INFO,    "INFO",              TO_COUT|TO_SYSLOG);
+extern MultiStream Lcout    ;//(LOGS_INFO,    "INFO",              TO_COUT);
+extern MultiStream Lsyslog  ;//(LOGS_INFO,    "INFO",                      TO_SYSLOG);
+extern MultiStream Levent   ;//(LOGS_INFO,    "EVENT",   SHOW_TYPE|TO_COUT|TO_SYSLOG);
+extern MultiStream Lmistake ;//(LOGS_ALWAYS,  "ERROR",   SHOW_TYPE|TO_CERR          );
+extern MultiStream Lerror   ;//(LOGS_ALWAYS,  "ERROR",   SHOW_TYPE|TO_CERR|TO_SYSLOG);
+extern MultiStream Lfatal   ;//(LOGS_ALWAYS,  "FATAL",   SHOW_TYPE|TO_CERR|TO_SYSLOG);
+extern MultiStream Lstatus  ;//(LOGS_STATUS,  "STATUS",            TO_COUT);
+extern MultiStream Lverbose ;//(LOGS_STATUS,  "STATUS",  SHOW_TYPE|TO_COUT);
+extern MultiStream Lcommands;//(LOGS_COMMANDS,"COMMANDS",SHOW_TYPE|TO_COUT|TO_FILE);
+extern MultiStream Lcalls   ;//(LOGS_CALLS,   "CALLS",   SHOW_TYPE|TO_COUT|TO_FILE);
+extern MultiStream Lsteps   ;//(LOGS_NOISE,   "STEPS",   SHOW_TYPE|TO_COUT|TO_FILE);
 
 //-------------------------------------------------------------------------
 

@@ -6,8 +6,9 @@
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 2000/01/08 22:24:00 $
-#  $Revision: 1.6 $
+#  $Date: 2000/03/13 21:39:08 $
+#  $Revision: 1.10 $
+#  $RCSfile: Makefile.ed,v $
 #  $Author: niels $
 #=========================================================================
 #
@@ -29,8 +30,13 @@ dist: TheMakefile
 rpm: TheMakefile
 	${MAKE} rpm
     
-TheMakefile:
+configure: configure.in
 	aclocal
 	automake
 	autoconf
+	
+TheMakefile: configure
 	./configure
+
+configure.in: configure.in_ VERSION
+	sed s/VERSION/`cat VERSION`/g < configure.in_ > configure.in

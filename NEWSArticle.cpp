@@ -6,8 +6,8 @@
 //  Filename  : NEWSArticle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:49 $
-//  $Revision: 1.11 $
+//  $Date: 2000/03/02 20:51:29 $
+//  $Revision: 1.12 $
 //  $RCSfile: NEWSArticle.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -25,6 +25,7 @@
 
 //-------------------------------------------------------------------------
 
+#include "SuckDefines.h"
 #include "NEWSArticle.h"
 #include "Tokenize.h"
 
@@ -293,7 +294,13 @@ NEWSArticle::GetHeaderField(string headerName,string &value)
             value = fXrefHeader;
             return true;
         }
-    
+
+        if (headerName == SUCK_ARTICLEBODY)
+        {
+            value = fBody;
+            return true;
+        }
+
         return false; // Value doesn't exist 
     }
     value = fParsedHeaders[headerName];

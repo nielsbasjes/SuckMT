@@ -1,14 +1,14 @@
 //=========================================================================
-//                   Copyright (C) 1999 by Niels Basjes
+//                   Copyright (C) 2000 by Niels Basjes
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
-//  Filename  : Command.cpp
+//  Filename  : SetProcTitle.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:45 $
-//  $Revision: 1.4 $
-//  $RCSfile: Command.cpp,v $
+//  $Date: 2000/03/12 21:31:09 $
+//  $Revision: 1.2 $
+//  $RCSfile: SetProcTitle.h,v $
 //  $Author: niels $
 //=========================================================================
 //
@@ -19,30 +19,26 @@
 //
 //=========================================================================
 
-#ifdef WIN32
-#pragma warning( disable : 4786 ) 
-#endif
+#ifndef __SETPROCTITLE_H__
+#define __SETPROCTITLE_H__
 
 //-------------------------------------------------------------------------
 
-#include <iostream.h>
-#include "Command.h"
+void
+InitSetProcTitle(
+	int argc,
+	char **argv,
+	char **envp,
+    const char * applicationPrefix);
+
+void
+SetProcTitle(const char *fmt, ...);
 
 //-------------------------------------------------------------------------
 
-Command::Command()
-{
-    // Nothing to do
-}
+#endif // __SETPROCTITLE_H__
 
-//-------------------------------------------------------------------------
-
-Command::~Command()
-{
-    // Nothing to do
-}
-
-//-------------------------------------------------------------------------
-
-// End of the file Command.cpp
+// End of the file SetProcTitle.h
 //=========================================================================
+
+

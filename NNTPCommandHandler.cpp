@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/03 18:04:33 $
-//  $Revision: 1.6 $
+//  $Date: 2000/03/12 21:30:59 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPCommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -41,7 +41,7 @@ NNTPCommandHandler::NNTPCommandHandler
     fIniFile         = iniFile;
     fKiller          = killer;
    
-    nntpConnection = new NNTPProxy(fIniFile);
+    nntpConnection = new NNTPProxy(fIniFile,id());
 }
 
 //-------------------------------------------------------------------------

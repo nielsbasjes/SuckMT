@@ -6,8 +6,8 @@
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:47 $
-//  $Revision: 1.10 $
+//  $Date: 2000/03/12 21:30:54 $
+//  $Revision: 1.12 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,9 +28,14 @@
 #include <fstream.h>
 #include <stdio.h>  
 #include <stdlib.h>  
+#include "TraceLog.h"
 #include "IniFile.h"
 #include "Tokenize.h"
 #include "Printable.h"
+
+//-------------------------------------------------------------------------
+
+static MultiStream LiniRead(LOGS_ALWAYS,"INI-READ",TO_COUT|TO_FILE);
 
 //-------------------------------------------------------------------------
 
@@ -73,9 +78,16 @@ IniFile::ReadFile(string filename)
     while(!inFile.eof())
     {
         lineNr++;
+        string work_buffer;
+
         inFile.getline(buffer,9999);
-        
-        string work_buffer(buffer);
+        work_buffer = buffer;
+
+        while ( strlen(buffer) == 9998)
+        {
+            inFile.getline(buffer,9999);
+            work_buffer += buffer;
+        }
         
         // Skip leading spaces and tabs
         RemoveLeadingSpaces(work_buffer);
@@ -113,14 +125,14 @@ IniFile::ReadFile(string filename)
 
             if (showWhatIsRead)
             {
-                cout << endl << "[" << token << "]" << endl;
+                LiniRead << "" << endl << "[" << token << "]" << endl << flush;
             }
 
             if (currentSection == NULL)
             {   // Fatal error.
-                cout << "Couldn't find or create section \"" << token
-                     << "\" in file \"" << filename 
-                     << "\" at line " << lineNr << "." << endl;
+                Lerror << "Couldn't find or create section \"" << token
+                       << "\" in file \"" << filename 
+                       << "\" at line " << lineNr << "." << endl << flush;
                 return false;
             }
         }
@@ -128,8 +140,8 @@ IniFile::ReadFile(string filename)
         {
             if (currentSection == NULL)
             {
-                cout << "Value without a section in \"" << filename
-                     << "\" at line " << lineNr << "." << endl;
+                Lerror << "Value without a section in \"" << filename
+                       << "\" at line " << lineNr << "." << endl << flush;
                 return false;
             }
 
@@ -137,8 +149,13 @@ IniFile::ReadFile(string filename)
             
             string settingName  = tokens[0];      // Everything before the first '='
             string settingValue = "";
-            if (tokens.size() == 2)
-                settingValue = tokens[1]; // Everything after the first '=';
+            int nrOfTokens = tokens.size();
+            for (int i = 1; i < nrOfTokens; i++)
+            {
+                settingValue += tokens[i]; // Everything after the first '=';
+                if (i != nrOfTokens - 1)
+                    settingValue += "=";
+            }
 
             RemoveLeadingSpaces(settingName);
             RemoveTrailingSpaces(settingName);
@@ -161,14 +178,14 @@ IniFile::ReadFile(string filename)
 
             if (showWhatIsRead)
             {
-                cout << settingName << " = " <<  settingValue << endl;
+                LiniRead << settingName << " = " <<  settingValue << endl << flush;
             }
 
             if (!SetValue(currentSection,settingName,settingValue))
             {
-                cout << "Unable to set or create the value \"" << settingName.c_str() 
-                     << "\" in file \"" << filename.c_str() 
-                     << "\" at line " << lineNr << "." << endl;
+                Lerror << "Unable to set or create the value \"" << settingName.c_str() 
+                       << "\" in file \"" << filename.c_str() 
+                       << "\" at line " << lineNr << "." << endl << flush;
                 return false;
             }
 
@@ -185,7 +202,11 @@ IniFile::ReadFile(string filename)
 bool
 IniFile::WriteFile(string filename)
 {
+    if (filename == "")
+        filename = fFilename;
+
     ofstream outFile(filename.c_str());
+
     if (!outFile.good())
         return false;
 
@@ -194,7 +215,7 @@ IniFile::WriteFile(string filename)
 //      << "# This file was read and written using" << endl
 //      << "# Niels Basjes` C++ IniFile class     " << endl
 //      << "#-------------------------------------" << endl
-//      << "# (C) 1999 by ir. Niels Basjes        " << endl
+//      << "# (C) 2000 by ir. Niels Basjes        " << endl
 //      << "# http://www.wirehub.nl/~basjesn      " << endl
 //      << "#=====================================" << endl
 //      << endl;
@@ -221,7 +242,8 @@ IniFile::Print(ostream & os)
         
         if (thisSection == NULL)
         {
-            cout << "FATAL ERROR: sectionsOrder contains section that doesn't exist." << endl;
+            Lfatal << "SectionsOrder contains a section that doesn't exist." 
+                   << endl << flush;
             return false;
         }
         

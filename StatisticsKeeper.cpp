@@ -6,8 +6,8 @@
 //  Filename  : StatisticsKeeper.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:52:26 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 22:15:30 $
+//  $Revision: 1.8 $
 //  $RCSfile: StatisticsKeeper.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -25,19 +25,29 @@
 
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
+#include <time.h>
+#else
+#include <sys/time.h>
+#endif
+
+#include <time.h>
 #include <stdio.h>
 #include <iostream.h>
 #include <iomanip.h>
 #include "omnithread.h"
 #include "StatisticsKeeper.h"
- 
+#include "SetProcTitle.h"
+#include "TraceLog.h"
+
 //--------------------------------------------------------------------
 
 StatisticsKeeper * statisticsKeeper = NULL;
 
 //--------------------------------------------------------------------
 
-// The specified time indicated the statistics should be printer automagically
+// The specified time indicates how often the statistics should be 
+// printed automagically
 void 
 KeepStatistics(long milliseconds)
 {
@@ -61,7 +71,8 @@ EndStatistics()
 }
 
 //--------------------------------------------------------------------
-StatisticsKeeper::StatisticsKeeper(long milliseconds): Printable("StatisticsKeeper")
+StatisticsKeeper::StatisticsKeeper(long milliseconds)
+    :Printable("StatisticsKeeper")
 {
     valuesModified = true;
     fMilliseconds = milliseconds;
@@ -82,26 +93,43 @@ void*
 StatisticsKeeper::run_undetached(void* /*arg*/)
 {
     unsigned long sleepTime = fMilliseconds * 1000;
+    time_t        startTime = time(NULL);
+    time_t        usedTime; 
+
+    unsigned long qlen    ;
+    unsigned long killed  ;
+    unsigned long total   ;
+    unsigned long stored  ;
+    unsigned long skipped ;
+    unsigned long msgerror;
+    unsigned long done    ;
+    float precentage_done ;
+    char  percentage[100] ;
+    unsigned long bytesReceived;
+    unsigned long bytesSent;
+    unsigned long avgBytesReceivedPerSecond;
+
     while (KeepRunning())
     {
         omni_thread::sleep(0,sleepTime);
         if(valuesModified)
         {
-            unsigned long qlen    = GetNumericValue("Command Queue Length");
-            unsigned long killed  = GetNumericValue("Articles Killed");
-            unsigned long total   = GetNumericValue("Articles Present");
-            unsigned long stored  = GetNumericValue("Articles Written");
-            unsigned long skipped = GetNumericValue("Articles Skipped");
-            unsigned long msgerror= GetNumericValue("Articles ERROR");
-            unsigned long done    = killed+stored+skipped+msgerror;
-            float precentage_done = (total==0?0.0:(((float)(done))/((float)total))*100.0);
+            qlen    = GetNumericValue("Command Queue Length");
+            killed  = GetNumericValue("Articles Killed");
+            total   = GetNumericValue("Articles Present");
+            stored  = GetNumericValue("Articles Written");
+            skipped = GetNumericValue("Articles Skipped");
+            msgerror= GetNumericValue("Articles ERROR");
+            done    = killed+stored+skipped+msgerror;
+
+            precentage_done = 
+                (total==0?0.0:(((float)(done))/((float)total))*100.0);
 
             // I couldn't get the stream formatting to do what I wanted
             // So let's do this the traditional way.
-            char percentage[100];
             sprintf(percentage,"%3.0f",precentage_done);
 
-            cout 
+            Lstatus 
                 << "MSGS:"  << setw(4) << total      <<","    // Total
                 << "TODO:"  << setw(4) << qlen       <<","    // Queue length
                 << "DONE:"             << percentage << "%={" 
@@ -110,12 +138,41 @@ StatisticsKeeper::run_undetached(void* /*arg*/)
                 << "KILL:"  << setw(4) << killed     <<","    // Killed
                 << "ERROR:" << setw(4) << msgerror   <<"} \r" // Error
                 << flush;
+
+            bytesReceived = GetNumericValue("Socket Received Bytes");
+                    
+            usedTime = time(NULL) - startTime;
+            if (usedTime==0)
+                avgBytesReceivedPerSecond = bytesReceived; // assume 1 second
+            else
+                avgBytesReceivedPerSecond = (bytesReceived)/(usedTime);
+
+            SetProcTitle("%3d%% (%4d/%4d) @ Average %6d bytes/second.    ",
+                    (unsigned long)precentage_done,done,total,
+                    avgBytesReceivedPerSecond);
             
             valuesModified = false;
         }
     }
 
-    cout << endl << flush;
+    Linfo << endl << flush;
+
+    // ----------------------------
+    // Print the overall statistics
+    bytesSent     = GetNumericValue("Socket Send Bytes");
+    bytesReceived = GetNumericValue("Socket Received Bytes");
+    
+    usedTime = time(NULL) - startTime;
+    if (usedTime==0)
+        avgBytesReceivedPerSecond = bytesReceived; // assume 1 second
+    else
+        avgBytesReceivedPerSecond = (bytesReceived)/(usedTime);
+
+    Linfo << "Overall : ";
+    Linfo << "OUT: " << setw(4) << bytesSent << " bytes, " 
+          << "IN: " << setw(7) <<  bytesReceived << " bytes, AVG: " 
+          << setw(7) << avgBytesReceivedPerSecond << " bytes/second" 
+          << endl << flush;
 
     return NULL;
 }

@@ -6,8 +6,8 @@
 //  Filename  : HeaderMatcher.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/08 22:26:14 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 21:30:53 $
+//  $Revision: 1.7 $
 //  $RCSfile: HeaderMatcher.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -26,8 +26,10 @@
 //-------------------------------------------------------------------------
 
 #include <time.h>
+#include "SuckDefines.h"
 #include "HeaderMatcher.h"
 #include "Tokenize.h"
+#include "TraceLog.h"
 
 //-------------------------------------------------------------------------
 // This class reads the specified value from the specified IniFile
@@ -87,9 +89,9 @@ HeaderMatcher::HeaderMatcher(
     if (colonPosition == parseValueName.npos)
     {   // The header doesn't include a ':' --> Not a header !! 
         fObjectIsValid = false;
-        cerr << "Invalid \"" << sectionName 
-             << "\" header matching line : \"" 
-             << valueName << "\"." << endl << flush;
+        Lerror << "Invalid \"" << sectionName 
+               << "\" header matching line : \"" 
+               << valueName << "\"." << endl << flush;
         return;
     }
 
@@ -104,9 +106,9 @@ HeaderMatcher::HeaderMatcher(
 
     if (regcomp (&fRegExpression, fHeaderValue.c_str(), cflags) != 0)
     {
-        cerr << "ERROR Parsing regular expression:" << endl 
-             << "[" << sectionName << "]:" << valueName << " = " << fHeaderValue << endl
-             << flush;
+        Lerror << "Parsing regular expression:" << endl 
+             << "[" << sectionName << "]:" << valueName << " = " << fHeaderValue 
+             << endl << flush;
         fObjectIsValid = false;
         return;
     }
@@ -152,8 +154,23 @@ HeaderMatcher::GetImpactValue(
     if (!fObjectIsValid || article == NULL)
         return 0; // Not valid -> no Impact
 
+    // Is this the right header ??
+    if (fHeaderName != headerName)
+    {
+        return 0; // 0 == no impact
+    }
+
     string headerValue;
-    
+
+    bool thisIsTheBody = false;
+
+    if (article->GetState() == NA_COMPLETE && 
+        headerName          == SUCK_ARTICLEBODY)
+    {
+        headerValue = article->GetBody();
+        thisIsTheBody = true;
+    }
+    else
     // Retrieves the value of the specified header field 
     // returns false if the header doesn't exist
     if (!article->GetHeaderField(fHeaderName, headerValue))
@@ -161,13 +178,7 @@ HeaderMatcher::GetImpactValue(
         return 0;
     }
 
-    // Is this the right header ??
-    if (fHeaderName  != headerName)
-    {
-        return 0; // 0 == no impact
-    }
-
-    // Match regular expression
+    // Match regular expression to the actual value
     if (regexec (&fRegExpression, headerValue.c_str(), 0, NULL, 0) == REG_NOMATCH)
     {
         return 0; // 0 == no impact
@@ -184,12 +195,18 @@ HeaderMatcher::GetImpactValue(
     fSettings->SetValue(fIniSectionName, fIniValueName, inistr);
 
     strstream tmpstream;
-    tmpstream << "MATCHED Header: " << fHeaderName 
-             << ": \"" << fHeaderValue << "\" = \"" << headerValue << "\"" << ends;
+    if (thisIsTheBody)
+    {
+        tmpstream << "MATCHED Article Body: \"" 
+            << fHeaderValue << "\" = \"" << headerValue << "\"" << ends;
+    }
+    else
+    {
+        tmpstream << "MATCHED Header: " << fHeaderName << ": \"" 
+            << fHeaderValue << "\" = \"" << headerValue << "\"" << ends;
+    }
     char * tmpcharp = tmpstream.str();
     matchlog += tmpcharp;
-
-//cerr << tmpcharp << endl;
 
     delete[] tmpcharp;
     

@@ -31,3 +31,13 @@ Version 0.40
 Version 0.41
     SERIOUS BUG FIXED regarding the conversion from string to long.
     Fixed the creation of RPM files.
+Version 0.50
+    Added: You can check the progress when you do ps from a shell.
+    Fixed: Bug reading a value in the ini file that contained an = in the value
+    Added: Restart file so it is safe to make the temp dir empty after an aborted download session.
+    Added: The headername "ArticleBody" can be used to create kill/keep rules that check for the actual article content.
+    Added: MultiStreams, all messages pass through a single stream type that can be configured to pass the information to the cerr, cout , the current logfile and the syslogd.
+    Rewrite: (Almost) All messages use the LogStreams now.
+    Changed: The -init option now updates the INI file if it already exists.    
+    Fixed: It is now possible to create an RPM and SRPM file.
+           

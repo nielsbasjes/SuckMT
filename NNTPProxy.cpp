@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:52 $
-//  $Revision: 1.8 $
+//  $Date: 2000/03/12 21:31:03 $
+//  $Revision: 1.10 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,7 +35,7 @@
 // Construction/Destruction
 //--------------------------------------------------------------------
 
-NNTPProxy::NNTPProxy(IniFile *settings)
+NNTPProxy::NNTPProxy(IniFile *settings, int connectionNr)
 {
     fSettings = settings;
     nntp = NULL;       // Not connected yet.
@@ -43,7 +43,7 @@ NNTPProxy::NNTPProxy(IniFile *settings)
 
     if (fSettings == NULL)
     {
-        lprintf(LOG_ERROR,"NNTPProxy called with settings == NULL");
+        Lfatal << "NNTPProxy called with settings == NULL" << endl << flush;
         return;
     }
 
@@ -59,12 +59,12 @@ NNTPProxy::NNTPProxy(IniFile *settings)
 
     //----------
     // Create socket connection to server on the NNTP port
-    nntp = new AsciiLineSocket(newsServerName,newsServerPort);
+    nntp = new AsciiLineSocket(newsServerName,newsServerPort,connectionNr);
     
     if (nntp == NULL)
     {
-        lprintf(LOG_ERROR,
-            "Unable to connect to NNTP server on %s", newsServerName.c_str());
+        Lerror << "Unable to connect to NNTP server on \"" 
+               << newsServerName.c_str() << "\"." << endl << flush;
         return; // abort
     }
 
@@ -82,7 +82,8 @@ NNTPProxy::NNTPProxy(IniFile *settings)
     
     if (nntp->GetResponse(serverIdentification) != 200)
     {
-        cout << "Some error occurred connecting." << endl;
+        Lfatal << "Some error occurred connecting:\"" 
+               << serverIdentification << "\"" << endl << flush;
         delete (nntp);
         nntp = NULL;
     }
@@ -106,6 +107,9 @@ NNTPProxy::NNTPProxy(IniFile *settings)
         
         Login(username,password);
     }
+
+    Linfo << "Connection " << connectionNr 
+          << " has been established." << endl << flush;
 }
 
 //--------------------------------------------------------------------
@@ -162,7 +166,7 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
         
@@ -177,10 +181,10 @@ NNTPProxy::GetGroups(vector<GroupInfo> &groups)
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed: " << responseLine << endl;
+            Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            cout << "Error: " << responseLine << endl;
+            Lfatal << "Unknown error: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -213,11 +217,11 @@ NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
 
-//    cout << "Settinggroup :\"" << groupName << "\"." << endl;
+    Lcalls << "Settinggroup :\"" << groupName << "\"." << endl << flush;
 
     nntp->SendCommandf("GROUP %s",groupName.c_str());
 
@@ -228,15 +232,15 @@ NNTPProxy::SetCurrentGroup(string groupName,GroupInfo &groupInfo)
         case 211: // Ok, proceed
             break;
         case 411: // Group doesn't exist
-            cout << "Error: " << responseLine << endl;
+            Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed: " << responseLine << endl;
+            Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            cout << "Error: " << responseLine << endl;
+            Lfatal << "Unknown error: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -268,14 +272,14 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return 0; // Not connected
     }
     
     GroupInfo groupInfo;
     if (!SetCurrentGroup(groupName,groupInfo))
     {
-        cout << "ERROR : Unable to get XOVER for " << groupName << endl;
+        Lerror << "Unable to get XOVER for " << groupName << endl << flush;
         return 0;
     }
     
@@ -287,7 +291,7 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
     
     if (first > last)
     {
-//        cout << endl << "There are no new messages present in " << groupName << endl << flush;
+//        Linfo << "There are no new messages present in " << groupName << endl << flush;
         return 2; // No messages in this group at all.    
     }
     
@@ -303,18 +307,18 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
         case 224: // Ok, proceed
             return 1;
         case 411: // Group doesn't exist
-            cout << "Error (NO SUCH GROUP): " << responseLine << endl;
+            Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             break;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed: " << responseLine << endl;
+            Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             break;
         case 501: // Didn't specify a range ?
-            cout << "Error (INVALID/NO RANGE): " << responseLine << endl;
+            Lerror << "INVALID/NO RANGE: " << responseLine << endl << flush;
             break;
         default:
-            cout << "Error (UNKNOWN): " << responseLine << endl;
+            Lfatal << "Unknown error: " << responseLine << endl << flush;
             break;
     }
     return 0;
@@ -342,9 +346,9 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
 
 //    if (!KeepRunning())
 //    {
-//      cout << endl << "Finishing XOVER command cleanly." << endl << flush;
+//      Linfo << "Finishing XOVER command cleanly." << endl << flush;
 //      while (nntp->GetLine(line));
-//      cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
+//      Linfo << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
 
     return true;
@@ -359,7 +363,7 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
 {
     if (commandHandler == NULL)
     {
-        lprintf(LOG_ERROR,"No command handler specified.");
+        Lerror << "No command handler specified." << endl << flush;
         return false; // Error
     }
     
@@ -380,9 +384,9 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
 
 //    if (!KeepRunning())
 //    {
-//      cout << endl << "Finishing XOVER command cleanly." << endl << flush;
+//      Linfo << "Finishing XOVER command cleanly." << endl << flush;
 //      while (nntp->GetLine(line));
-//      cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
+//      Linfo << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
     
     return true;
@@ -394,7 +398,7 @@ NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler
 bool 
 NNTPProxy::GetArticle (string /*articleId*/,string &/*article*/)
 {
-    lprintf(LOG_FATAL,"NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleId,string &article)");
+    Lfatal << "NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleId,string &article)" << endl << flush;
     return true;
 }
 
@@ -404,7 +408,7 @@ NNTPProxy::GetArticle (string /*articleId*/,string &/*article*/)
 bool 
 NNTPProxy::GetArticle (int /*articleNumber*/,string &/*article*/)
 {
-    lprintf(LOG_FATAL,"NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleNumber,string &article)");
+    Lfatal << "NOT IMPLEMENTED : NNTPProxy::GetArticle (string articleNumber,string &article)" << endl << flush;
     return true;
 }
 
@@ -416,7 +420,7 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
 
@@ -429,15 +433,15 @@ NNTPProxy::GetArticleHead(string articleId,string &articleHead)
         case 221: // Ok, proceed
             break;
         case 411: // Group doesn't exist
-            cout << "Error: " << responseLine << endl;
+            Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed: " << responseLine << endl;
+            Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            cout << "Error: " << responseLine << endl;
+            Lfatal << "Unknown error: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -461,7 +465,7 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
 
@@ -474,15 +478,15 @@ NNTPProxy::GetArticleBody(string articleId,string &articleBody)
         case 222: // Ok, proceed
             break;
         case 411: // Group doesn't exist
-            cout << "Error: " << responseLine << endl;
+            Lerror << "NO SUCH GROUP: " << responseLine << endl << flush;
             return false;
         case 499: // Server is dead and so is the connection
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed: " << responseLine << endl;
+            Lfatal << "ERROR Connection closed: " << responseLine << endl << flush;
             return false;
         default:
-            cout << "Error: " << responseLine << endl;
+            Lfatal << "Unknown error: " << responseLine << endl << flush;
             return false; // Error
     }
 
@@ -540,7 +544,7 @@ NNTPProxy::Send_MODE_READER()
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
 
@@ -557,8 +561,8 @@ NNTPProxy::Send_MODE_READER()
         default:
             delete nntp;
             nntp = NULL;
-            cout << "ERROR Connection closed in response to MODE READER: " 
-                 << responseLine << endl;
+            Lfatal << "Connection closed in response to MODE READER: " 
+                   << responseLine << endl << flush;
             return false;
     }
 
@@ -575,7 +579,7 @@ NNTPProxy::Login(string user,string pass)
 {
     if (!IsConnected())
     {
-        lprintf(LOG_ERROR,"Not connected.");
+        Lerror << "Not connected." << endl << flush;
         return false; // Not connected
     }
 
@@ -589,8 +593,8 @@ NNTPProxy::Login(string user,string pass)
     {  // Some kind of error
         delete nntp;
         nntp = NULL;
-        cout << "ERROR Connection closed in response to AUTHINFO USER : " 
-             << responseLine << endl;
+        Lfatal << "Connection closed in response to AUTHINFO USER : " 
+               << responseLine << endl << flush;
         return false;
     }
 
@@ -601,8 +605,8 @@ NNTPProxy::Login(string user,string pass)
     {  // Some kind of error
         delete nntp;
         nntp = NULL;
-        cout << "ERROR Connection closed in response to AUTHINFO PASS : " 
-             << responseLine << endl;
+        Lfatal << "Connection closed in response to AUTHINFO PASS : " 
+               << responseLine << endl << flush;
         return false;
     }
 

@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:33 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 21:30:41 $
+//  $Revision: 1.6 $
 //  $RCSfile: AsciiLineSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -25,7 +25,12 @@
 
 //-------------------------------------------------------------------------
 
+#include "TraceLog.h"
 #include "AsciiLineSocket.h"
+
+// We set this stream to LOGS_ALWAYS because we use a different
+// flag to enable or disable messaging.
+MultiStream Lsocketdebug (LOGS_ALWAYS,"SOCKET",SHOW_TYPE|TO_COUT|TO_FILE);
 
 //-------------------------------------------------------------------------
 
@@ -38,8 +43,8 @@ AsciiLineSocket::AsciiLineSocket()
 //-------------------------------------------------------------------------
 
 AsciiLineSocket::AsciiLineSocket
-    (string hostName, unsigned short portNumber) 
-    : GenericSocket(hostName,portNumber)
+    (string hostName, unsigned short portNumber,int socketNr) 
+    : GenericSocket(hostName,portNumber,socketNr)
 {
     fVerbosePrintCommands = false;
     init_line_buffer();
@@ -54,15 +59,14 @@ AsciiLineSocket::~AsciiLineSocket()
 }
 
 //------------------------------------------------------------------------
-// Start/Stop showing the socket commands on cout
+// Start/Stop showing the socket commands on Lsocketdebug
 void 
 AsciiLineSocket::DebugSocketCommands(bool show)
 {
     fVerbosePrintCommands = show;
     if (show)
     {
-        cout << "DEBUG mode for Ascii Socket commands enabled" << endl 
-             << flush;
+        Lsocketdebug << "DEBUG mode for Ascii Socket commands enabled" << endl << flush;
     }
 }
 
@@ -97,7 +101,7 @@ AsciiLineSocket::SendCommand(const char *buffer)
 {
     string localBuffer = buffer ;
     if (fVerbosePrintCommands)
-        cout << ">> " << buffer << endl << flush;
+        Lsocketdebug << ">> " << buffer << endl << flush;
     localBuffer += "\r\n";
     return(Send(localBuffer.c_str()));
 }
@@ -112,13 +116,13 @@ AsciiLineSocket::GetResponse (string &completeResponseLine, bool keepEOL)
     if (Receive(line_buffer,line_buffer_size,'\n',keepEOL) == -1)
     {
         if (fVerbosePrintCommands)
-            cout << "<< SOCKET ERROR" << endl << flush;
+            Lsocketdebug << "<< SOCKET ERROR" << endl << flush;
         return -1;
     }
     completeResponseLine = line_buffer;
 
     if (fVerbosePrintCommands)
-        cout << "<< " << line_buffer << endl << flush;
+        Lsocketdebug << "<< " << line_buffer << endl << flush;
     
     unsigned int statusCode;
     sscanf(line_buffer,"%ud",&statusCode);

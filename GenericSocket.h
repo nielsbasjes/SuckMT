@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:38 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/12 21:30:52 $
+//  $Revision: 1.8 $
 //  $RCSfile: GenericSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -74,7 +74,7 @@ class GenericSocket  : public Abortable
 //-----------------------------------    
 public:
     GenericSocket();
-    GenericSocket(const string hostName, const unsigned short portNumber);
+    GenericSocket(const string hostName, const unsigned short portNumber,int socketNr=0);
     virtual ~GenericSocket();
 
     bool
@@ -136,6 +136,8 @@ private:
     unsigned short      port;
     bool                connected;
     struct sockaddr_in  serv_addr;
+    
+    int                 fSocketNr;
     
     time_t              socketCreateTime;
     unsigned long       sendBytes;

@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:34:21 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 21:31:04 $
+//  $Revision: 1.6 $
 //  $RCSfile: NNTPProxy.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -63,7 +63,7 @@ class NNTPProxy  : public Abortable
 public:
     // All parameters required for construction are 
     // available in the IniFile.
-    NNTPProxy(IniFile  *settings);
+    NNTPProxy(IniFile  *settings, int connectionNr = 0);
     virtual ~NNTPProxy();
 
     bool

@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/02 22:34:23 $
-//  $Revision: 1.15 $
+//  $Date: 2000/03/13 22:36:53 $
+//  $Revision: 1.21 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -33,6 +33,9 @@
 
 #include <time.h>
 #include <signal.h>
+#ifndef WIN32
+#include <syslog.h>
+#endif
 #include <iostream.h>
 #include <iomanip.h>
 #include "TraceLog.h"
@@ -40,18 +43,22 @@
 #include "StatisticsKeeper.h"
 #include "IniFile.h"
 #include "SuckDefines.h"
+#include "SetProcTitle.h"
 
 //-------------------------------------------------------------------------
 
 void
 Copyright()
 {
-    cout << setprecision(2) // for the version displaying
-         << "+==================================================+" << endl
-         << "| Suck MT "<< SUCKMT_VERSION <<" - A Multi Threaded suck replacement |" << endl
-         << "+--------------------------------------------------+" << endl
-         << "| (C)1999 by Niels Basjes  -  http://go.to/suckmt  |" << endl
-         << "+==================================================+" << endl;
+    Lsyslog << "Starting SuckMT v" << SUCKMT_VERSION << endl << flush;
+
+    Lcout << "+==================================================+" << endl
+          << "| Suck MT " << SUCKMT_VERSION 
+                         <<" - A Multi Threaded suck replacement |" << endl
+          << "+--------------------------------------------------+" << endl
+          << "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |" << endl
+          << "+==================================================+" << endl
+          << flush;
 }
 
 //-------------------------------------------------------------------------
@@ -59,13 +66,14 @@ Copyright()
 void
 Usage()
 {
-    cout << "+==================================================+" << endl
-         << "| Usage: suckmt [-i <file>] [-n <group>] [-init]   |" << endl
-         << "| -i <filename>   Use specified file as ini file   |" << endl
-         << "| -n <groupname>  Add the specied group            |" << endl
-         << "| -init           Fill ini file with defaults      |" << endl
-         << "| -q              quiet: don't show the progress   |" << endl
-         << "+==================================================+" << endl;
+    Lcout << "+==================================================+" << endl
+          << "| Usage: suckmt [-i <file>] [-n <group>] [-init]   |" << endl
+          << "| -i <filename>   Use specified file as ini file   |" << endl
+          << "| -n <groupname>  Add the specied group            |" << endl
+          << "| -init           Fill ini file with defaults      |" << endl
+          << "| -q              quiet: don't show the progress   |" << endl
+          << "+==================================================+" << endl 
+          << flush;
 }
 
 //-------------------------------------------------------------------------
@@ -75,9 +83,13 @@ InitializeIniFile(IniFile &settings)
     string dummy;
 
     // Convenience macro that sets a value to the default if it is not defined
-    #define SET_UNDEFINED(key,value,default)\
-        if (!settings.GetValue(key,value,dummy))\
-            settings.SetValue(key,value,default);
+    #define SET_UNDEFINED(key,newvalue,default)\
+        if (!settings.GetValue(key,newvalue,dummy))\
+        {\
+            settings.SetValue(key,newvalue,default);\
+            Lcout << "Added new value to INI file: [" << key << "] " \
+                  << newvalue << " = " << default << endl << flush;\
+        }
     
     time_t now = time(NULL);
     char * nowStr = ctime(&now);
@@ -85,7 +97,7 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            "Suck MT was written by ir. Niels Basjes (C) 1999");
+            "Suck MT was written by ir. Niels Basjes (C) 1999-2000");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
             "Suck MT is distributed under the GNU Public License.");
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
@@ -103,9 +115,11 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DEBUG_SOCKET ,   false);
 
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_DIR,             "/tmp/");
-    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/suckmtbatch");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,      "/tmp/SuckMT-batch");
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_RESTART_FILE,    "/tmp/SuckMT-restart");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,         3);
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_SEND_MODEREADER, false);
+    SET_UNDEFINED(SUCK_CONFIG,  SUCK_LOGLEVEL,        LOGS_STATUS);
     
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MIN_LINES, "-1 ; 100");
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES, "-1 ; 100");
@@ -113,8 +127,10 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,"-1 ; 100");
 
     SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, false);
-    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    "/tmp/SuckMTKillLog.txt");
-    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,"From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    
+        "/tmp/SuckMT-KillLog.txt");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,
+        "From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 
     // Keep statistics
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LATEST_VERSION,SUCKMT_VERSION);
@@ -134,7 +150,7 @@ static NNTPRetrieveManager *retrieveManagerToSignal = NULL;
 static void 
 SuckmtSignalHandler(int /*sig_num*/)
 {
-    cout << "Received STOP signal." << endl << flush;
+    Levent << "Received STOP signal." << endl << flush;
 
     if (retrieveManagerToSignal == NULL)
         exit(1); // No clean signalling option .. just die now.
@@ -156,21 +172,25 @@ SetSuckmtSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
 
 //-------------------------------------------------------------------------
 
-int main(int argc, char** argv)
+int main(int argc, char** argv, char **envp)
 {
+    // The system to set the string you see when you do "ps"
+    // must be initialised first
+#ifndef WIN32
+    openlog("SuckMT: ",LOG_PID,LOG_USER);
+#endif
+    InitSetProcTitle(argc,argv,envp,"SuckMT: ");
+    Copyright();
+
     string iniFileName = SUCK_CONFIG_FILE;
     bool   writeDefaultInitFile = false;
-    bool   downloadMessages = true;
-    bool   showProgress = true;
+    bool   downloadMessages     = true;
+    long   logLevel             = LOGS_STATUS; // Default logging level
+    bool   forcedQuiet          = false;
 
     IniFile settings;
     
     vector<string> groupsToAdd;
-    
-//    SetCurrentLogLevel(LOG_EVERYTHING);
-//    StartTraceLog("sucknntp.log");
-
-    Copyright();
     
     for (int i = 1 ; i < argc ; i++)
     {
@@ -185,8 +205,11 @@ int main(int argc, char** argv)
             }
             else
             {
-                cout << "Invalid parameter: Expected a filename after -i" << endl;
+                Lmistake << "Invalid parameter: Expected a filename after -i" 
+                         << endl << flush;
                 Usage();
+                Linfo << "Exit invalid commandline parameter." << endl 
+                      << flush;
                 return EXIT_FAILURE;
             }
         }
@@ -204,8 +227,11 @@ int main(int argc, char** argv)
             }
             else
             {
-                cout << "Invalid parameter: Expected a filename after -n" << endl;
+                Lmistake << "Invalid parameter: Expected a filename after -n" 
+                         << endl << flush;
                 Usage();
+                Linfo << "Exit invalid commandline parameter." 
+                      << endl << flush;
                 return EXIT_FAILURE;
             }
         }
@@ -220,41 +246,60 @@ int main(int argc, char** argv)
         // Be quiet ??
         if (!strcmp(argv[i],"-q"))
         {
-            showProgress = false;
+            SetLoggingLevel(LOGS_NOTHING);
+            forcedQuiet = true;
             continue;
         }
 
-        cout << "Unknown commandline parameter " << argv[i] << endl;
+        Lmistake << "Unknown commandline parameter :\"" << argv[i] << "\"." 
+                 << endl << flush;
         Usage();
+        Linfo << "Exit invalid commandline parameter." 
+              << endl << flush;
         return EXIT_FAILURE;
     }
-    
-    cout << "Reading config file \"" << iniFileName.c_str() << "\"" << endl 
-         << flush;
+
+
+    Linfo << "Reading config file \"" << iniFileName.c_str() << "\"" 
+          << endl << flush;
          
     if(!settings.ReadFile(iniFileName))
     {
         if (writeDefaultInitFile)
         {
-            cout << "Writing a default file settings file \"" << iniFileName << "\"." << endl;
-            cout << "Remember to check the settings file." << endl;
+            Linfo << "Writing a default file settings file \"" 
+                  << iniFileName << "\"." << endl
+                  << "Remember to check the settings file." << endl << flush;
             InitializeIniFile(settings);
             settings.WriteFile(iniFileName);
+            Linfo << "Exiting successfully." << endl << flush;
             return EXIT_SUCCESS;
         }
-        cout << "Unable to read settings file \"" << iniFileName << "\"." << endl;
+        Lerror << "Unable to read settings file \"" << iniFileName << "\"." 
+               << endl << flush;
         Usage();
+        Linfo << "Exit no settings file." << endl << flush;
         return EXIT_FAILURE;
-    }
-    else
-    if (writeDefaultInitFile)
-    {
-        cout << "The specified settings file \"" << iniFileName << "\" "
-             << "already exists and will NOT be overwritten." << endl;
-        return -1;
     }
 
     InitializeIniFile(settings);
+
+    if (writeDefaultInitFile)
+    {
+        settings.WriteFile(iniFileName);
+        Linfo << "The specified settings file \"" << iniFileName << "\" " << endl
+              << "has been updated to ensure it contains all new " << endl
+              << "options exist and have a default value." << endl << flush;
+        return EXIT_SUCCESS;
+    }
+
+    if (!forcedQuiet)
+    {
+        if (settings.GetValue(SUCK_CONFIG,SUCK_LOGLEVEL,logLevel))
+        {
+            SetLoggingLevel(logLevel);
+        }
+    }
 
     vector<string>::iterator newGroupIter;
     
@@ -266,49 +311,69 @@ int main(int argc, char** argv)
     
         if (settings.GetValue(SUCK_GROUPS,(*newGroupIter),dummyValue))
         {
-            cout << "Group \"" << *newGroupIter << "\" already exists." << endl;
+            Lmistake << "Group \"" << *newGroupIter << "\" already exists." 
+                     << endl << flush;
         }
         else
         {
-            cout << "Adding new group \"" << *newGroupIter << "\"." << endl;
+            Linfo << "Adding new group \"" << *newGroupIter << "\"." << endl 
+                  << flush;
             settings.SetValue(SUCK_GROUPS,(*newGroupIter),-1);
         }
     }
 
-    if (downloadMessages)
+    // If we don't download we can write the ini file now and stop.
+    if (!downloadMessages)
     {
-        NNTPRetrieveManager nntpRetrieveManager(settings);
-    
-        SetSuckmtSignalHandler(&nntpRetrieveManager);
+        Linfo << "Writing updated config file \"" << iniFileName << "\"." 
+              << endl << flush;
+        settings.WriteFile(iniFileName);
+        Linfo << "Exiting successfully." << endl << flush;
+        return EXIT_SUCCESS;
+    }
 
-        if (showProgress)
-            KeepStatistics(10000); // 10000 == Show every 1 second
+    // ======================
+    // Start the downloads...
+    // ======================
+    Linfo << "Beginning message download." << endl << flush;
+    NNTPRetrieveManager * nntpRetrieveManager = 
+            new NNTPRetrieveManager(settings);
 
-        nntpRetrieveManager.WaitForCompletion();
+    SetSuckmtSignalHandler(nntpRetrieveManager);
 
-        if (showProgress)
-        {
-            cout << endl;
-            //    statisticsKeeper->Print(cout);
-            EndStatistics();
-        }
-        
-        // Write the ini file back if we were not aborted
-        if (nntpRetrieveManager.KeepRunning())
-        {
-            cout << "All downloads were completed successfully." << endl << flush;
-            settings.WriteFile(iniFileName); 
-        }
-        else
-        {
-            cout << "Downloads were aborted by user." << endl << flush;
-        }
+    KeepStatistics(500000); // 500000 == Show every 0.5 second
+
+    nntpRetrieveManager->WaitForCompletion();
+
+    bool wasAborted = !nntpRetrieveManager->KeepRunning();
+
+    // Tell the user what the ending status was
+    if (wasAborted)
+    {
+        Linfo << "Download aborted by user." << endl << flush;
     }
     else
     {
-        settings.WriteFile(iniFileName);
+        Linfo << "Download completed succesfully." << endl << flush;
     }
+
+    // Stop the statistics keeper
+    EndStatistics();
+
+    // Delete the retrieve manager
+    delete (nntpRetrieveManager);
+
+    if (wasAborted)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // Write the ini file back if we were not aborted
+    settings.WriteFile(iniFileName); 
+    Linfo << "All downloads were completed successfully." << endl 
+          << flush;
     
+    Linfo << "Exiting successfully." << endl << flush;
     return EXIT_SUCCESS;
 }
 

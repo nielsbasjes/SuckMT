@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetXOVERCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:54:27 $
-//  $Revision: 1.4 $
+//  $Date: 2000/03/12 21:31:02 $
+//  $Revision: 1.5 $
 //  $RCSfile: NNTPGetXOVERCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -35,7 +35,8 @@
 
 NNTPGetXOVERCommand::NNTPGetXOVERCommand(string newsGroup, long startAtArticlenr)
 {
-//cout << endl << "CREATED XOVER COMMAND FOR GROUP:" << newsGroup << " @ " << startAtArticlenr << endl << endl << endl << flush;
+    Lcalls << "CREATED XOVER COMMAND FOR GROUP:" << newsGroup 
+           << " @ " << startAtArticlenr << endl << flush;
 
     fNewsGroup        = newsGroup;
     fStartAtArticlenr = startAtArticlenr;
@@ -59,17 +60,18 @@ NNTPGetXOVERCommand::Execute(CommandHandler * currentHandler)
     if (nntpProxy == NULL)
         return false;
 
-//    cout << endl << "Getting message overview for " << fNewsGroup << endl << flush;
+    Lcalls << "Getting message overview for " << fNewsGroup << endl << flush;
 
     vector<NEWSArticle*> newsArticles;
     
     if (!nntpProxy->GetGroupOverview(fNewsGroup,myHandler,fStartAtArticlenr))
     {
-        lprintf(LOG_ERROR,"Error while calling GetGroupOverview");
+        Lerror << "Error while calling GetGroupOverview" << endl << flush;
         return false;
     }
 
-//    cout << endl << "Group " <<fNewsGroup << " has " << newsArticles.size() << " new messages." << endl << flush;
+    Lcalls << "Group " <<fNewsGroup << " has " << newsArticles.size() 
+           << " new messages." << endl << flush;
 /*
     vector<NEWSArticle*>::iterator articleIter;
 

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:53 $
-//  $Revision: 1.15 $
+//  $Date: 2000/03/12 21:31:07 $
+//  $Revision: 1.17 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <time.h>
+#include "TraceLog.h"
 #include "omnithread.h"
 #include "SuckDefines.h"
 #include "NewsKiller.h"
@@ -36,6 +37,7 @@
 //-------------------------------------------------------------------------
 
 NewsKiller::NewsKiller(IniFile * settings)
+        :fDuplicatesChecker(settings)
 {
     omni_mutex_lock lock(fKillLogFileMutex);
     
@@ -53,12 +55,13 @@ NewsKiller::NewsKiller(IniFile * settings)
     {
         InitializeLogFile();
         ReadLinesBytesGroupsRules();
-        ReadHeaderRules(SUCK_KILL_HEADERS,fHeadersToCheck,fKillHeaders,fKillOther);
-        ReadHeaderRules(SUCK_KEEP_HEADERS,fHeadersToCheck,fKeepHeaders,fKeepOther);
+        ReadHeaderRules(SUCK_KILL_HEADERS,fHeadersToCheck,
+                        fKillHeaders,fKillOther);
+                        
+        ReadHeaderRules(SUCK_KEEP_HEADERS,fHeadersToCheck,
+                        fKeepHeaders,fKeepOther);
     }
-    
-//cout << this;
-    
+        
 }
 
 //-------------------------------------------------------------------------
@@ -88,8 +91,9 @@ NewsKiller::InitializeLogFile()
 
             if (!fKillLogFile.is_open())
             {
-                cout << "Unable to open the file \"" << fKillLogFileName 
-                     << "\" for appending the kill statistics log file." << endl << flush;
+                Lerror << "Unable to open the file \"" << fKillLogFileName 
+                     << "\" for appending the kill statistics log file." 
+                     << endl << flush;
                 fLogKilledMessages = false;
             }                
             else
@@ -144,8 +148,8 @@ NewsKiller::ReadLinesBytesGroupsRules()
 
     if (fMinLines > 0 && fMaxLines > 0 && fMinLines >= fMaxLines)
     {
-        cerr << "The specified minimum number of lines in a message "
-             << "is LARGER than the maximum." << endl;
+        Lerror << "The specified minimum number of lines in a message "
+               << "is LARGER than the maximum." << endl << flush;
     }
 }
 
@@ -244,8 +248,6 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 {
     strstream killReasons; 
     
-    string matchedValue;
-
     if (article == NULL)
         return false;
 
@@ -258,10 +260,9 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
         // ----------------
         case NA_ONLY_XOVER:
             {
-                // Check if this article isn't already downloaded from
-                // an other newsgroup
-                //=========================================
-                if (!StoreMessageID(article->fMessageID))
+                // Check if this article hasn't already been downloaded
+                string logentry;
+                if ( fDuplicatesChecker.GetImpactValue(article,"Message-ID",logentry) != 0 )
                 {
                     STAT_AddValue("Articles Skipped",1);
                     return false; 
@@ -273,11 +274,9 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
         // ----------------
         case NA_ONLY_HEADER:
             {
-
-                CheckLinesAndBytesAndGroups(article,killReasons);
-
                 //=========================================
                 // Check for the headers to kill or keep
+                CheckLinesAndBytesAndGroups(article,killReasons);
                 ExecuteHeaderMatchers(article,killReasons);
                             
                 break;
@@ -285,8 +284,15 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 
         // ----------------
         case NA_COMPLETE: 
-                break;   // There is no need to kill any more 
-                         // if we have already downloaded the complete message
+            {
+                ExecuteHeaderMatchers(article,killReasons, SUCK_ARTICLEBODY);
+
+                // The duplicates checker needs to know the article has been downloaded
+                string logentry;
+                fDuplicatesChecker.GetImpactValue(article,"Message-ID",logentry);
+
+                break;                            
+            }
     }
 
     // If a the score is above 0 we keep the message.
@@ -305,64 +311,6 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
     return true;
 }
 
-//-------------------------------------------------------------------------
-/*
-bool 
-NewsKiller::DoesTheHeaderMatch(bool   kill_keep,
-                               NEWSArticle * article,
-                               string headerName,
-                               string headerValue,
-                               string &matchedValue)
-{
-    vector<headerMatchers *> *rules;
-    string sectionName;
-
-    if (kill_keep == true)
-    {
-        if(fKillHeaders.find(headerName) == fKillHeaders.end())
-            return false; // No header match
-
-        rules       = &(fKillHeaders[headerName]);
-        sectionName = SUCK_KILL_HEADERS;
-    }
-    else
-    {
-        if(fKeepHeaders.find(headerName) == fKeepHeaders.end())
-            return false; // No header match
-
-        rules       = &(fKeepHeaders[headerName]);
-        sectionName = SUCK_KEEP_HEADERS;
-    }
-
-    for(vector<HeaderMatcher *>::const_iterator
-        ruleIter  = rules->begin();
-        ruleIter != rules->end();
-        ruleIter ++)
-    {
-        HeaderMatcher * rule = *ruleIter;
-
-
-
-        if (headerValue.find(rule->valueToMatch) != headerValue.npos)
-        {   // Found a matching rule
-            valuesMutex.lock();
-            rule->lastOcurrance = fNow;
-            rule->count ++;
-
-            char countstr[50];
-            sprintf(countstr,"%ld",rule->count);
-            fSettings->SetValue(sectionName,
-                                rule->keyName,
-                                rule->lastOcurrance + " ; " + countstr);
-            valuesMutex.unlock();
-            matchedValue = rule->valueToMatch;
-            return true;
-        }
-    }
-    
-    return false;
-}
-*/
 //-------------------------------------------------------------------------
 
 void
@@ -422,8 +370,6 @@ NewsKiller::CheckLinesAndBytesAndGroups(NEWSArticle * article,strstream &killRea
 void 
 NewsKiller::ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons)
 {
-    string matchedValue;
-    string headerValue;
     vector<HeaderMatcher*>::iterator matchIter;
 
     //=========================================
@@ -433,46 +379,7 @@ NewsKiller::ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons)
         headerIter != fHeadersToCheck.end();
         headerIter ++)
     {
-        string headerName = *headerIter;
-        
-        if (article->GetHeaderField(headerName,headerValue))
-        {
-            vector<HeaderMatcher*> *rules = NULL;
-
-            if(fKillHeaders.find(headerName) != fKillHeaders.end())
-            {
-                rules = &(fKillHeaders[headerName]);
-                for(matchIter  = rules->begin();
-                    matchIter != rules->end();
-                    matchIter ++)
-                {
-                    string logentry;
-                    long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
-                    if ( score != 0)
-                    {
-                        article->Score(-1*score);
-                        killReasons << "[KILL](-" << score << ") " << logentry << endl;
-                    }
-                }
-            }
-
-            if(fKeepHeaders.find(headerName) != fKeepHeaders.end())
-            {
-                rules = &(fKeepHeaders[headerName]);
-                for(matchIter  = rules->begin();
-                    matchIter != rules->end();
-                    matchIter ++)
-                {
-                    string logentry;
-                    long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
-                    if ( score != 0)
-                    {
-                        article->Score(score);
-                        killReasons << "[KEEP](+" << score << ") " << logentry << endl;
-                    }
-                }
-            }
-        }
+        ExecuteHeaderMatchers(article,killReasons,*headerIter); 
     }
 
     //=========================================
@@ -503,7 +410,59 @@ NewsKiller::ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons)
         }
     }
 }
+        
+//-------------------------------------------------------------------------
 
+void 
+NewsKiller::ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons, 
+                                  string headerName)
+{
+    vector<HeaderMatcher*>::iterator matchIter;
+    string headerValue;
+
+    // This is to reduce the number of needless checks if the header
+    // does not occur in this article.
+    if (!(article->GetState() == NA_COMPLETE && 
+          headerName          == SUCK_ARTICLEBODY) &&
+        !article->GetHeaderField(headerName,headerValue))
+        return;
+
+    vector<HeaderMatcher*> *rules = NULL;
+
+    if(fKillHeaders.find(headerName) != fKillHeaders.end())
+    {
+        rules = &(fKillHeaders[headerName]);
+        for(matchIter  = rules->begin();
+            matchIter != rules->end();
+            matchIter ++)
+        {
+            string logentry;
+            long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
+            if ( score != 0)
+            {
+                article->Score(-1*score);
+                killReasons << "[KILL](-" << score << ") " << logentry << endl;
+            }
+        }
+    }
+
+    if(fKeepHeaders.find(headerName) != fKeepHeaders.end())
+    {
+        rules = &(fKeepHeaders[headerName]);
+        for(matchIter  = rules->begin();
+            matchIter != rules->end();
+            matchIter ++)
+        {
+            string logentry;
+            long score = (*matchIter)->GetImpactValue(article,headerName,logentry);
+            if ( score != 0)
+            {
+                article->Score(score);
+                killReasons << "[KEEP](+" << score << ") " << logentry << endl;
+            }
+        }
+    }
+}
 //-------------------------------------------------------------------------
 
 void 
@@ -540,20 +499,11 @@ NewsKiller::LogKillEvent(NEWSArticle *article,
 }
 
 //-------------------------------------------------------------------------
-// Returns 
-//  - true  if stored.
-//  - false if not stored because it is already present.
-bool
-NewsKiller::StoreMessageID(string newMessageID)
+
+void 
+NewsKiller::AbortChildren()
 {
-    omni_mutex_lock lock(messageDBmutex);
-    // If newMessageID is not yet present then it will return
-    // the default value: false
-    if (allMessageIDs[newMessageID] == true)
-        return false;
-    
-    allMessageIDs[newMessageID] = true;
-    return true;
+    fDuplicatesChecker.Abort();
 }
 
 //-------------------------------------------------------------------------
@@ -562,9 +512,7 @@ IMPLEMENT_PRINTABLE_OPERATORS(NewsKiller)
 void 
 NewsKiller::Print (ostream &os) const
 {
-    os  << "NewsKiller= {" << endl;
-
-    os  << "}" << endl << flush ;
+    os  << "NewsKiller= {" << "}";
 }
 
 //--------------------------------------------------------------------

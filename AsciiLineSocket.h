@@ -6,8 +6,8 @@
 //  Filename  : AsciiLineSocket.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:34 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 21:30:42 $
+//  $Revision: 1.6 $
 //  $RCSfile: AsciiLineSocket.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -32,7 +32,7 @@ class AsciiLineSocket : public GenericSocket
 {
 public:
     AsciiLineSocket();
-    AsciiLineSocket(string hostName, unsigned short portNumber);
+    AsciiLineSocket(string hostName, unsigned short portNumber,int socketNr=0);
     ~AsciiLineSocket();
 
     // Start/Stop showing the socket commands on cout

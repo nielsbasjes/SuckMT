@@ -1,37 +1,39 @@
 [Suck MT Copyright Information]
-Author                         = Suck MT was written by ir. Niels Basjes (C) 1999
+Author                         = Suck MT was written by ir. Niels Basjes (C) 1999-2000
 Suck MT License                = Suck MT is distributed under the GNU Public License.
 The Suck MT website            = http://go.to/suckmt
 You can email the author at    = SuckMT@Basjes.nl
 This file created by version   = 0.2
-This file modified by version  = 0.40
+This file modified by version  = 0.50
 
 [Suck MT Installation]
 Date of first run  = Mon Aug 30 23:17:54 1999
-Date of last run   = Thu Jan  6 21:07:51 2000
-Run number         = 126
+Date of last run   = Mon Mar 13 21:52:51 2000
+Run number         = 127
 
 [Suck MT Configuration]
-News server Hostname           = news.wirehub.nl
-Storage Directory              = /etc/ppp/news/Msgs
-Batch File                     = /etc/ppp/news/batch
-Number of threads               = 5
-Connect with Port Number        = 119
-Connect with Username          = basjes
-Connect with Password          = Secret
-Debug SOCKET commands           = False
-Send MODE READER to the server  = False
+News server Hostname                   = news.wirehub.nl
+Storage Directory                      = /etc/ppp/news/Msgs
+Batch File                             = /etc/ppp/news/batch
+Number of threads                      = 5
+Connect with Port Number               = 119
+Connect with Username                  = basjes
+Connect with Password                  = Secret
+Debug SOCKET commands                  = False
+Send MODE READER to the server         = False
+Restart File                           = /tmp/suckmtrestart
+Logging amount [0(nothing)..7(noise)]  = 2
 
 [Kill Log File]
-Enable Kill Logfile   = true
+Enable Kill Logfile   = False
 Kill Log Filename     = /tmp/SuckMTKillLog.txt
 Kill Logfile Headers  = From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID
 
 [Global Kill Rules]
-Minimum Lines in a Message   =    -1 ;   100
-Maximum Lines in a Message   =    -1 ;   100
-Maximum Bytes in a Message   =    -1 ;   100
-Maximum Groups in a Message  =    -1 ;   100
+Minimum Lines in a Message   = -1 ;   100
+Maximum Lines in a Message   = -1 ;   100
+Maximum Bytes in a Message   = -1 ;   100
+Maximum Groups in a Message  = -1 ;   100
 
 [News Groups]
 comp.os.linux.announce        = 15467

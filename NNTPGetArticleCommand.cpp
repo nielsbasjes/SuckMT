@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:54:25 $
-//  $Revision: 1.6 $
+//  $Date: 2000/03/12 21:31:01 $
+//  $Revision: 1.8 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -101,7 +101,8 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     if(iniFile->GetValue(SUCK_CONFIG,SUCK_DIR,baseDirectory))
         filenameStr << baseDirectory << "/" ;
 
-    filenameStr << article->fPrimaryNewsGroup << "_" << article->fArticleNr << ends;
+    filenameStr << article->fPrimaryNewsGroup << "_" 
+                << article->fArticleNr << ends;
 
     char * fileName = filenameStr.str();
 
@@ -129,7 +130,8 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     // Get the headers of the article
     if (!nntpProxy->GetArticleHead(article))
     {   
-//        cout << endl << "ERROR GETTING ARTICLE HEAD: " << article->fMessageID << endl;
+        Lerror << "ERROR GETTING ARTICLE HEAD: " 
+               << article->fMessageID << endl << flush;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
@@ -146,22 +148,27 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
     // Get the body of the article
     if (!nntpProxy->GetArticleBody(article))
     {   
-//        cout << "ERROR GETTING ARTICLE BODY: " << article->fMessageID << endl;
+        Lerror << "ERROR GETTING ARTICLE BODY: " 
+               << article->fMessageID << endl << flush;
         STAT_AddValue("Articles ERROR",1);
 
         delete fileName;
         return false; // Done
     }
 
-    if (KeepRunning())
-    {
-        // Ok, we got the article. Now we store it.
-        ofstream outFile(fileName);
-        outFile << article->GetHeader()  << "\r\n";
-        outFile << article->GetBody()      << "\r\n";
-        STAT_AddValue("Articles Written",1);
-        myHandler->ArticleFileHasBeenWritten(fileName);
+    // Based on the actual content --> Do we continue or kill this one ?
+    if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
+    {   
+        delete fileName;
+        return true; // Done
     }
+
+    // Ok, we got the article. Now we store it.
+    ofstream outFile(fileName);
+    outFile << article->GetHeader()  << "\r\n";
+    outFile << article->GetBody()    << "\r\n";
+    STAT_AddValue("Articles Written",1);
+    myHandler->ArticleFileHasBeenWritten(fileName);
     
     delete fileName;
     return true;

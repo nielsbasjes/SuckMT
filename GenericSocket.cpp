@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/13 20:09:36 $
-//  $Revision: 1.5 $
+//  $Date: 2000/03/12 21:30:50 $
+//  $Revision: 1.6 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -28,6 +28,8 @@
 #include "TraceLog.h"
 #include "GenericSocket.h"
 #include "StatisticsKeeper.h"
+#include <iostream.h>
+#include <iomanip.h>
 
 //-------------------------------------------------------------------------
 
@@ -60,6 +62,8 @@ static char THIS_FILE[]=__FILE__;
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
 
+MultiStream Lsocketcalls (LOGS_CALLS,"SOCKET",SHOW_TYPE|TO_COUT|TO_FILE);
+
 //------------------------------------------------------------------------
 // Construction
 //------------------------------------------------------------------------
@@ -76,8 +80,10 @@ GenericSocket::GenericSocket()
 
 GenericSocket::GenericSocket(
         const string hostName, 
-        const unsigned short portNumber)
+        const unsigned short portNumber,
+        const int socketNr)
 {
+    fSocketNr = socketNr;
     socketCreateTime = time(NULL);
     sendBytes = 0;
     receivedBytes = 0;
@@ -91,9 +97,8 @@ GenericSocket::GenericSocket(
 
 GenericSocket::~GenericSocket()
 {
-    cout << "Socket statistics: ";
-    PrintStatistics(cout);
-    cout << endl << flush;
+    PrintStatistics(Linfo);
+    Linfo << endl << flush;
 
 #ifdef WIN32
     if (connected)
@@ -144,8 +149,8 @@ GenericSocket::SetConnectionParams(
     hostEntry = GetHostEntry(hostName);
     if(hostEntry == NULL) 
     {
-        lprintf(LOG_ERROR,"Couldn't resolv '%s', exiting.\n", 
-                hostName.c_str());
+        Lerror << "Couldn't resolv '" << hostName.c_str() << "', exiting."
+               << endl << flush;
         return false;
     }
 
@@ -177,8 +182,8 @@ GenericSocket::GetHostEntry(const string hostname)
         
         if ( hostEnt == NULL )
         {
-            lprintf(LOG_ERROR,"gethostbyaddr(1) failed for %s\n", 
-                    hostname.c_str());
+            Lerror << "gethostbyaddr(1) failed for " 
+                   << hostname.c_str() << endl << flush;
         }
     } 
     else 
@@ -187,8 +192,8 @@ GenericSocket::GetHostEntry(const string hostname)
 
         if ( hostEnt == NULL ) 
         {
-            lprintf(LOG_ERROR,"gethostbyname(2) failed for %s\n", 
-                    hostname.c_str());
+            Lerror << "gethostbyaddr(2) failed for " 
+                   << hostname.c_str()  << endl << flush;
         }   
     }
     return (hostEnt);
@@ -209,16 +214,16 @@ GenericSocket::Connect()
     if (connect(socketHandle, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
     {
 #ifdef WIN32
-        lprintf(LOG_ERROR,"Can't connect to server.\n");
+        Lerror << "Can't connect to server." << endl << flush;
 #else
         switch(errno) 
         {
             /* this should be made nicer */
         case ECONNREFUSED:
-            lprintf(LOG_ERROR,"Connection refused.\n");
+            Lerror << "Connection refused." << endl << flush;
             break;
         default:
-            lprintf(LOG_ERROR,"Can't connect to server.\n");
+            Lerror << "Can't connect to server." << endl << flush;
             break;
         }
 #endif        
@@ -245,7 +250,7 @@ GenericSocket::Send(const char *buffer)
 {
     if (buffer==NULL)
     {
-        lprintf(LOG_FATAL,"CANNOT SEND: Provided buffer == NULL !!!");
+        Lfatal << "CANNOT SEND: Provided buffer == NULL !!!" << endl << flush;
         return -1;
     }
     
@@ -261,22 +266,21 @@ GenericSocket::Send(const char *buffer, const unsigned int len)
 {
     if (buffer==NULL)
     {
-        lprintf(LOG_FATAL,"CANNOT SEND: Provided buffer == NULL !!!");
+        Lfatal << "CANNOT SEND: Provided buffer == NULL !!!" << endl << flush;
         return -1;
     }
         
     if (!connected)
     {
-        lprintf(LOG_FATAL,"CANNOT SEND: NOT CONNECTED !!!");
+        Lfatal << "CANNOT SEND: NOT CONNECTED !!!" << endl << flush;
         return -1;
     }
-
-//    cout << "SENDING: \"" << buffer <<  "\"" << endl << flush;
 
     STAT_AddValue("Socket Send Bytes",len);
     sendBytes += len;
 
-    lprintf(LOG_SOCKET,"Send %d bytes (total %d): \"%s\".",len,sendBytes,buffer);
+    Lsocketcalls << "Send " << len << " bytes (total " 
+                 << sendBytes << "): \""<<buffer<<"\"." << endl << flush;
 
     return(SocketWrite(socketHandle,buffer,len));
 }
@@ -300,13 +304,13 @@ GenericSocket::__Receive(char *buffer, int maxlen, char stopChar,
 
     if (buffer==NULL)
     {
-        lprintf(LOG_FATAL,"CANNOT RECEIVE: Provided buffer == NULL !!!");
+        Lfatal << "CANNOT RECEIVE: Provided buffer == NULL !!!" << endl << flush;
         return -1;
     }
 
     if (!connected)
     {
-        lprintf(LOG_FATAL,"CANNOT RECEIVE: NOT CONNECTED !!!");
+        Lfatal << "CANNOT RECEIVE: NOT CONNECTED !!!" << endl << flush;
         return -1;
     }
 
@@ -359,11 +363,10 @@ GenericSocket::__Receive(char *buffer, int maxlen, char stopChar,
     STAT_AddValue("Socket Received Bytes",byteCounter);
     receivedBytes += byteCounter;
 
-//    cout << "\r";
 //    PrintStatistics(cout);
     
-    lprintf(LOG_SOCKET,"Received %d bytes (total %d)",
-                       byteCounter,receivedBytes,realBuffer);
+    Lsocketcalls << "Received " << byteCounter << " bytes (total " 
+                 << receivedBytes << "): \""<<realBuffer<<"\"." << endl << flush;
 
     return byteCounter;
 }
@@ -399,8 +402,14 @@ void
 GenericSocket::PrintStatistics(ostream &os)
 {
     time_t usedTime = time(NULL) - socketCreateTime;
-    os << "Out " << sendBytes << " bytes, in " << receivedBytes << " bytes" 
-       << " in " << usedTime << " seconds : "; 
+
+    if (fSocketNr == 0)
+        os << "Socket : ";
+    else
+        os << "Socket " << fSocketNr << ": ";
+        
+    os << "OUT: " << setw(4) << sendBytes << " bytes, " 
+       << "IN: " << setw(7) <<  receivedBytes << " bytes, AVG: " << setw(7);
     if (usedTime==0)
         os << (receivedBytes) << " bytes/second"; // We assume 1 second
     else

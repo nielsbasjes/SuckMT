@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:37 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/12 21:30:46 $
+//  $Revision: 1.8 $
 //  $RCSfile: CommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -26,6 +26,7 @@
 //-------------------------------------------------------------------------
 
 #include "omnithread.h"
+#include "TraceLog.h"
 #include "CommandHandler.h"
 
 //-------------------------------------------------------------------------
@@ -33,7 +34,7 @@
 CommandHandler::CommandHandler(CommandQueue * commandQueue)
 {
     myCommandQueue = commandQueue;
-//    cout << "Starting Command Handler" << endl << flush;
+    Lcalls << "Starting Command Handler" << endl << flush;
     busy = false;
     currentCommand = (Command*)NULL;
     start_undetached();
@@ -85,7 +86,7 @@ CommandHandler::run_undetached(void* /*arg*/)
             busy = true;
             if(currentCommand->Execute(this) == false)
             {
-//                cout << "ERROR !!!!!!" << endl << flush;
+                Lerror << "Command failed." << endl << flush;
 //                busy = false;
             }
 

@@ -1,11 +1,11 @@
 This is the TODO list I currently have. 
 
 Nr  Status  Description
- 1          Actually create usefull logging options (syslog ?). 
+ 1  Done    Actually create usefull logging options (syslog ?). 
  2  Done    Parse the header fields
  3  Done    After (2): Create fully flexible header based killrules.
  4          Automagically remove non-existant groups from suckmt.ini ??
- 5          Better handle error situations (no such group, cannot connect to server, server throttle, extremely slow server, etc).
+ 5  Partial Better handle error situations (no such group, cannot connect to server, server throttle, extremely slow server, etc).
  6          Rewrite makefiles so they work on NT, Linux and Irix (use autoconf better !!).
  7  Partial Write manual pages and such.
  8          Create an auto remove for header kill rules that haven't been used for a

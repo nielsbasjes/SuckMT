@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/03 18:04:36 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/12 21:31:05 $
+//  $Revision: 1.9 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -27,6 +27,7 @@
 
 #include <fstream.h>
 #include <iostream.h>
+#include "TraceLog.h"
 #include "SuckDefines.h"
 #include "NNTPRetrieveManager.h"
 #include "NNTPGetXOVERCommand.h"
@@ -38,34 +39,45 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
 {
     fSettings = &settings;
 
+    // Get the groups we want.
     list<string> groups;
     fSettings->GetVariableNames(SUCK_GROUPS,groups);
 
     if (groups.size() == 0)
     {
-        cout << "No groups have been defined." << endl
-         << "Please add a line :\"groupname = -1\" in the section [" 
-         << SUCK_GROUPS << "] in " << SUCK_CONFIG_FILE << "." << endl
-         << "Example: " << endl
-         << "nl.comp.os.linux.announce = -1" << endl << flush;
-         return;
+        Lerror << "No groups have been defined." << endl << flush;
+        return;
     }
 
+    // Create the handlers.
     long   handlersToCreate;
     if (!fSettings->GetValue(SUCK_CONFIG,SUCK_THREADS,handlersToCreate))
         handlersToCreate = 3; // Default value
     
-    cout << "Starting " << handlersToCreate 
-         << " simultaneous connections." << endl << flush;
+    Linfo << "Starting " << handlersToCreate 
+          << " simultaneous connections." << endl << flush;
 
     for (int i = 0 ; i < handlersToCreate ; i ++)
     {
         NNTPCommandHandler * newCommandHandler = new NNTPCommandHandler 
                         (this,&commands, &fKiller, fSettings);
 
+        // Check if the connect succeeded with the first one
+        // If the first one failed the the others will fail aswell.
+        if (i == 0)
+        {
+            NNTPProxy * proxy = newCommandHandler->GetNNTPProxy();
+            if (proxy == NULL ||
+                (proxy != NULL && !proxy->IsConnected()))
+            {
+                Lerror << "Connection to server failed." << endl << flush;
+                return;
+            }
+        }
         NNTPHandlers.push_back (newCommandHandler);
     }
-
+    
+    // Add commands for all groups.
     list<string>::const_iterator groupIter;
 
     for(groupIter  = groups.begin();
@@ -79,7 +91,7 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
             fSettings->SetValue(SUCK_GROUPS,(*groupIter),lastOneWeHave);
         }
 
-        cout << "Checking group " << groupIter->c_str() << endl;
+        Linfo << "Checking group " << groupIter->c_str() << endl << flush;
 
         commands.AddCommand(new NNTPGetXOVERCommand
                           (*groupIter,lastOneWeHave+1));
@@ -121,9 +133,8 @@ NNTPRetrieveManager::~NNTPRetrieveManager()
         (*nntpHandlersIter)->Abort();
         (*nntpHandlersIter)->join(NULL);
     }
+
     NNTPHandlers.clear();
-    
-//    delete (fKiller);
 }
 
 
@@ -192,7 +203,7 @@ NNTPRetrieveManager::WaitForCompletion ()
 void
 NNTPRetrieveManager::AbortChildren()
 {
-    cout << "Making Queue EMPTY." <<  endl << flush;
+    Levent << "Making Queue EMPTY." << endl << flush;
     
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
     
@@ -203,7 +214,9 @@ NNTPRetrieveManager::AbortChildren()
     {
         (*nntpHandlersIter)->Abort();
     }
-    
+
+    fKiller.Abort();
+        
     bool someAreBusy = true;
     
     while (someAreBusy)

@@ -112,6 +112,10 @@ SOURCE=.\CommandQueue.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DuplicatesChecker.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GenericSocket.cpp
 # End Source File
 # Begin Source File
@@ -125,6 +129,10 @@ SOURCE=.\IniFile.cpp
 # Begin Source File
 
 SOURCE=.\main.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MultiStream.cpp
 # End Source File
 # Begin Source File
 
@@ -168,6 +176,10 @@ SOURCE=.\regex.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\SetProcTitle.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StatisticsKeeper.cpp
 # End Source File
 # Begin Source File
@@ -192,6 +204,10 @@ SOURCE=.\acconfig.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ArticleImpactChecker.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\AsciiLineSocket.h
 # End Source File
 # Begin Source File
@@ -208,11 +224,23 @@ SOURCE=.\CommandQueue.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DuplicatesChecker.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\GenericSocket.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\HeaderMatcher.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\IniFile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MultiStream.h
 # End Source File
 # Begin Source File
 
@@ -253,6 +281,14 @@ SOURCE=.\omnithread.h
 # Begin Source File
 
 SOURCE=.\Printable.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\regex.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SetProcTitle.h
 # End Source File
 # Begin Source File
 

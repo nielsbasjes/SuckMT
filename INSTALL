@@ -14,9 +14,13 @@ Basic Installation and use.
 4) Create a default config file (you can put this file anywhere you like).
    suckmt -init -i /etc/suckmt.ini
 
+   With a new version of suckmt it is very likely new settings have been added.
+   You can use the above commandline to add the new options to your suckmt.ini
+   file with an appropriate default value without running the actual download.
+
    A suckmt.ini.sample is included to get an idea on what a running suckmt.ini
    file can look like.
-   
+
 5) Add the news group(s) you want.
    You can just add them with a normal text editor or you can do 
    suckmt -i /etc/suckmt.ini -n nl.comp.os.linux
@@ -72,6 +76,22 @@ Basic Installation and use.
     Sending the MODE READER command to the server is required for 
     some servers.
 
+   -----------
+         Restart File  = /tmp/suckmtrestart
+         
+    This is the name of the temporary file that is used to restart 
+    when suckmt was stopped before all downloads were completed.
+         
+   -----------
+         Logging amount [0(nothing)..7(noise)]  = 2
+
+    This determines how much information is shown on the screen during
+    the execution of suckmt. 
+    0 means that (almost) nothing is shown. 
+    7 means that a LOT of noise about a lot of steps is shown on the screen.
+    The default value 2 show a usefull amount of information.
+    Note that some of the logged information is also sent to the syslogd.
+
 7) To actually use suckmt just run it
    suckmt -i /etc/suckmt.ini 
    and everything is handled automagically.
@@ -80,9 +100,10 @@ Basic Installation and use.
    something else.
       
    If and error situation occurs the suckmt.ini file will NOT be updated.
-   If you remove the already downloaded files from the "Storage Directory"
-   the next time suckmt is run it will download the same files AGAIN !!!
-
+   You can however safely post the downloaded files to your news server and 
+   remove them from the "Storage Directory". The next time suckmt is run 
+   the "Restart File" will be used to determine which messages have already 
+   been download and can be skipped for that reason.
    
 8) Add some kill/keep rules (see further below)
 
@@ -232,16 +253,45 @@ The second number is the weight of this rule.
 The default weight value is 100 but can be changed manually.
 This weight value will be explained later.
 
+  ARTICLE BODY 
+  ============
+  You can also kill/keep if a specific value occurs in the Article Body.
+  To do this you can specify the "header" field called ArticleBody.
+  This rule will ONLY be matched if the entire article has been downloaded 
+  but can still be usefull to reduce the amount of junk that you see in 
+  some newsgroups. 
+
+  Example (this one kills articles that refer to a numerical URL):
+    ~ArticleBody:http://[0-9]*/ = Wed Mar 01 22:06:37 2000 ;     0 ;   100
+
+  The weight of this rule will be added to the total weight of all previously 
+  matched headers. So if you have a keep rule that sets the cumulative weight 
+  of a message to 200 and you match the above rule the message will still be 
+  kept because the total weight will be 100.
+  
+  It is important to note that using this feature will probably cause a 
+  performance impact because 
+    1) This match can only be done AFTER download, 
+    2) all messages have a body so all messages will be checked, 
+    3) the size of the "header" is significantly larger than the other headers.
+
+  Note that if you set the "Enable Kill Logfile" to true you will get the 
+  entire message in the logfile if a match was found (because that is the 
+  value that the expression matched against).
 
   KILL KEEP WEIGHT VALUE
   ======================
 
 For all messages the following is done:
-1)  Check the lines, bytes and groups against the ALL kill rules in the 
+1)  Download the header based on the line from the XOVER command.
+2)  Check the lines, bytes and groups against the ALL kill rules in the 
     "Global Kill Rules" section. 
-2)  Check the headers against ALL kill and keep rules.
-3)  The matched keep weights are added and the matched kill weights are 
-    substracted from 0. 
+3)  Check the headers against ALL kill and keep rules.
+4)  The matched kill weights are substracted from the matched keep weights.
     If the resulting number is negative the message is killed.
     If the resulting number is 0 or larger the message is NOT killed.
-
+5)  The body is downloaded
+6)  Check the body against the ArticleBody kill and keep rules.
+    If the total from 3) and 6) is negative the message is killed.
+    If the total from 3) and 6) is 0 or larger the message is NOT killed.
+7)  Write the message to disk.

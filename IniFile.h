@@ -6,8 +6,8 @@
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:48 $
-//  $Revision: 1.10 $
+//  $Date: 2000/03/02 20:51:28 $
+//  $Revision: 1.11 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -66,7 +66,7 @@ public:
     // Returns true if file succesfully written
     //         false otherwise.
     bool
-    WriteFile(string filename);
+    WriteFile(string filename="");
 
     //------------------------------------------------------
     // Prints all settings to the specified stream

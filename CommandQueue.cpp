@@ -6,8 +6,8 @@
 //  Filename  : CommandQueue.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:46:39 $
-//  $Revision: 1.3 $
+//  $Date: 2000/03/12 21:30:47 $
+//  $Revision: 1.4 $
 //  $RCSfile: CommandQueue.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -27,6 +27,7 @@
 
 #include "CommandQueue.h"
 #include "StatisticsKeeper.h"
+#include "TraceLog.h"
 
 //-------------------------------------------------------------------------
 
@@ -37,7 +38,7 @@ CommandQueue::GetCommand()
 
     if (empty())
     {
-        //cout << "Command Queue is EMPTY" << endl << flush;
+        Lsteps << "Command Queue is EMPTY" << endl << flush;
         return NULL;
     }
 

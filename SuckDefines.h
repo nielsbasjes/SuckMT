@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/02 15:33:01 $
-//  $Revision: 1.13 $
+//  $Date: 2000/03/13 21:28:03 $
+//  $Revision: 1.16 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -67,6 +67,8 @@
 #define SUCK_DIR               "Storage Directory"
 #define SUCK_BATCH_FILE        "Batch File"
 #define SUCK_THREADS           "Number of threads"
+#define SUCK_RESTART_FILE      "Restart File"
+#define SUCK_LOGLEVEL          "Logging amount [0(nothing)..7(noise)]"
 
 #define SUCK_GLOBAL_KILL_RULES "Global Kill Rules"
 #define SUCK_MIN_LINES         "Minimum Lines in a Message"
@@ -76,6 +78,9 @@
 
 #define SUCK_KILL_HEADERS      "Kill Headers"
 #define SUCK_KEEP_HEADERS      "Keep Headers"
+
+// This is the name of the "header" field that indicates the article body
+#define SUCK_ARTICLEBODY       "ArticleBody"
 
 #define SUCK_KILL_LOGFILE         "Kill Log File"
 #define SUCK_KILL_ENABLE_LOGFILE  "Enable Kill Logfile"

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/01/06 20:25:54 $
-//  $Revision: 1.11 $
+//  $Date: 2000/03/02 20:51:30 $
+//  $Revision: 1.12 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -44,6 +44,7 @@ class NewsKiller; // Forward declaration
 #include "Printable.h"
 #include "omnithread.h"
 #include "HeaderMatcher.h"
+#include "DuplicatesChecker.h"
 
 //-------------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ class NewsKiller; // Forward declaration
 
 //-------------------------------------------------------------------------
 
-class NewsKiller : public Printable
+class NewsKiller : public Printable, public Abortable
 {
 public: 
     NewsKiller(IniFile *settings);
@@ -65,24 +66,20 @@ public:
     bool 
     DoWeKeepThisArticle(NEWSArticle * article);
 
-    void Print (ostream &os) const;
+    void 
+    AbortChildren();
+
+    void 
+    Print (ostream &os) const;
 
 private:
     //------------------------------------------------------
     // Private members that are actually used for the storage 
     omni_mutex valuesMutex;    
 
-    // Returns 
-    //  - true  if stored.
-    //  - false if not stored because it is already present.
-    bool
-    StoreMessageID(string newMessageID);
+    // The settings file contains all downloaded message IDs
+    DuplicatesChecker fDuplicatesChecker;
 
-    // The string is the messageID and 
-    // the bool is always true except when not yet present
-    map <string,bool> allMessageIDs;
-    omni_mutex       messageDBmutex;
-    
     // The settings file contains all the kill rules
     IniFile          *fSettings;
     
@@ -145,6 +142,10 @@ private:
 
     void
     ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons);
+
+    void 
+    ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons, 
+                          string headerName);
 };
 
 DEFINE_PRINTABLE_OPERATORS(NewsKiller)
