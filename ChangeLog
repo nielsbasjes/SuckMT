@@ -1,3 +1,26 @@
+//=========================================================================
+//                 Copyright (C)1999-2005 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT
+//                       Author: SuckMT@Basjes.nl
+//-------------------------------------------------------------------------
+//  Project: SuckMT, a multithreaded suck replacement
+//  Language: English
+//  $Id$
+//  $Date$
+//  $Revision$
+//  $LastChangedBy$
+//=========================================================================
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   If you reuse code from SuckMT you are required to put a notice of 
+//   this fact in both your manual and about box.
+//
+//=========================================================================
+
 Version 0.3
     First public version.
     Actually works but losts of things are still missing.
@@ -89,3 +112,5 @@ Version 0.57
     Fixed: Serious bug in the INI file read code. Thanks to Bob Jaques for pointing it out to me. This bug effectively made suckmt unusable on many platforms. The strange thing is that the effected code has been in there since almost the very first version. I should have spotted this when making 0.56 but back then I only focussed on the makefiles and related scripts.
 Version 0.58
     Updated: With Fedora Core 3 the bundeled version of Boost didn't compile any more. The nice thing of FC3 is that it comes with the most recent version of Boost as a standard RPM. SuckMT was modified to rely on this RPM.
+    Updated: Copyright info updated to reflect current year.
+    Updated: Changed CVS tags into SVN tags.

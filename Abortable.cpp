@@ -1,14 +1,13 @@
 //=========================================================================
 //                 Copyright (C)1999-2005 by Niels Basjes
 //              SuckMT Website : http://oss.basjes.nl/SuckMT
-//                        Author: SuckMT@Basjes.nl
+//                       Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
-//  Filename  : Abortable.cpp
-//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: Abortable.cpp 5 2004-12-20 20:20:02Z niels $
-//  $Date: 2004-12-20 21:20:02 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 5 $
+//  $Id: Abortable.cpp 6 2004-12-20 20:53:20Z niels $
+//  $Date: 2004-12-20 21:53:20 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 6 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //

@@ -1,5 +1,4 @@
-#=========================================================================
-#                   Copyright (C) 1999 by Niels Basjes
+http://oss.basjes.nl/SuckMT#                   Copyright (C) 1999 by Niels Basjes
 #                  Suck MT Website: http://go.to/suckmt
 #                        Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------

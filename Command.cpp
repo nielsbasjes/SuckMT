@@ -1,15 +1,14 @@
 //=========================================================================
-//                 Copyright (C)1999-2000 by Niels Basjes
-//                  SuckMT Website : http://go.to/suckmt
-//                        Author: SuckMT@Basjes.nl
+//                 Copyright (C)1999-2005 by Niels Basjes
+//              SuckMT Website : http://oss.basjes.nl/SuckMT
+//                       Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
-//  Filename  : Command.cpp
-//  Sub-system: SuckMT, a multithreaded suck replacement
+//  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2004-12-20 21:09:23 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 4 $
-//  $RCSfile: Command.cpp,v $
-//  $Author: $
+//  $Id: Command.cpp 6 2004-12-20 20:53:20Z niels $
+//  $Date: 2004-12-20 21:53:20 +0100 (Mon, 20 Dec 2004) $
+//  $Revision: 6 $
+//  $LastChangedBy: niels $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify
