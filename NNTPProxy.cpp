@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:39 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:43:14 $
+//  $Revision: 1.4 $
 //  $RCSfile: NNTPProxy.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -58,9 +58,9 @@ NNTPProxy::NNTPProxy (string serverName)
 NNTPProxy::~NNTPProxy ()
 {
     if (nntp != NULL)
-	{
+    {
         delete(nntp);
-	}
+    }
 }
 
 //--------------------------------------------------------------------
@@ -198,48 +198,48 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
         lprintf(LOG_ERROR,"Not connected.");
         return 0; // Not connected
     }
-	
+    
     GroupInfo groupInfo;
     if (!SetCurrentGroup(groupName,groupInfo))
     {
         cout << "ERROR" << endl;
         return 0;
     }
-	
+    
     long first = groupInfo.first;
     long last  = groupInfo.last;
-	
+    
     if (startAtArticlenr != -1 && startAtArticlenr > first)
         first = startAtArticlenr;
-	
+    
     if (first > last)
     {
-		cout << endl << "There are no new messages present in " << groupName << endl << flush;
+        cout << endl << "There are no new messages present in " << groupName << endl << flush;
         return 2; // No messages in this group at all.    
     }
-	
+    
     if (first == last)
         nntp->Sendf("XOVER %ld\n",first);
     else
         nntp->Sendf("XOVER %ld-%ld\n",first,last);
-	
+    
     string responseLine;
-	
+    
     switch(nntp->GetResponse(responseLine))
     {
-		case 224: // Ok, proceed
-			return 1;
-		case 411: // Group doesn't exist
-			cout << "Error (NO SUCH GROUP): " << responseLine << endl;
-			break;
-		case 501: // Didn't specify a range ?
-			cout << "Error (INVALID/NO RANGE): " << responseLine << endl;
-			break;
-		default:
-			cout << "Error (UNKNOWN): " << responseLine << endl;
-			break;
+        case 224: // Ok, proceed
+            return 1;
+        case 411: // Group doesn't exist
+            cout << "Error (NO SUCH GROUP): " << responseLine << endl;
+            break;
+        case 501: // Didn't specify a range ?
+            cout << "Error (INVALID/NO RANGE): " << responseLine << endl;
+            break;
+        default:
+            cout << "Error (UNKNOWN): " << responseLine << endl;
+            break;
     }
-	return 0;
+    return 0;
 }
 
 //--------------------------------------------------------------------
@@ -248,12 +248,12 @@ NNTPProxy::COMMON_GetGroupOverview(string groupName, long startAtArticlenr)
 bool 
 NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticles, long startAtArticlenr)
 {
-	switch (COMMON_GetGroupOverview(groupName,startAtArticlenr))
-	{
-	case 0: return false;  // Error
-	case 1: break; // Ok to continue
-	case 2: return true; // Didn't start command because there are no messages
-	}
+    switch (COMMON_GetGroupOverview(groupName,startAtArticlenr))
+    {
+    case 0: return false;  // Error
+    case 1: break; // Ok to continue
+    case 2: return true; // Didn't start command because there are no messages
+    }
 
     string line;
     while (nntp->GetLine(line) && KeepRunning())
@@ -264,9 +264,9 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
 
 //    if (!KeepRunning())
 //    {
-//		cout << endl << "Finishing XOVER command cleanly." << endl << flush;
-//		while (nntp->GetLine(line));
-//		cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
+//      cout << endl << "Finishing XOVER command cleanly." << endl << flush;
+//      while (nntp->GetLine(line));
+//      cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
 
     return true;
@@ -279,35 +279,35 @@ NNTPProxy::GetGroupOverview (string groupName, vector<NEWSArticle*>  &newsArticl
 bool 
 NNTPProxy::GetGroupOverview(string groupName, NNTPCommandHandler *commandHandler, long startAtArticlenr)
 {
-	if (commandHandler == NULL)
-	{
-		lprintf(LOG_ERROR,"No command handler specified.");
-		return false; // Error
-	}
-	
-	switch (COMMON_GetGroupOverview(groupName,startAtArticlenr))
-	{
-	case 0: return false;  // Error
-	case 1: break; // Ok to continue
-	case 2: return true; // Didn't start command because there are no messages
-	}
-	
-	string line;
-	while (nntp->GetLine(line) && KeepRunning())
-	{
-		STAT_AddValue("Articles Present",1);
-		NEWSArticle * article = new NEWSArticle(groupName,line.c_str());
-		commandHandler->AddCommand(new NNTPGetArticleCommand(article));
-	}
+    if (commandHandler == NULL)
+    {
+        lprintf(LOG_ERROR,"No command handler specified.");
+        return false; // Error
+    }
+    
+    switch (COMMON_GetGroupOverview(groupName,startAtArticlenr))
+    {
+    case 0: return false;  // Error
+    case 1: break; // Ok to continue
+    case 2: return true; // Didn't start command because there are no messages
+    }
+    
+    string line;
+    while (nntp->GetLine(line) && KeepRunning())
+    {
+        STAT_AddValue("Articles Present",1);
+        NEWSArticle * article = new NEWSArticle(groupName,line.c_str());
+        commandHandler->AddCommand(new NNTPGetArticleCommand(article));
+    }
 
 //    if (!KeepRunning())
 //    {
-//		cout << endl << "Finishing XOVER command cleanly." << endl << flush;
-//		while (nntp->GetLine(line));
-//		cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
+//      cout << endl << "Finishing XOVER command cleanly." << endl << flush;
+//      while (nntp->GetLine(line));
+//      cout << endl << "FINISHED XOVER command cleanly." << endl << flush;
 //    }
-	
-	return true;
+    
+    return true;
 }
 
 //--------------------------------------------------------------------

@@ -3,37 +3,22 @@
 //                  Suck MT Website: http://go.to/suckmt
 //                        Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
-//  Filename  : Abortable.h
+//  Filename  : debugging.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/10/07 19:45:51 $
-//  $Revision: 1.3 $
-//  $RCSfile: Abortable.h,v $
+//  $Date: 1999/09/18 21:28:04 $
+//  $Revision: 1.2 $
+//  $RCSfile: debugging.h,v $
 //  $Author: niels $
 //=========================================================================
 
-#ifndef ABORTABLE_H
-#define ABORTABLE_H
+#ifndef __debugging_h__
+#define __debugging_h__
 
-//-------------------------------------------------------------------------
+//#define DEBUG_TRACECALLS 1
+#include "stacktrace.h"
 
-class Abortable 
-{
-public: 
-    Abortable();
-    virtual ~Abortable();
-    
-    void Abort();
-    bool KeepRunning();
-    virtual void AbortChildren();
-    
-private:
-    bool keepRunning;
-};
+#endif // __debugging_h__
 
-//-------------------------------------------------------------------------
-
-#endif
-
-// End of the file Abortable.h
+// End of the file debugging.h
 //=========================================================================

@@ -6,8 +6,8 @@
 //  Filename  : NEWSArticle.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:32 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:43:11 $
+//  $Revision: 1.4 $
 //  $RCSfile: NEWSArticle.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -19,6 +19,8 @@
 
 class NEWSArticle; // Forward Declaration
 
+//-------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <map>
 #include <vector>
@@ -27,6 +29,7 @@ class NEWSArticle; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
+// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define map    std::map
 #define vector std::vector
@@ -58,16 +61,17 @@ public:
     bool
     GetHeaderField(string headerName, string &value);
 
-//    // Retrieves the value of the specified header field 
-//    // returns false if the header doesn't exist
-//    bool
-//    GetHeaderField(string headerFieldName, long &value);
-
     string
     GetHeader();
     
     string 
     GetBody();
+
+    bool KillMatched();
+    bool KillMatched(bool killMatched);
+
+    bool KeepMatched();
+    bool KeepMatched(bool keepMatched);
 
     bool operator== (const string& someMessageID) const;
 //private:
@@ -95,7 +99,10 @@ private:
 
     string              fHeader;
     string              fBody;
-    
+
+    bool                fKillMatched;
+    bool                fKeepMatched;
+
     NewsArticleState    fState;
 };
 

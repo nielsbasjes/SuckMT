@@ -6,8 +6,8 @@
 //  Filename  : TraceLog.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:48 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:52:40 $
+//  $Revision: 1.4 $
 //  $RCSfile: TraceLog.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -56,12 +56,12 @@ lprintf(int logLevel, const char *format, ...)
 {
     int printedChars = 0;
  
-return 0;	
+return 0;   
 
     if (theActualLogLevel >= logLevel)
     {
 #ifdef WIN32
-		va_dcl;
+        va_dcl;
 #endif
         va_list ap;
 

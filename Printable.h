@@ -6,8 +6,8 @@
 //  Filename  : Printable.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:50 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:43:16 $
+//  $Revision: 1.3 $
 //  $RCSfile: Printable.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -23,6 +23,7 @@
 
 //-------------------------------------------------------------------------
 
+// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define string std::string
 #define vector std::vector

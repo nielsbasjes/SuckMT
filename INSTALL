@@ -7,10 +7,10 @@ Basic Installation and use.
 2) Build the executable
    cd suckmt.*
    make
-   
+
 3) Copy the final executable to a usable location
    cp suckmt /usr/bin          
-   
+
 4) Create a default config file (you can put this file anywhere you like).
    suckmt -init -i /etc/suckmt.ini
    
@@ -26,11 +26,6 @@ News server Hostname  = news.wirehub.nl
 Storage Directory     = /etc/ppp/news/Msgs
 Batch File            = /etc/ppp/news/batch
 Number of threads     = 5
-
-[Global Kill Rules]
-Maximum Lines in a Message   = 300
-Maximum Bytes in a Message   = -1
-Maximum Groups in a Message  = 6
 
     I recommend you experiment with the "Number of threads" value (5 seems to
     work best in my situation).
@@ -52,21 +47,101 @@ Maximum Groups in a Message  = 6
    
    Content-Type:text/html
    
-   After you run suckmt this line will have been changed into this (added an
-   '=') if no messages were killed during this run.
-   
-   Content-Type:text/html =
-  
-   If one or more messages were found then this line will look something like
+   After you run suckmt this line will have been changed into something like
    this:
    
    Content-Type:text/html = Wed Sep 29 20:46:51 1999 ; 6
 
    The date is the start time of the suckmt run when this header was found. 
-   The number after the ; is the number of occurrances this rule has been 
+   The number after the ';' is the number of occurrances this rule has been 
    applied since it was put in the suckmt.ini file.
    
    The reason I added this is that if I manually inspect the suckmt.ini file I
    can see how often a kill rule has been applied and when the last occurrance
    was. This system isn't perfect (yet) because if multiple headers would be
    reason to kill a message only the status of the first one will be updated.
+
+
+Content of the suckmt.ini file
+==============================
+
+The suckmt.ini has been created as a simple general config format for all 
+settings relating to suckmt in a human edditable format.
+
+Generic File format
+===================
+
+The file consists of sections. The start of the section foo is indicated 
+by a line with [foo]. Each section consists of a group of settings. Each 
+setting is a name and a value with an '=' in between. Both the name and the 
+value are free text as long as it is on 1 line and the name cannot contain an '='
+Each name must be unique in the section. If duplicate names are found the last 
+one will overwrite the first one.
+
+IMPORTANT: All names are CASE SENSITIVE !!
+
+Sections can be split in muliple part but they will be rejoined automagically.
+
+For example
+[foo]
+Harry = Man
+Jill = !Man
+
+[bar]
+Harry = Man
+Jill = !Man
+
+[foo]
+William = Man
+
+
+will be rewritten into
+
+[foo]
+Harry    = Man
+Jill     = !Man
+William  = Man
+
+[bar]
+Harry  = Man
+Jill   = !Man
+
+
+Used contents of suckmt.ini
+===========================
+You can put a lot of settings into the suckmt.ini that are not used by the software.
+I will only describe the actually used values. Please examine the suckmt.ini.sample file to get an idea how to store the information.
+
+[Suck MT Copyright Information] contains some unimportant general information about suckmt.
+
+[Suck MT Installation] contains some unimportant statistics about how often you have run suckmt. 
+
+[Suck MT Configuration] contains the connection and storage information you'll know what they mean when you see them.
+
+[News Groups] is a list of all the newsgroups that should be downloaded. The value that is stored is the article number where to start the next download.
+
+[Kill Headers] are the headers that are cause to kill a message. Each line consists of 4 items:
+- The header name
+- The value to look for
+- The date when the last ocurrence was found
+- The number of matches that have been found till now
+
+Examples:
+Content-Type:multipart/alternative        = Wed Oct  6 20:27:51 1999 ; 25
+Content-Type:multipart/mixed              = Wed Oct  6 20:27:51 1999 ; 8
+Subject:TKA                               = Wed Oct  6 23:32:53 1999 ; 15
+Subject:TKG                               = Wed Oct  6 20:27:51 1999 ; 7
+Subject:overklok                          = Sun Oct  3 22:53:12 1999 ; 5
+Subject:overclock                         = Mon Oct  4 20:34:45 1999 ; 3
+From:droid@spam.free.net                  = Mon Oct  4 20:34:45 1999 ; 0
+
+
+NOTES:
+1) You can specify ANY header field.
+2) All matches are case sensitive
+3) If you want to specify a new rule you can just put something like this in here.
+Subject:TKA
+   Suckmt will automagically create the rest of the information for you.
+
+[Keep Headers] are the headers that are cause to keep a message no matter if a kill match was found. The format and use of these line are identical to the Kill Headers.
+

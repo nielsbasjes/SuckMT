@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/30 17:35:00 $
-//  $Revision: 1.4 $
+//  $Date: 1999/10/07 19:43:12 $
+//  $Revision: 1.7 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -19,8 +19,19 @@
 
 class NewsKiller; // Forward declaration
 
+//-------------------------------------------------------------------------
+
 #include <map>
+#include <vector>
 #include <string>
+
+#ifdef WIN32
+#include <strstrea.h>
+#else
+#include <strstream.h>
+#endif
+
+#include <fstream.h>
 #include "NEWSArticle.h"
 #include "IniFile.h"
 #include "Printable.h"
@@ -28,8 +39,10 @@ class NewsKiller; // Forward declaration
 
 //-------------------------------------------------------------------------
 
+// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define map    std::map
+#define vector std::vector
 #define string std::string
 #endif
 
@@ -38,8 +51,8 @@ class NewsKiller; // Forward declaration
 class NewsKiller : public Printable
 {
 public: 
-	NewsKiller(IniFile *settings);
-	~NewsKiller();
+    NewsKiller(IniFile *settings);
+    ~NewsKiller();
 
     bool 
     DoWeKeepThisArticle(NEWSArticle * article);
@@ -67,25 +80,60 @@ private:
     
     // The current time and date as a string
     string            fNow;
+
+    // Kill Logfile    
+    bool              fLogKilledMessages;
+    string            fKillLogFileName;
+    vector<string>    fHeadersToMentionInKillLog;
+    ofstream          fKillLogFile;
+    omni_mutex        fKillLogFileMutex;
+    
+    void 
+    LogKillEvent(NEWSArticle *article,
+                 const char * reason);
     
     typedef struct 
     {
         string  keyName;
-        string  valueToKill;
+        string  valueToMatch;
         string  lastOcurrance;
         long    count;
-    } killStruct;
+    } headerMatchStruct;
         
-    // Pre parsed cache for the kill rules
-    vector<string>                  fHeadersToCheck;
-    map<string,vector<killStruct*> > fKillHeaders;
-    
+    // Pre parsed cache for the kill/keep rules
+    vector<string>                          fHeadersToCheck;
+    map<string,vector<headerMatchStruct*> > fKillHeaders;
+    map<string,vector<headerMatchStruct*> > fKeepHeaders;
+
+    // This function reads the rules from the Inifile and stores 
+    // them in the specified storage
+    void
+    ReadHeaderRules (string iniSection, vector<string>  &headersToCheck,
+                     map<string,vector<headerMatchStruct*> >    &headerRules);
+
+    void
+    EraseHeaderRules(map<string,vector<headerMatchStruct*> >    &headerRules);
+
+    void
+    CheckLinesAndBytesAndGroups(NEWSArticle * article, strstream &killReasons);
+
+    void
+    MatchHeaders(NEWSArticle * article, strstream &killReasons);
+
+    void 
+    MatchOneHeader(NEWSArticle * article, strstream &killReasons, string headerName);
+
+    // The rule set is either the Kill (true) or the Keep (false) set
     // The headername is the name of the header that is passed
     // The headerValue is the value of the header that is passed
-    // The return value is false if this article should be killed
+    // The return value is true if this article should be killed
     bool 
-    DoWeKeepThisArticle(string headername,string headerValue);
-    
+    DoesTheHeaderMatch(bool   kill_keep,
+                       string headerName,
+                       string headerValue,
+                       string &matchedValue);
+    #define USE_KILL  true
+    #define USE_KEEP  false
 };
 
 DEFINE_PRINTABLE_OPERATORS(NewsKiller)
@@ -93,6 +141,8 @@ DEFINE_PRINTABLE_OPERATORS(NewsKiller)
 //-------------------------------------------------------------------------
 
 #endif
+
+//-------------------------------------------------------------------------
 
 // End of the file NewsKiller.h
 //=========================================================================

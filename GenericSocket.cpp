@@ -6,8 +6,8 @@
 //  Filename  : GenericSocket.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:24 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:44:34 $
+//  $Revision: 1.3 $
 //  $RCSfile: GenericSocket.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -85,6 +85,7 @@ GenericSocket::~GenericSocket()
     cout << "Socket statistics: ";
     PrintStatistics(cout);
     cout << endl << flush;
+
 #ifdef WIN32
     if (connected)
         WSACleanup();
@@ -130,7 +131,7 @@ GenericSocket::SetConnectionParams(string hostName, unsigned short portNumber)
     alarm(60*30); /* 30 minutes */
     
     hostEntry = GetHostEntry(hostName);
-    if(hostEntry == 0) 
+    if(hostEntry == NULL) 
     {
         lprintf(LOG_ERROR,"Couldn't resolv '%s', exiting.\n", 
                 hostName.c_str());

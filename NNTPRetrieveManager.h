@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:45 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:43:15 $
+//  $Revision: 1.3 $
 //  $RCSfile: NNTPRetrieveManager.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -15,7 +15,11 @@
 #ifndef NNTPRETRIEVEMANAGER_H
 #define NNTPRETRIEVEMANAGER_H
 
+//-------------------------------------------------------------------------
+
 class NNTPRetrieveManager; // Forward Declaration
+
+//-------------------------------------------------------------------------
 
 #include <vector>
 #include <string>
@@ -26,16 +30,20 @@ class NNTPRetrieveManager; // Forward Declaration
 #include "NNTPCommandHandler.h"
 #include "NewsKiller.h"
 
+//-------------------------------------------------------------------------
+
 // Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define string std::string
 #endif
 
+//-------------------------------------------------------------------------
+
 class NNTPRetrieveManager : public Abortable
 {
 public: 
-	NNTPRetrieveManager(IniFile &settings);
-	~NNTPRetrieveManager();
+    NNTPRetrieveManager(IniFile &settings);
+    ~NNTPRetrieveManager();
 
     // Get the messages from the specified groups
     void
@@ -71,6 +79,8 @@ private:
     NewsKiller   fKiller;
     IniFile      *fSettings;
 };
+
+//-------------------------------------------------------------------------
 
 #endif
 

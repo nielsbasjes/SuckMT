@@ -6,8 +6,8 @@
 //  Filename  : main.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/30 17:56:05 $
-//  $Revision: 1.5 $
+//  $Date: 1999/10/07 19:44:35 $
+//  $Revision: 1.7 $
 //  $RCSfile: main.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -94,13 +94,13 @@ InitializeIniFile(IniFile &settings)
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_BATCH_FILE,    "/tmp/suckmtbatch");
     SET_UNDEFINED(SUCK_CONFIG,  SUCK_THREADS,       3);
     
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES,     -1);
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES,     -1);
-    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS,    -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_LINES,  -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_BYTES,  -1);
+    SET_UNDEFINED(SUCK_GLOBAL_KILL_RULES,   SUCK_MAX_GROUPS, -1);
 
-//    SET_UNDEFINED(SUCK_KILL_STATISTICS,"Explanation of these fields",
-//    "These fields indicate when the last message was killed and how often messages"
-//    "have been killed for the specified reason.");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_ENABLE_LOGFILE, "0");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILENAME,    "/tmp/SuckMTKillLog.txt");
+    SET_UNDEFINED(SUCK_KILL_LOGFILE,SUCK_KILL_LOGFILE_HEADERS,"From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID");
 
     // Keep statistics
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LATEST_VERSION,SUCKMT_VERSION);
@@ -119,7 +119,7 @@ InitializeIniFile(IniFile &settings)
 static NNTPRetrieveManager * retrieveManagerToSignal = NULL;
 
 static void 
-SignalHandler(int /*sig_num*/)
+SuckmtSignalHandler(int /*sig_num*/)
 {
     cout << "Received STOP signal." << endl << flush;
     if (retrieveManagerToSignal == NULL)
@@ -131,13 +131,13 @@ SignalHandler(int /*sig_num*/)
 //-------------------------------------------------------------------------
 
 static void 
-SetSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
+SetSuckmtSignalHandler(NNTPRetrieveManager * nntpRetrieveManager)
 {
     retrieveManagerToSignal = nntpRetrieveManager;
-    signal(SIGINT,  SignalHandler);
-//    signal(SIGHUP,  SignalHandler);
-//    signal(SIGABRT, SignalHandler);
-//    signal(SIGTERM, SignalHandler);
+    signal(SIGINT,  SuckmtSignalHandler);
+//    signal(SIGHUP,  SuckmtSignalHandler);
+//    signal(SIGABRT, SuckmtSignalHandler);
+//    signal(SIGTERM, SuckmtSignalHandler);
 }
 
 //-------------------------------------------------------------------------
@@ -265,7 +265,7 @@ int main(int argc, char** argv)
     {
         NNTPRetrieveManager nntpRetrieveManager(settings);
     
-        SetSignalHandler(&nntpRetrieveManager);
+        SetSuckmtSignalHandler(&nntpRetrieveManager);
 
         if (showProgress)
             KeepStatistics(10000); // 10000 == Show every 1 second
@@ -281,20 +281,20 @@ int main(int argc, char** argv)
         
         // Write the ini file back if we were not aborted
         if (nntpRetrieveManager.KeepRunning())
-	    {
-		    cout << "All downloads were completed successfully." << endl << flush;
+        {
+            cout << "All downloads were completed successfully." << endl << flush;
             settings.WriteFile(iniFileName); 
-	    }
-	    else
-	    {
-		    cout << "Downloads were aborted by user." << endl << flush;
-	    }
+        }
+        else
+        {
+            cout << "Downloads were aborted by user." << endl << flush;
+        }
     }
     else
     {
         settings.WriteFile(iniFileName);
     }
-
+    
     return EXIT_SUCCESS;
 }
 

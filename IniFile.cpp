@@ -6,8 +6,8 @@
 //  Filename  : IniFile.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:26 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:44:34 $
+//  $Revision: 1.4 $
 //  $RCSfile: IniFile.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -53,6 +53,8 @@ IniFile::ReadFile(string filename)
 {
     ifstream inFile(filename.c_str());
 
+    bool showWhatIsRead = false;
+
     if (!inFile.good())
         return false;
 
@@ -95,7 +97,6 @@ IniFile::ReadFile(string filename)
             RemoveTrailingSpaces(work_buffer);
             
             // This is the start of a new section
-            //token=strsep(&str_walker, "]");
             string token(work_buffer.begin(),work_buffer.find("]"));
 
             RemoveTrailingSpaces(token);
@@ -103,7 +104,10 @@ IniFile::ReadFile(string filename)
             // Get or Make the requested section
             currentSection = AddSection(token);
 
-//cout << endl << "[" << token << "]" << endl;
+            if (showWhatIsRead)
+            {
+                cout << endl << "[" << token << "]" << endl;
+            }
 
             if (currentSection == NULL)
             {   // Fatal error.
@@ -135,7 +139,23 @@ IniFile::ReadFile(string filename)
             RemoveLeadingSpaces(settingValue);
             RemoveTrailingSpaces(settingValue);
 
-//cout << settingName << " = " <<  settingValue << endl;
+            if (settingName  == "IniFile Verbose Output")
+            {
+                if (settingValue == "Enable")
+                {
+                    showWhatIsRead = true;
+                }
+                else
+                {
+                    showWhatIsRead = false;
+                }
+            }
+
+
+            if (showWhatIsRead)
+            {
+                cout << settingName << " = " <<  settingValue << endl;
+            }
 
             if (!SetValue(currentSection,settingName,settingValue))
             {

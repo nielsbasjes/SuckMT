@@ -6,8 +6,8 @@
 //  Filename  : Tokenize.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:45 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:45:52 $
+//  $Revision: 1.4 $
 //  $RCSfile: Tokenize.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -25,21 +25,21 @@
 vector<string>
 GetTokens(string theString, char separator)
 {
-	vector<string> foundStrings;
-	
-	string::iterator beginPos = theString.begin();
-	string::iterator endPos;
+    vector<string> foundStrings;
+    
+    string::iterator beginPos = theString.begin();
+    string::iterator endPos;
 
-	while (beginPos != theString.end())
-	{
-		endPos = std::find(beginPos,theString.end(),separator);
-		string foundString(beginPos,endPos);
-		foundStrings.push_back(foundString);
-		if (endPos == theString.end())
-			break;
-		beginPos = ++endPos;
-	}
-	return foundStrings;
+    while (beginPos != theString.end())
+    {
+        endPos = std::find(beginPos,theString.end(),separator);
+        string foundString(beginPos,endPos);
+        foundStrings.push_back(foundString);
+        if (endPos == theString.end())
+            break;
+        beginPos = ++endPos;
+    }
+    return foundStrings;
 }
 
 //-------------------------------------------------------------------------

@@ -6,3 +6,5 @@ Version 0.3a
 Version 0.3b
     Remove the FUNCTION_BEGIN ... testing code completely.
     Added proper copyright banners
+Version 0.3f
+    Fixed lots of stuff, added kill rules and keep rules.

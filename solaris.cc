@@ -1,5 +1,5 @@
-//				Package : omnithread
-// omnithread/solaris.cc	Created : 7/94 tjr
+//              Package : omnithread
+// omnithread/solaris.cc    Created : 7/94 tjr
 //
 //    Copyright (C) 1994-1999 AT&T Laboratories Cambridge
 //
@@ -32,7 +32,7 @@
 // #include <iostream> or #include <iostream.h> if DB is on.
 
 #define THROW_ERRORS(x) { int rc = (x); \
-			  if (rc != 0) throw omni_thread_fatal(rc); }
+              if (rc != 0) throw omni_thread_fatal(rc); }
 
 
 
@@ -99,13 +99,13 @@ omni_condition::timedwait(unsigned long secs, unsigned long nanosecs)
     int rc = cond_timedwait(&sol_cond, &mutex->sol_mutex, &rqts);
 
     if (rc == 0)
-	return 1;
+    return 1;
 
     if (rc == EINTR)
         goto again;
 
     if (rc == ETIME)
-	return 0;
+    return 0;
 
     throw omni_thread_fatal(rc);
 }
@@ -180,8 +180,8 @@ static thread_key_t self_key;
 
 omni_thread::init_t::init_t(void)
 {
-    if (count++ != 0)	// only do it once however many objects get created.
-	return;
+    if (count++ != 0)   // only do it once however many objects get created.
+    return;
 
     DB(cerr << "omni_thread::init: solaris implementation initialising\n");
 
@@ -227,21 +227,21 @@ omni_thread_wrapper(void* ptr)
     //
 
     if (me->fn_void != NULL) {
-	(*me->fn_void)(me->thread_arg);
-	omni_thread::exit();
+    (*me->fn_void)(me->thread_arg);
+    omni_thread::exit();
     }
 
     if (me->fn_ret != NULL) {
-	void* return_value = (*me->fn_ret)(me->thread_arg);
-	omni_thread::exit(return_value);
+    void* return_value = (*me->fn_ret)(me->thread_arg);
+    omni_thread::exit(return_value);
     }
 
     if (me->detached) {
-	me->run(me->thread_arg);
-	omni_thread::exit();
+    me->run(me->thread_arg);
+    omni_thread::exit();
     } else {
-	void* return_value = me->run_undetached(me->thread_arg);
-	omni_thread::exit(return_value);
+    void* return_value = me->run_undetached(me->thread_arg);
+    omni_thread::exit(return_value);
     }
 
     // should never get here.
@@ -295,7 +295,7 @@ omni_thread::common_constructor(void* arg, priority_t pri, int det)
     next_id_mutex->unlock();
 
     thread_arg = arg;
-    detached = det;	// may be altered in start_undetached()
+    detached = det; // may be altered in start_undetached()
 
     // sol_thread is set up in initialisation routine or start().
 }
@@ -321,15 +321,15 @@ omni_thread::start(void)
     long flags = 0;
 
     if (detached)
-	flags |= THR_DETACHED;
+    flags |= THR_DETACHED;
 
     omni_mutex_lock l(mutex);
 
     if (_state != STATE_NEW)
-	throw omni_thread_invalid();
+    throw omni_thread_invalid();
 
     THROW_ERRORS(thr_create(0, 0, omni_thread_wrapper, (void*)this, flags,
-			    &sol_thread));
+                &sol_thread));
 
     _state = STATE_RUNNING;
 
@@ -345,7 +345,7 @@ void
 omni_thread::start_undetached(void)
 {
     if ((fn_void != NULL) || (fn_ret != NULL))
-	throw omni_thread_invalid();
+    throw omni_thread_invalid();
 
     detached = 0;
     start();
@@ -362,17 +362,17 @@ omni_thread::join(void** status)
     mutex.lock();
 
     if ((_state != STATE_RUNNING) && (_state != STATE_TERMINATED)) {
-	mutex.unlock();
-	throw omni_thread_invalid();
+    mutex.unlock();
+    throw omni_thread_invalid();
     }
 
     mutex.unlock();
 
     if (this == self())
-	throw omni_thread_invalid();
+    throw omni_thread_invalid();
 
     if (detached)
-	throw omni_thread_invalid();
+    throw omni_thread_invalid();
 
     DB(cerr << "omni_thread::join: doing thr_join\n");
 
@@ -394,7 +394,7 @@ omni_thread::set_priority(priority_t pri)
     omni_mutex_lock l(mutex);
 
     if (_state != STATE_RUNNING)
-	throw omni_thread_invalid();
+    throw omni_thread_invalid();
 
     _priority = pri;
 
@@ -448,21 +448,21 @@ omni_thread::exit(void* return_value)
 
     if (me)
       {
-	me->mutex.lock();
+    me->mutex.lock();
 
-	me->_state = STATE_TERMINATED;
+    me->_state = STATE_TERMINATED;
 
-	me->mutex.unlock();
+    me->mutex.unlock();
 
-	DB(cerr << "omni_thread::exit: thread " << me->id() << " detached "
-	   << me->detached << " return value " << return_value << endl);
+    DB(cerr << "omni_thread::exit: thread " << me->id() << " detached "
+       << me->detached << " return value " << return_value << endl);
 
-	if (me->detached)
-	  delete me;
+    if (me->detached)
+      delete me;
       }
     else
       {
-	DB(cerr << "omni_thread::exit: called with a non-omnithread. Exit quietly." << endl);
+    DB(cerr << "omni_thread::exit: called with a non-omnithread. Exit quietly." << endl);
       }
 
     thr_exit(return_value);
@@ -500,19 +500,19 @@ omni_thread::sleep(unsigned long secs, unsigned long nanosecs)
     timespec remain;
     while (nanosleep(&rqts, &remain)) {
       if (errno == EINTR) {
-	rqts.tv_sec  = remain.tv_sec;
-	rqts.tv_nsec = remain.tv_nsec;
-	continue;
+    rqts.tv_sec  = remain.tv_sec;
+    rqts.tv_nsec = remain.tv_nsec;
+    continue;
       }
       else
-	throw omni_thread_fatal(errno);
+    throw omni_thread_fatal(errno);
     }
 }
 
 
 void
 omni_thread::get_time(unsigned long* abs_sec, unsigned long* abs_nsec,
-		      unsigned long rel_sec, unsigned long rel_nsec)
+              unsigned long rel_sec, unsigned long rel_nsec)
 {
     timespec abs;
     clock_gettime(CLOCK_REALTIME, &abs);
@@ -530,13 +530,13 @@ omni_thread::sol_priority(priority_t pri)
     switch (pri) {
 
     case PRIORITY_LOW:
-	return 0;
+    return 0;
 
     case PRIORITY_NORMAL:
-	return 1;
+    return 1;
 
     case PRIORITY_HIGH:
-	return 2;
+    return 2;
     }
 
     throw omni_thread_invalid();

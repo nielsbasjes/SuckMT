@@ -6,14 +6,14 @@
 //  Filename  : NEWSArticle.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:30 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:42:52 $
+//  $Revision: 1.7 $
 //  $RCSfile: NEWSArticle.cpp,v $
 //  $Author: niels $
 //=========================================================================
 
 #ifdef WIN32
-#pragma warning( disable : 4786 ) 
+#pragma warning( disable : 4786 )
 #endif
 
 //-------------------------------------------------------------------------
@@ -28,8 +28,12 @@ NEWSArticle::NEWSArticle():
 {
     fNrOfNewsGroups = 1; // Let's assume a reasonable default
     
+    fPrimaryNewsGroup = "";
+
     fState = NA_NOTHING;
-    // Nothing to do
+
+    fKillMatched = false;
+    fKeepMatched = false;
 }
 
 //--------------------------------------------------------------------
@@ -44,6 +48,13 @@ NEWSArticle::~NEWSArticle()
 NEWSArticle::NEWSArticle(string newsgroup, string serverLine): 
         Printable("NEWSArticle")
 {
+    fNrOfNewsGroups = 1; // Let's assume a reasonable default
+    
+    fState = NA_NOTHING;
+
+    fKillMatched = false;
+    fKeepMatched = false;
+
     fPrimaryNewsGroup = newsgroup;
     SetXOVERLine(serverLine.c_str());
 }
@@ -85,7 +96,7 @@ NEWSArticle::Print (ostream &os) const
             itemIter ++)
         {
             os << "     " << (*itemIter)
-               << " : " << fParsedHeaders[(*itemIter)]
+               << " : " << (fParsedHeaders.find(*itemIter))->second
                << endl<< flush;
         }
         os  << "                }" << endl;
@@ -95,10 +106,44 @@ NEWSArticle::Print (ostream &os) const
 
 //--------------------------------------------------------------------
 
+bool 
+NEWSArticle::KillMatched()    
+{ 
+    return fKillMatched; 
+}
+
+//--------------------------------------------------------------------
+
+bool
+NEWSArticle::KillMatched(bool killMatched) 
+{ 
+    fKillMatched = killMatched;
+    return fKillMatched; 
+}
+
+//--------------------------------------------------------------------
+
+bool 
+NEWSArticle::KeepMatched()
+{ 
+    return fKeepMatched; 
+}
+
+//--------------------------------------------------------------------
+
+bool 
+NEWSArticle::KeepMatched(bool keepMatched) 
+{ 
+    fKeepMatched = keepMatched;
+    return fKeepMatched; 
+}
+
+//--------------------------------------------------------------------
+
 void 
 NEWSArticle::SetXOVERLine(const char * line)
 {
-	vector<string> tokens = GetTokens(line,'\t');
+    vector<string> tokens = GetTokens(line,'\t');
     sscanf(tokens[0].c_str(),"%ld",&fArticleNr);
     fSubject = tokens[1].c_str();
     fSender = tokens[2].c_str();
@@ -127,7 +172,7 @@ NEWSArticle::StoreHeader(const string &line)
     vector<string> headerLines = GetTokens(fHeader,'\n');
     
     string fieldName  = "";
-	string fieldValue = "";
+    string fieldValue = "";
     
     for(vector<string>::const_iterator
         itemIter  = headerLines.begin();
@@ -139,10 +184,10 @@ NEWSArticle::StoreHeader(const string &line)
 
         if (thisLine[0] != ' ' && thisLine[0] != '\t')
         {  // This means that this line is a new field
-	        int position = thisLine.find(":");
+            int position = thisLine.find(":");
 
-		    fieldName.assign(thisLine,0,position);
-		    fieldValue.assign(thisLine,position+1);
+            fieldName.assign(thisLine,0,position);
+            fieldValue.assign(thisLine.begin()+position+1,thisLine.end());
 
             RemoveLeadingSpaces(fieldName);
             RemoveTrailingSpaces(fieldName);
@@ -164,7 +209,7 @@ NEWSArticle::StoreHeader(const string &line)
     string groupsField;
     if (GetHeaderField("Newsgroups",groupsField))
     {
-            fNewsGroups = GetTokens(groupsField,' ');
+            fNewsGroups = GetTokens(groupsField,',');
             fNrOfNewsGroups = fNewsGroups.size();
     }
 
@@ -204,8 +249,69 @@ bool
 NEWSArticle::GetHeaderField(string headerName,string &value)
 {
     if (fParsedHeaders.find(headerName) == fParsedHeaders.end())
-        return false; // Value doesn't exist 
+    {
+        if (headerName == "ArticleNr")
+        {
+            char str[50];
+            sprintf(str,"%ld",fArticleNr);
+            value = str;
+            return true;
+        }
 
+        if (headerName == "Subject") 
+        {
+            value = fSubject;
+            return true;
+        }
+
+        if (headerName == "From")
+        {
+            value = fSender;
+            return true;
+        }
+
+        if (headerName == "Date")
+        {
+            value = fDate;
+            return true;
+        }
+
+        if (headerName == "Message-ID")
+        {
+            value = fMessageID;
+            return true;
+        }
+
+        if (headerName == "References")
+        {
+            value = fReferences;
+            return true;
+        }
+
+        if (headerName == "Bytes")
+        {
+            char str[50];
+            sprintf(str,"%ld",fBytes);
+            value = str;
+            return true;
+        }
+
+        if (headerName == "Lines")
+        {
+            char str[50];
+            sprintf(str,"%ld",fLines);
+            value = str;
+            return true;
+        }
+
+        if (headerName == "Xref")
+        {
+            value = fXrefHeader;
+            return true;
+        }
+    
+        return false; // Value doesn't exist 
+    }
     value = fParsedHeaders[headerName];
     return true;    
 }

@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:34 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:43:13 $
+//  $Revision: 1.4 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -105,7 +105,7 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         return true; // Done
     }
 
-	// Based on the XOVER fields --> Do we continue or kill this one ?
+    // Based on the XOVER fields --> Do we continue or kill this one ?
     if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
     {   
         delete fileName;

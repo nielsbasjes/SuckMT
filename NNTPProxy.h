@@ -6,8 +6,8 @@
 //  Filename  : NNTPProxy.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:43 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:43:14 $
+//  $Revision: 1.3 $
 //  $RCSfile: NNTPProxy.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -71,8 +71,8 @@ public:
                      long                  startAtArticlenr = -1);
 
     // Retrieves the complete list of the overview database
-	// Instead of storing the articles in a vector they are stored
-	// with the specified commandhandler
+    // Instead of storing the articles in a vector they are stored
+    // with the specified commandhandler
     bool 
     GetGroupOverview(string                groupName,
                      NNTPCommandHandler   *commandHandler, 
@@ -107,7 +107,7 @@ private:
     string currentGroup;
 
     // Implements the common part of both versions of GetGroupOverview
-	// returns 0 if error else returns 1 if OK or 2 if no messages.
+    // returns 0 if error else returns 1 if OK or 2 if no messages.
     int
     COMMON_GetGroupOverview(string groupName,
                             long   startAtArticlenr = -1);

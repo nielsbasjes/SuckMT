@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetXOVERCommand.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:37 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:43:14 $
+//  $Revision: 1.4 $
 //  $RCSfile: NNTPGetXOVERCommand.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -24,6 +24,7 @@ class NNTPGetXOVERCommand; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
+// Warning Dirty hack to skip the std namespace in Visual C++ 6.0
 #ifdef __WIN32__
 #define string std::string
 #endif

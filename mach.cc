@@ -1,5 +1,5 @@
-//				Package : omnithread
-// omnithread/mach.cc		Created : 7/97 lars immisch lars@ibp.de
+//              Package : omnithread
+// omnithread/mach.cc       Created : 7/97 lars immisch lars@ibp.de
 //
 //    Copyright (C) 1997 Immisch, Becker & Partner
 //
@@ -60,13 +60,13 @@ static int highest_priority;
 
 omni_mutex::omni_mutex(void)
 {
-  mutex_init(&mach_mutex);	
+  mutex_init(&mach_mutex);  
 }
 
 
 omni_mutex::~omni_mutex(void)
 {
-  mutex_clear(&mach_mutex);	
+  mutex_clear(&mach_mutex); 
 }
 
 
@@ -118,15 +118,15 @@ typedef struct alarmclock_args {
 any_t alarmclock(any_t arg)
 {
   alarmclock_args* alarm = (alarmclock_args*)arg;
-	
+    
   omni_thread::sleep(alarm->secs, alarm->nsecs);
 
   mutex_lock(alarm->mutex);
-			
+            
   alarm->wakeup = TRUE;
-	
+    
   condition_signal(alarm->condition);
-		
+        
   mutex_unlock(alarm->mutex);
 
   return (any_t)TRUE;
@@ -137,7 +137,7 @@ int omni_condition::timedwait(unsigned long abs_secs, unsigned long abs_nsecs)
   alarmclock_args alarm;
 
   omni_thread::get_time(&alarm.secs, &alarm.nsecs, 0, 0);
-	
+    
   if (abs_secs < alarm.secs || (abs_secs == alarm.secs && abs_nsecs <= alarm.nsecs))
     return ETIMEDOUT;
 
@@ -153,19 +153,19 @@ int omni_condition::timedwait(unsigned long abs_secs, unsigned long abs_nsecs)
   alarm.mutex = &mutex->mach_mutex;
   alarm.condition = &mach_cond;
   alarm.wakeup = FALSE;
-	
+    
   cthread_t ct = cthread_fork((cthread_fn_t)alarmclock, (any_t)&alarm);
   cthread_detach(ct);
-	
+    
   condition_wait(&mach_cond, &mutex->mach_mutex);
-		
+        
   if (alarm.wakeup) {
     return 0;
   }
-	
+    
   // interrupt the alarmclock thread sleep
   cthread_abort(ct);
-	
+    
   // wait until it has signalled the condition
   condition_wait(&mach_cond, &mutex->mach_mutex);
 
@@ -255,7 +255,7 @@ omni_semaphore::post(void)
 
 omni_thread::init_t::init_t(void)
 {
-  if (count++ != 0)	// only do it once however many objects get created.
+  if (count++ != 0) // only do it once however many objects get created.
     return;
 
   //
@@ -264,9 +264,9 @@ omni_thread::init_t::init_t(void)
   // thread also applies to any newly created thread.
   //
 
-  kern_return_t				error;
-  struct thread_sched_info	info;
-  unsigned int				info_count = THREAD_SCHED_INFO_COUNT;
+  kern_return_t             error;
+  struct thread_sched_info  info;
+  unsigned int              info_count = THREAD_SCHED_INFO_COUNT;
 
   error = thread_info(thread_self(), THREAD_SCHED_INFO, (thread_info_t)&info, &info_count);
   if (error != KERN_SUCCESS) {
@@ -387,7 +387,7 @@ void omni_thread::common_constructor(void* arg, priority_t pri, int det)
   next_id_mutex->unlock();
   
   thread_arg = arg;
-  detached = det;	// may be altered in start_undetached()
+  detached = det;   // may be altered in start_undetached()
 
   // posix_thread is set up in initialisation routine or start().
 }
@@ -418,7 +418,7 @@ omni_thread::start(void)
     throw omni_thread_invalid();
 
   mach_thread = cthread_fork(omni_thread_wrapper, (any_t)this);
-	
+    
   _state = STATE_RUNNING;
 
   if (detached) {
@@ -457,7 +457,7 @@ omni_thread::join(void** status)
 
   mutex.unlock();
 
-  if (this == self()) 	
+  if (this == self())   
     throw omni_thread_invalid();
 
   if (detached)
@@ -486,7 +486,7 @@ omni_thread::set_priority(priority_t pri)
   _priority = pri;
 
   kern_return_t rc = cthread_priority(mach_thread, mach_priority(pri), FALSE);
-	
+    
   if (rc != KERN_SUCCESS)
     throw omni_thread_fatal(errno);
 }
@@ -538,17 +538,17 @@ void omni_thread::exit(void* return_value)
       me->mutex.lock();
 
       if (me->_state != STATE_RUNNING)
-	cerr << "omni_thread::exit: thread not in \"running\" state\n";
+    cerr << "omni_thread::exit: thread not in \"running\" state\n";
 
       me->_state = STATE_TERMINATED;
 
       me->mutex.unlock();
 
       DB(cerr << "omni_thread::exit: thread " << me->id() << " detached "
-	 << me->detached << " return value " << return_value << endl);
+     << me->detached << " return value " << return_value << endl);
 
       if (me->detached)
-	delete me;
+    delete me;
     }
   else
     {
@@ -568,7 +568,7 @@ omni_thread* omni_thread::self(void)
     // doesn't has a class omni_thread instance attached to its key.
     DB(cerr << "omni_thread::self: called with a non-ominthread. NULL is returned." << endl);
   }
-	
+    
   return me;
 }
 
@@ -577,7 +577,7 @@ void omni_thread::yield(void)
   cthread_yield();
 }
 
-#define MAX_SLEEP_SECONDS (unsigned)4294966	// (2**32-2)/1000
+#define MAX_SLEEP_SECONDS (unsigned)4294966 // (2**32-2)/1000
 
 void
 omni_thread::sleep(unsigned long secs, unsigned long nanosecs)
@@ -593,22 +593,22 @@ omni_thread::sleep(unsigned long secs, unsigned long nanosecs)
     thread_switch(THREAD_NULL, SWITCH_OPTION_WAIT, MAX_SLEEP_SECONDS * 1000);
 
   thread_switch(THREAD_NULL, SWITCH_OPTION_WAIT, 
-		(secs % MAX_SLEEP_SECONDS) * 1000 + nanosecs / 1000000);
-	
+        (secs % MAX_SLEEP_SECONDS) * 1000 + nanosecs / 1000000);
+    
   return;
 }
 
 void
 omni_thread::get_time(unsigned long* abs_sec, unsigned long* abs_nsec,
-		      unsigned long rel_sec, unsigned long rel_nsec)
+              unsigned long rel_sec, unsigned long rel_nsec)
 {
   int rc;
   unsigned long tv_sec;
   unsigned long tv_nsec;
   struct timeval tv;
-	
+    
   rc = gettimeofday(&tv, NULL); 
-  if (rc)	throw omni_thread_fatal(rc);
+  if (rc)   throw omni_thread_fatal(rc);
 
   tv_sec = tv.tv_sec;
   tv_nsec = tv.tv_usec * 1000;

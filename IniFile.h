@@ -6,8 +6,8 @@
 //  Filename  : IniFile.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:28 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:44:34 $
+//  $Revision: 1.4 $
 //  $RCSfile: IniFile.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -43,8 +43,8 @@ public:
     // If no file was specified none will be read.
     // If a file is specified, all settings will be automagically
     // written back to the same file when destroying the object.
-	IniFile(string filename = "");
-	~IniFile();
+    IniFile(string filename = "");
+    ~IniFile();
 
     //------------------------------------------------------
     // Read the specified file into the settings database
@@ -251,7 +251,11 @@ private:
 //======
 };
 
+//-------------------------------------------------------------------------
+
 #endif
+
+//-------------------------------------------------------------------------
 
 // End of the file IniFile.h
 //=========================================================================

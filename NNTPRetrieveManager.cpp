@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:44 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:43:14 $
+//  $Revision: 1.3 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -24,7 +24,8 @@
 
 //-------------------------------------------------------------------------
 
-NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKiller(&settings)
+NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
+    :fKiller(&settings)
 {
     fSettings = &settings;
     string newsServerName;
@@ -44,8 +45,6 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKiller(&settings)
          << "nl.comp.os.linux.announce = -1" << endl << flush;
          return;
     }
-
-//    fKiller = new NewsKiller(&settings);
 
     long   handlersToCreate;
     if (!fSettings->GetValue(SUCK_CONFIG,SUCK_THREADS,handlersToCreate))
@@ -69,7 +68,11 @@ NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings):fKiller(&settings)
         groupIter ++)
     {
         long lastOneWeHave;
-        fSettings->GetValue(SUCK_GROUPS,(*groupIter),lastOneWeHave);
+        if (!fSettings->GetValue(SUCK_GROUPS,(*groupIter),lastOneWeHave))
+        {
+            lastOneWeHave = -1;
+            fSettings->SetValue(SUCK_GROUPS,(*groupIter),lastOneWeHave);
+        }
 
         cout << "Checking group " << groupIter->c_str() << endl;
 
@@ -122,6 +125,7 @@ NNTPRetrieveManager::~NNTPRetrieveManager()
 //-------------------------------------------------------------------------
 // Store the specified filename so we know which files have to 
 // be processed later
+
 void
 NNTPRetrieveManager::ArticleFileHasBeenWritten(string fileName)
 {
@@ -181,33 +185,33 @@ void
 NNTPRetrieveManager::AbortChildren()
 {
     cout << "Making Queue EMPTY." <<  endl << flush;
-	
+    
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
-	
+    
     // Send the abort signal to all handlers
     for(nntpHandlersIter  = NNTPHandlers.begin();
-		nntpHandlersIter != NNTPHandlers.end();
-		nntpHandlersIter ++)
+        nntpHandlersIter != NNTPHandlers.end();
+        nntpHandlersIter ++)
     {
         (*nntpHandlersIter)->Abort();
     }
-	
-	bool someAreBusy = true;
-	
-	while (someAreBusy)
-	{
-		someAreBusy = false;
-		
-		// Wait for all the handlers to really finish
-		for(nntpHandlersIter  = NNTPHandlers.begin();
-			nntpHandlersIter != NNTPHandlers.end();
-			nntpHandlersIter ++)
-		{
-			if ((*nntpHandlersIter)->IsBusy())
-				someAreBusy =true; // This one is still busy
-		}
-	}
-	
+    
+    bool someAreBusy = true;
+    
+    while (someAreBusy)
+    {
+        someAreBusy = false;
+        
+        // Wait for all the handlers to really finish
+        for(nntpHandlersIter  = NNTPHandlers.begin();
+            nntpHandlersIter != NNTPHandlers.end();
+            nntpHandlersIter ++)
+        {
+            if ((*nntpHandlersIter)->IsBusy())
+                someAreBusy =true; // This one is still busy
+        }
+    }
+    
     // Remove ALL outstanding commands from the queue
     Command * command = commands.GetCommand();
     while (command != NULL)

@@ -6,8 +6,8 @@
 //  Filename  : SuckDefines.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/30 17:35:02 $
-//  $Revision: 1.4 $
+//  $Date: 1999/10/07 19:45:52 $
+//  $Revision: 1.7 $
 //  $RCSfile: SuckDefines.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -18,13 +18,12 @@
 //-------------------------------------------------------------------------
 
 #ifndef SUCKMT_VERSION
-#define SUCKMT_VERSION "0.3d"
+#define SUCKMT_VERSION "0.3f"
 #endif 
 
 //-------------------------------------------------------------------------
 
 #ifndef SUCK_CONFIG_FILE
-//#define SUCK_CONFIG_FILE "/etc/suckmt.ini" 
 #define SUCK_CONFIG_FILE       "suckmt.ini" 
 #endif
 
@@ -48,11 +47,17 @@
 #define SUCK_THREADS           "Number of threads"
 
 #define SUCK_GLOBAL_KILL_RULES "Global Kill Rules"
-#define SUCK_KILL_HEADERS      "Kill Headers"
-#define SUCK_KILL_STATISTICS   "Kill Statistics"
 #define SUCK_MAX_LINES         "Maximum Lines in a Message"
 #define SUCK_MAX_BYTES         "Maximum Bytes in a Message"
 #define SUCK_MAX_GROUPS        "Maximum Groups in a Message"
+
+#define SUCK_KILL_HEADERS      "Kill Headers"
+#define SUCK_KEEP_HEADERS      "Keep Headers"
+
+#define SUCK_KILL_LOGFILE         "Kill Log File"
+#define SUCK_KILL_ENABLE_LOGFILE  "Enable Kill Logfile"
+#define SUCK_KILL_LOGFILENAME     "Kill Log Filename"
+#define SUCK_KILL_LOGFILE_HEADERS "Kill Logfile Headers"
 
 #define SUCK_GROUPS            "News Groups"
 

@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:34 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:43:13 $
+//  $Revision: 1.3 $
 //  $RCSfile: NNTPCommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -74,7 +74,7 @@ void
 NNTPCommandHandler::AbortChildren()
 {
     if (nntpConnection != NULL)
-		nntpConnection->Abort();
+        nntpConnection->Abort();
 }
 
 //-------------------------------------------------------------------------

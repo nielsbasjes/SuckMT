@@ -6,12 +6,11 @@
 //  Filename  : Abortable.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/18 21:27:10 $
-//  $Revision: 1.2 $
+//  $Date: 1999/10/07 19:33:48 $
+//  $Revision: 1.3 $
 //  $RCSfile: Abortable.cpp,v $
 //  $Author: niels $
 //=========================================================================
-
 
 #ifdef WIN32
 #pragma warning( disable : 4786 ) 

@@ -6,8 +6,8 @@
 //  Filename  : CommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/09/29 20:12:24 $
-//  $Revision: 1.3 $
+//  $Date: 1999/10/07 19:44:43 $
+//  $Revision: 1.5 $
 //  $RCSfile: CommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -27,7 +27,7 @@ CommandHandler::CommandHandler(CommandQueue * commandQueue)
     myCommandQueue = commandQueue;
 //    cout << "Starting Command Handler" << endl << flush;
     busy = false;
-    currentCommand = NULL;
+    currentCommand = (Command*)NULL;
     start_undetached();
 }
 
@@ -86,16 +86,16 @@ CommandHandler::run_undetached(void* /*arg*/)
             if (KeepRunning())
                 currentCommand = myCommandQueue->GetCommand();
             else
-                currentCommand = NULL;
+                currentCommand = (Command*)NULL;
             currentCommandMutex.unlock();
             busy = false;
         }
     }
-
-	currentCommandMutex.lock();
+    
+    currentCommandMutex.lock();
     if (currentCommand != NULL)    
         delete (currentCommand);
-	currentCommandMutex.unlock();
+    currentCommandMutex.unlock();
     
     return NULL;
 }

@@ -66,7 +66,8 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WIN32__" /D "_WINSTATIC" /D "_MT" /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /debug /debugtype:both /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /profile /debug /debugtype:both /machine:I386
 
 !ENDIF 
 
@@ -155,10 +156,6 @@ SOURCE=.\Printable.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\stacktrace.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StatisticsKeeper.cpp
 # End Source File
 # Begin Source File
@@ -196,10 +193,6 @@ SOURCE=.\CommandHandler.h
 # Begin Source File
 
 SOURCE=.\CommandQueue.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\debugging.h
 # End Source File
 # Begin Source File
 
@@ -251,15 +244,15 @@ SOURCE=.\Printable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\stacktrace.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\StatisticsKeeper.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\SuckDefines.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Tokenize.h
 # End Source File
 # Begin Source File
 
@@ -278,9 +271,45 @@ SOURCE=.\Vectorprint.h
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
+# Begin Group "Other Files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\ReadMe.txt
+SOURCE=.\AUTHORS
 # End Source File
+# Begin Source File
+
+SOURCE=.\ChangeLog
+# End Source File
+# Begin Source File
+
+SOURCE=.\COPYING
+# End Source File
+# Begin Source File
+
+SOURCE=.\INSTALL
+# End Source File
+# Begin Source File
+
+SOURCE=.\NEWS
+# End Source File
+# Begin Source File
+
+SOURCE=.\README
+# End Source File
+# Begin Source File
+
+SOURCE=.\suckmt.ini.sample
+# End Source File
+# Begin Source File
+
+SOURCE=.\suckmt.lsm
+# End Source File
+# Begin Source File
+
+SOURCE=.\TODO
+# End Source File
+# End Group
 # End Target
 # End Project
