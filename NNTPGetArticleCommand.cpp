@@ -6,8 +6,8 @@
 //  Filename  : NNTPGetArticleCommand.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:01 $
-//  $Revision: 1.8 $
+//  $Date: 2000/03/19 12:21:48 $
+//  $Revision: 1.9 $
 //  $RCSfile: NNTPGetArticleCommand.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -46,10 +46,10 @@
 //-------------------------------------------------------------------------
  
 static bool 
-FileExists(char *fileName)
+FileExists(string fileName)
 {
     struct stat fileStatus;
-    if (stat(fileName,&fileStatus) == 0)
+    if (stat(fileName.c_str(),&fileStatus) == 0)
         return true;
     return false;
 }
@@ -97,14 +97,16 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
 
     strstream filenameStr;
 
-    string baseDirectory;
+    string baseDirectory = "/tmp/"; // Default value
     if(iniFile->GetValue(SUCK_CONFIG,SUCK_DIR,baseDirectory))
         filenameStr << baseDirectory << "/" ;
 
     filenameStr << article->fPrimaryNewsGroup << "_" 
                 << article->fArticleNr << ends;
 
-    char * fileName = filenameStr.str();
+    char * tmpFileName = filenameStr.str();
+    string fileName(tmpFileName);
+    delete tmpFileName;
 
     // First we check if the specified file already exists.
     // This can happen when we restart a killed session
@@ -114,16 +116,29 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
         
         // Although this session didn't write the file it still needs
         // to be post processed
-        myHandler->ArticleFileHasBeenWritten(fileName);
+        myHandler->ArticleHasBeenStored(article,fileName);
 
-        delete fileName;
         return true; // Done
     }
 
+    // Check if this article hasn't already been downloaded
+    if (!myHandler->DoWeNeedToDownloadThisArticle(article))
+    {
+        STAT_AddValue("Articles Skipped",1);
+        return true; 
+    }
+
     // Based on the XOVER fields --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
+    if (!myHandler->DoWeKeepThisArticle(article))
     {   
-        delete fileName;
+        // The central handler must know the article has been killed
+        myHandler->ArticleHasBeenKilled(article);
+        return true; // Done
+    }
+
+    // Continue running ??
+    if (!KeepRunning())
+    {   
         return true; // Done
     }
 
@@ -134,14 +149,20 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
                << article->fMessageID << endl << flush;
         STAT_AddValue("Articles ERROR",1);
 
-        delete fileName;
         return false; // Done
     }
 
     // Based on the headers --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
+    if (!myHandler->DoWeKeepThisArticle(article))
     {   
-        delete fileName;
+        // The central handler must know the article has been killed
+        myHandler->ArticleHasBeenKilled(article);
+        return true; // Done
+    }
+
+    // Continue running ??
+    if (!KeepRunning())
+    {   
         return true; // Done
     }
 
@@ -152,25 +173,25 @@ NNTPGetArticleCommand::Execute(CommandHandler * currentHandler)
                << article->fMessageID << endl << flush;
         STAT_AddValue("Articles ERROR",1);
 
-        delete fileName;
         return false; // Done
     }
 
     // Based on the actual content --> Do we continue or kill this one ?
-    if (!myHandler->DoWeKeepThisArticle(article) || !KeepRunning())
+    if (!myHandler->DoWeKeepThisArticle(article))
     {   
-        delete fileName;
+        // The central handler must know the article has been killed
+        myHandler->ArticleHasBeenKilled(article);
         return true; // Done
     }
 
     // Ok, we got the article. Now we store it.
-    ofstream outFile(fileName);
+    ofstream outFile(fileName.c_str());
     outFile << article->GetHeader()  << "\r\n";
     outFile << article->GetBody()    << "\r\n";
-    STAT_AddValue("Articles Written",1);
-    myHandler->ArticleFileHasBeenWritten(fileName);
-    
-    delete fileName;
+
+    // The central handler must know the article has been stored
+    myHandler->ArticleHasBeenStored(article,fileName);
+            
     return true;
 }
 

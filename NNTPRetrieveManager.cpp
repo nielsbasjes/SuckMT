@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:05 $
-//  $Revision: 1.9 $
+//  $Date: 2000/03/19 12:21:50 $
+//  $Revision: 1.10 $
 //  $RCSfile: NNTPRetrieveManager.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -36,6 +36,7 @@
 
 NNTPRetrieveManager::NNTPRetrieveManager (IniFile &settings)
     :fKiller(&settings)
+    ,fDuplicatesChecker(&settings)
 {
     fSettings = &settings;
 
@@ -137,18 +138,37 @@ NNTPRetrieveManager::~NNTPRetrieveManager()
     NNTPHandlers.clear();
 }
 
-
 //-------------------------------------------------------------------------
-// Store the specified filename so we know which files have to 
-// be processed later
+// Store the specified messageID so we can check if we get any duplicates
+// Returns 
+//  - true  if the messageID was unknown and it has been stored.
+//  - false if the messageID was already present and it has not been stored.
 
-void
-NNTPRetrieveManager::ArticleFileHasBeenWritten(string fileName)
+bool
+NNTPRetrieveManager::DoWeNeedToDownloadThisArticle(NEWSArticle * article)
 {
-    omni_mutex_lock lock(nrm_mutex);
-    fFilesWritten.push_back(fileName);
+    return fDuplicatesChecker.DoWeNeedToDownloadThisArticle(article);
 }
 
+//-------------------------------------------------------------------------
+// Make a note this article has been stored in the specified file
+
+void
+NNTPRetrieveManager::ArticleHasBeenStored(NEWSArticle * article,string filename)
+{
+    omni_mutex_lock lock(nrm_mutex);
+    fFilesWritten.push_back(filename);
+    fDuplicatesChecker.ArticleHasBeenStored(article);
+}
+
+//-------------------------------------------------------------------------
+// Make a note this article has been stored
+
+void
+NNTPRetrieveManager::ArticleHasBeenKilled(NEWSArticle * article)
+{
+    fDuplicatesChecker.ArticleHasBeenKilled(article);
+}
 
 //-------------------------------------------------------------------------
 // Get the messages from the specified groups
@@ -204,7 +224,7 @@ void
 NNTPRetrieveManager::AbortChildren()
 {
     Levent << "Making Queue EMPTY." << endl << flush;
-    
+
     vector<NNTPCommandHandler*>::iterator nntpHandlersIter;
     
     // Send the abort signal to all handlers
@@ -215,7 +235,7 @@ NNTPRetrieveManager::AbortChildren()
         (*nntpHandlersIter)->Abort();
     }
 
-    fKiller.Abort();
+    fDuplicatesChecker.Abort();
         
     bool someAreBusy = true;
     

@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:31:07 $
-//  $Revision: 1.17 $
+//  $Date: 2000/03/19 12:21:55 $
+//  $Revision: 1.18 $
 //  $RCSfile: NewsKiller.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -37,7 +37,6 @@
 //-------------------------------------------------------------------------
 
 NewsKiller::NewsKiller(IniFile * settings)
-        :fDuplicatesChecker(settings)
 {
     omni_mutex_lock lock(fKillLogFileMutex);
     
@@ -259,17 +258,7 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
 
         // ----------------
         case NA_ONLY_XOVER:
-            {
-                // Check if this article hasn't already been downloaded
-                string logentry;
-                if ( fDuplicatesChecker.GetImpactValue(article,"Message-ID",logentry) != 0 )
-                {
-                    STAT_AddValue("Articles Skipped",1);
-                    return false; 
-                }
-
-                break;                            
-            }
+            break; // We can't kill based on only the XOVER fields
             
         // ----------------
         case NA_ONLY_HEADER:
@@ -278,19 +267,15 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
                 // Check for the headers to kill or keep
                 CheckLinesAndBytesAndGroups(article,killReasons);
                 ExecuteHeaderMatchers(article,killReasons);
-                            
                 break;
             }
 
         // ----------------
         case NA_COMPLETE: 
             {
+                //=========================================
+                // Only Check for the rules that apply to the article body
                 ExecuteHeaderMatchers(article,killReasons, SUCK_ARTICLEBODY);
-
-                // The duplicates checker needs to know the article has been downloaded
-                string logentry;
-                fDuplicatesChecker.GetImpactValue(article,"Message-ID",logentry);
-
                 break;                            
             }
     }
@@ -303,7 +288,6 @@ NewsKiller::DoWeKeepThisArticle(NEWSArticle * article)
             << ends << flush; // Terminate the string
         char * cstr_reasons = killReasons.str();
         LogKillEvent(article,cstr_reasons);
-        STAT_AddValue("Articles Killed",1);
         delete [] cstr_reasons;// Avoid memory leaks
         return false;
     }
@@ -496,23 +480,6 @@ NewsKiller::LogKillEvent(NEWSArticle *article,
             
         fKillLogFile << flush;
     }
-}
-
-//-------------------------------------------------------------------------
-
-void 
-NewsKiller::AbortChildren()
-{
-    fDuplicatesChecker.Abort();
-}
-
-//-------------------------------------------------------------------------
-IMPLEMENT_PRINTABLE_OPERATORS(NewsKiller)
-
-void 
-NewsKiller::Print (ostream &os) const
-{
-    os  << "NewsKiller= {" << "}";
 }
 
 //--------------------------------------------------------------------

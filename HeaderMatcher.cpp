@@ -6,8 +6,8 @@
 //  Filename  : HeaderMatcher.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:53 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/20 21:12:57 $
+//  $Revision: 1.8 $
 //  $RCSfile: HeaderMatcher.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -140,7 +140,8 @@ HeaderMatcher::HeaderMatcher(
 
 HeaderMatcher::~HeaderMatcher()
 {
-    // Nothing to to
+    // Free the memory allocated inside the compiled expression
+    regfree (&fRegExpression);
 }
 
 //-------------------------------------------------------------------------

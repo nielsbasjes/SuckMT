@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/02 20:51:28 $
-//  $Revision: 1.1 $
+//  $Date: 2000/03/19 12:21:40 $
+//  $Revision: 1.2 $
 //  $RCSfile: DuplicatesChecker.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -26,47 +26,33 @@ class DuplicatesChecker; // Forward Declaration
 
 //-------------------------------------------------------------------------
 
-#ifdef WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
-
 #include <fstream.h>
 #include <stdio.h>  
 #include <stdlib.h>  
-#include "regex.h"
 #include "Abortable.h"
 #include "IniFile.h"
-#include "Printable.h"
-#include "ArticleImpactChecker.h"
+#include "NEWSArticle.h"
 
 //-------------------------------------------------------------------------
 // This class reads the specified value from the specified IniFile
 // and logs this event by itself when a matching query is performed.
 
 class DuplicatesChecker: 
-        public Printable, 
-        public ArticleImpactChecker, 
         public Abortable
 {
 public: 
     DuplicatesChecker(IniFile *settings);
 
-//    DuplicatesChecker(const DuplicatesChecker &original);
-
     ~DuplicatesChecker();
 
-    virtual long
-    GetImpactValue(
-        NEWSArticle * article,
-        const string &headerName,
-        string &matchlog);
-
     bool
-    GetMatchingHeader(string & headerName);
+    DoWeNeedToDownloadThisArticle(NEWSArticle * article);
 
-    void Print (ostream &os) const;
+    void
+    ArticleHasBeenStored(NEWSArticle * article);
+
+    void
+    ArticleHasBeenKilled(NEWSArticle * article);
         
 private:
     omni_mutex valuesMutex;    
@@ -81,8 +67,6 @@ private:
     map <string,bool>   fAllMessageIDs;
     omni_mutex          fMessageDBmutex;
 };
-
-DEFINE_PRINTABLE_OPERATORS(DuplicatesChecker)
 
 //-------------------------------------------------------------------------
 

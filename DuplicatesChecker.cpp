@@ -6,8 +6,8 @@
 //  Filename  : DuplicatesChecker.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:49 $
-//  $Revision: 1.2 $
+//  $Date: 2000/03/19 12:21:38 $
+//  $Revision: 1.3 $
 //  $RCSfile: DuplicatesChecker.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -30,6 +30,7 @@
 #include "DuplicatesChecker.h"
 #include "Tokenize.h"
 #include "TraceLog.h"
+#include "StatisticsKeeper.h"
 
 //-------------------------------------------------------------------------
 // This class reads the specified restart filename from the specified IniFile
@@ -37,16 +38,14 @@
 //-------------------------------------------------------------------------
 
 DuplicatesChecker::DuplicatesChecker(IniFile *settings)
-    : Printable("DuplicatesChecker")
-    , ArticleImpactChecker(settings)
 {
     fRestartFileName = "/tmp/suckmt_restart_default.txt";
 
     // Quick check of the parameters
-    if (fSettings != NULL)
+    if (settings != NULL)
     {
         // Get the restartfilename
-        if (fSettings->GetValue( SUCK_CONFIG,
+        if (settings->GetValue( SUCK_CONFIG,
                 SUCK_RESTART_FILE, fRestartFileName))
         {
             // Open/Create the file
@@ -96,66 +95,48 @@ DuplicatesChecker::~DuplicatesChecker()
 
 //-------------------------------------------------------------------------
 
-long
-DuplicatesChecker::GetImpactValue(
-        NEWSArticle * article,
-        const string &headerName,
-        string &/*matchlog*/)
+bool
+DuplicatesChecker::DoWeNeedToDownloadThisArticle(NEWSArticle * article)
 {
     if (article == NULL)
-        return 0; // Not valid -> no Impact
-
-    if (headerName != "Message-ID")
-        return 0; // Wrong header -> no Impact
+        return false; // Not valid -> don't download
 
     string newMessageID = article->fMessageID;
 
-    if (article->GetState() != NA_COMPLETE)
-    {   // The article has NOT YET been downloaded
-        // Check if this is a duplicate
-        omni_mutex_lock lock(fMessageDBmutex);
+    // Check if this is a duplicate
+    omni_mutex_lock lock(fMessageDBmutex);
 
-        // If newMessageID is not yet present then it will return
-        // the default value: false
-        if (fAllMessageIDs[newMessageID] == true)
-            return 1000000; // 1000000 == extreme impact
+    // If newMessageID is not yet present then it will return
+    // the default value: false
+    if (fAllMessageIDs[newMessageID] == true)
+        return false; // We have this one -> don't download
 
-        // Append the newMessageID to both storage systems
-        // The first is for quick checking, the second goes 
-        // faster to the restart file.
-        fAllMessageIDs[newMessageID] = true;
-    }
-    else
-    {   // The article has been downloaded so we append it to the restart file
-        omni_mutex_lock lock(fRestartFileMutex);
-        fRestartFile << newMessageID << endl << flush;
-    }
+    // Store the newMessageID 
+    fAllMessageIDs[newMessageID] = true;
 
-    return 0; // 0 == no impact
+    return true; // we want to download
 }
 
-//--------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
-// This function returns the name of the header
-// for which this ArticleImpactChecker will check.
-// Returns true if headerName is filled.
-// Returns false if this ArticleImpactChecker will check
-// Several headers
-bool
-DuplicatesChecker::GetMatchingHeader(string & headerName)
-{
-    headerName = "Message-ID";
-    return true;
+void
+DuplicatesChecker::ArticleHasBeenStored(NEWSArticle * article)
+{   
+    // The article has been downloaded so we append it to the restart file
+    omni_mutex_lock lock(fRestartFileMutex);
+    fRestartFile << article->fMessageID << endl << flush;
+    STAT_AddValue("Articles Written",1);
 }
 
-//--------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
-IMPLEMENT_PRINTABLE_OPERATORS(DuplicatesChecker);
-
-void 
-DuplicatesChecker::Print (ostream &os) const
-{
-    os  << "DuplicatesChecker= {" << "}" << endl;
+void
+DuplicatesChecker::ArticleHasBeenKilled(NEWSArticle * article)
+{   
+    // The article has been killed so we append it to the restart file
+    omni_mutex_lock lock(fRestartFileMutex);
+    fRestartFile << article->fMessageID << endl << flush;
+    STAT_AddValue("Articles Killed",1);
 }
 
 //-------------------------------------------------------------------------

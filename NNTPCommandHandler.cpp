@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.cpp
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/12 21:30:59 $
-//  $Revision: 1.7 $
+//  $Date: 2000/03/19 12:21:43 $
+//  $Revision: 1.8 $
 //  $RCSfile: NNTPCommandHandler.cpp,v $
 //  $Author: niels $
 //=========================================================================
@@ -77,11 +77,31 @@ NNTPCommandHandler::DoWeKeepThisArticle(NEWSArticle * article)
 }
 
 //-------------------------------------------------------------------------
-
-void
-NNTPCommandHandler::ArticleFileHasBeenWritten(string fileName)
+// Store the specified messageID so we can check if we get any duplicates
+// Returns 
+//  - true  if the messageID was unknown and it has been stored.
+//  - false if the messageID was already present and it has not been stored.
+bool
+NNTPCommandHandler::DoWeNeedToDownloadThisArticle(NEWSArticle * article)
 {
-    fRetrieveManager->ArticleFileHasBeenWritten(fileName);
+    return fRetrieveManager->DoWeNeedToDownloadThisArticle(article);
+}
+
+//-------------------------------------------------------------------------
+// Make a note this article has been stored in the specified file
+void
+NNTPCommandHandler::ArticleHasBeenStored(NEWSArticle * article,string filename)
+{
+    fRetrieveManager->ArticleHasBeenStored(article,filename);
+}
+
+//-------------------------------------------------------------------------
+
+// Make a note this article has been stored
+void
+NNTPCommandHandler::ArticleHasBeenKilled(NEWSArticle * article)
+{
+    fRetrieveManager->ArticleHasBeenKilled(article);
 }
 
 //-------------------------------------------------------------------------

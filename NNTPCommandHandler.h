@@ -6,8 +6,8 @@
 //  Filename  : NNTPCommandHandler.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/12/02 22:34:16 $
-//  $Revision: 1.6 $
+//  $Date: 2000/03/19 12:21:45 $
+//  $Revision: 1.7 $
 //  $RCSfile: NNTPCommandHandler.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -53,10 +53,24 @@ public:
     bool 
     DoWeKeepThisArticle(NEWSArticle * article);
 
-    void
-    ArticleFileHasBeenWritten(string fileName);
+    // Store the specified messageID so we can check if we get any duplicates
+    // Returns 
+    //  - true  if the messageID was unknown and it has been stored.
+    //  - false if the messageID was already present and it has not been stored.
+    bool
+    DoWeNeedToDownloadThisArticle(NEWSArticle * article);
 
-    void AbortChildren();
+    // Make a note this article has been stored in the specified file
+    void
+    ArticleHasBeenStored(NEWSArticle * article,string filename);
+
+    // Make a note this article has been stored
+    void
+    ArticleHasBeenKilled(NEWSArticle * article);
+
+    // Forward the Abort command to all child objects
+    void 
+    AbortChildren();
 
 private:
     NNTPRetrieveManager* fRetrieveManager;

@@ -6,8 +6,8 @@
 //  Filename  : NNTPRetrieveManager.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 1999/11/18 22:53:20 $
-//  $Revision: 1.4 $
+//  $Date: 2000/03/19 12:21:53 $
+//  $Revision: 1.5 $
 //  $RCSfile: NNTPRetrieveManager.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -36,6 +36,7 @@ class NNTPRetrieveManager; // Forward Declaration
 #include "CommandQueue.h"
 #include "NNTPCommandHandler.h"
 #include "NewsKiller.h"
+#include "DuplicatesChecker.h"
 
 //-------------------------------------------------------------------------
 
@@ -56,17 +57,20 @@ public:
     void
     GetGroups(vector<string> groupNames);
 
-    // Store th specified messageID so we can check if we get any duplicates
+    // Store the specified messageID so we can check if we get any duplicates
     // Returns 
     //  - true  if the messageID was unknown and it has been stored.
     //  - false if the messageID was already present and it has not been stored.
     bool
-    StoreMessageID(string newMessageID);
+    DoWeNeedToDownloadThisArticle(NEWSArticle * article);
 
-    // Store the specified filename so we know which files have to 
-    // be processed later
+    // Make a note this article has been stored in the specified file
     void
-    ArticleFileHasBeenWritten(string fileName);
+    ArticleHasBeenStored(NEWSArticle * article,string filename);
+
+    // Make a note this article has been stored
+    void
+    ArticleHasBeenKilled(NEWSArticle * article);
 
     void
     WaitForCompletion ();
@@ -83,8 +87,9 @@ private:
     
     CommandQueue  commands;
     
-    NewsKiller   fKiller;
-    IniFile      *fSettings;
+    NewsKiller         fKiller;
+    DuplicatesChecker  fDuplicatesChecker;
+    IniFile           *fSettings;
 };
 
 //-------------------------------------------------------------------------

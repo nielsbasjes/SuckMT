@@ -6,8 +6,8 @@ dnl -------------------------------------------------------------------------
 dnl   Filename  : configure.in_
 dnl   Sub-system: SuckMT, a multithreaded suck replacement
 dnl   Language  : Automake
-dnl   $Date: 2000/03/02 22:11:27 $
-dnl   $Revision: 1.8 $
+dnl   $Date: 2000/03/19 21:31:37 $
+dnl   $Revision: 1.9 $
 dnl   $RCSfile: configure.in_,v $
 dnl   $Author: niels $
 dnl =========================================================================
@@ -25,6 +25,22 @@ AC_INIT(Makefile.am)
 AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(suckmt,VERSION)
+
+AC_ARG_ENABLE(debug,
+[  --enable-debug    Turn debugging on
+  --disable-debug   Turn debugging off],
+[case "${enableval}" in
+  yes) debug=true ;;
+   no) debug=false ;;
+    *) debug=false ;;
+ esac],[debug=false])
+
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
+dnl Detect the operating system and set the correct flag
+
+AM_CONDITIONAL(UNAME_LINUX, test x`uname` = xLinux)
+AM_CONDITIONAL(UNAME_IRIX,  test x`uname` = xIrix)
 
 dnl Checks for programs.
 AC_PROG_CC

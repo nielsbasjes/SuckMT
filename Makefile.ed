@@ -6,8 +6,8 @@
 #  Filename  : Makefile.ed
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : make
-#  $Date: 2000/03/13 21:39:08 $
-#  $Revision: 1.10 $
+#  $Date: 2000/03/20 21:32:35 $
+#  $Revision: 1.13 $
 #  $RCSfile: Makefile.ed,v $
 #  $Author: niels $
 #=========================================================================
@@ -19,20 +19,37 @@
 #
 #=========================================================================
 
-.PHONY: TheMakefile
+.PHONY: CopyrightMessage debug nodebug TheMakefile
 
-all: TheMakefile
+all: CopyrightMessage TheMakefile
 	${MAKE}
 
-dist: TheMakefile
+install: CopyrightMessage TheMakefile
 	${MAKE} dist
 
-rpm: TheMakefile
+debug: CopyrightMessage configure
+	./configure --enable-debug
+	@echo The makefile has been created with debugging ENABLED
+	@echo Run make again to actually start building suckmt.
+
+nodebug: CopyrightMessage configure
+	./configure --disable-debug
+	@echo The makefile has been created with debugging DISABLED
+	@echo Run make again to actually start building suckmt.
+
+dist: CopyrightMessage TheMakefile
+	${MAKE} dist
+
+rpm: CopyrightMessage TheMakefile
 	${MAKE} rpm
-    
-configure: configure.in
+
+aclocal.m4: configure.in
 	aclocal
+
+Makefile.in: Makefile.am configure.in config.h.in
 	automake
+
+configure: configure.in Makefile.in aclocal.m4
 	autoconf
 	
 TheMakefile: configure
@@ -40,3 +57,21 @@ TheMakefile: configure
 
 configure.in: configure.in_ VERSION
 	sed s/VERSION/`cat VERSION`/g < configure.in_ > configure.in
+
+CopyrightMessage: VERSION
+	@echo "+==================================================+"
+	@echo "| ----------- GETTING READY TO BUILD ------------- |"
+	@echo "+==================================================+"
+	@echo "| Suck MT `cat VERSION` - A Multi Threaded suck replacement |"
+	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "+--------------------------------------------------+"
+	@echo "| SuckMT may be used under the GNU Public Licence. |"
+	@echo "+==================================================+"
+	@echo 
+	@echo "Available targets to build:"
+	@echo "- all     : Just build it all."
+	@echo "- debug   : ENABLE  source debugging for all following compile sessions."
+	@echo "- nodebug : DISABLE source debugging for all following compile sessions."
+	@echo "- dist    : Create a suckmt.`cat VERSION`.tar.gz source distribution."
+	@echo "- rpm     : Create an RPM and SRPM for suckmt."
+	@echo 

@@ -6,8 +6,8 @@
 #  Filename  : Makefile.am
 #  Sub-system: SuckMT, a multithreaded suck replacement
 #  Language  : automake
-#  $Date: 2000/03/14 19:45:38 $
-#  $Revision: 1.21 $
+#  $Date: 2000/03/20 20:09:00 $
+#  $Revision: 1.23 $
 #  $RCSfile: Makefile.am,v $
 #  $Author: niels $
 #=========================================================================
@@ -24,20 +24,20 @@ EXTRA_PROGRAMS = suckmtstatic
 
 #-------------------------
 
-# Optimization flags
-#CXXFLAGS = -O0  -g
-#CXXFLAGS = -O0 -g3 
-CXXFLAGS = -O3 
-
-#CFLAGS = -O0  -g
-#CFLAGS = -O0 -g3 
-CFLAGS = -O3 
-
-#Uncomment to remove the symbols from the final executables
+if DEBUG
+COMPILER_DEBUG = -O0 -g
+#Keep the symbols in the final executables
+LD_OMIT_SYMBOLS = 
+else
+COMPILER_DEBUG = -O3
+#Remove the symbols from the final executables
 LD_OMIT_SYMBOLS = -s
+endif
+
+CXXFLAGS = $(COMPILER_DEBUG)
+CFLAGS = $(COMPILER_DEBUG)
 
 #-------------------------
-
 
 SUCKSOURCES  = main.cpp 
 SUCKSOURCES += posix.cc 
@@ -91,7 +91,7 @@ EXTRA_DIST += omnithread/posix.h    posix.cc
 EXTRA_DIST += omnithread/solaris.h  solaris.cc 
 
 # All the C++ sources and header files.
-EXTRA_DIST += SuckDefines.h main.cpp tsqueue.h  
+EXTRA_DIST += SuckDefines.h config.h main.cpp tsqueue.h  
 EXTRA_DIST += SetProcTitle.h            SetProcTitle.cpp 
 EXTRA_DIST += AsciiLineSocket.h         AsciiLineSocket.cpp 
 EXTRA_DIST += Abortable.h               Abortable.cpp 
@@ -118,28 +118,44 @@ EXTRA_DIST += MultiStream.h             MultiStream.cpp
 EXTRA_DIST += TraceLog.h                TraceLog.cpp 
 
 # Enable Compiler warnings
-ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
+#ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
+ALLWARNINGS = -Wall -W  -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Woverloaded-virtual -Wsynth 
 CXXFLAGS += $(ALLWARNINGS)
-#CFLAGS += $(ALLWARNINGS)
+CFLAGS += -Wall -W
 
 #Some flags for the regular expression library
 CXXFLAGS += -DSTDC_HEADERS -DREGEX_MALLOC
+CFLAGS   += -DSTDC_HEADERS -DREGEX_MALLOC
 
-#echo @$(PLATFORM)@
+#------------------------------
+# Flags for omnithread
+# Linux ?
+if UNAME_LINUX
+OMNITHREADFLAGS = -D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
+PLATFORM=Linux
+endif
 
-UNAME=`uname`
-
-#ifeq ($(UNAME),Linux)
-CXXFLAGS += -D__x86__ -D__linux__ -D__OSVERSION__=2 -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
-#endif
-
+# IRIX ?
 # IRIX FLAGS TO BE CHECKED
-#ifeq ($(UNAME),IRIX)
-#CXXFLAGS+=-D__irix__ -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
-#endif
+if UNAME_IRIX
+OMNITHREADFLAGS = -D__irix__ -DNoNanoSleep -D_REENTRANT -DPthreadDraftVersion=10
+PLATFORM=Irix
+endif
+
+CXXFLAGS += $(OMNITHREADFLAGS)
+CFLAGS += $(OMNITHREADFLAGS)
+
+#------------------------------
+# Explicit dependency
+SuckDefines.h: VERSION
+	touch SuckDefines.h
+
+#------------------------------
 
 cxxflags:
-	echo @$(CXXFLAGS)@
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo PLATFORM=$(PLATFORM)
+
 
 # This target makes the distribution easier to build for the end user.
 dist-hook: suckmt.lsm suckmt.spec
@@ -158,10 +174,38 @@ suckmt.lsm: suckmt.lsm.in configure.in
         | sed "s/\#VERSION\#/$(VERSION)/g" \
         | sed "s/\#DATE\#/`date +%Y-%m-%d`/g" > suckmt.lsm
 
-rpm: suckmt.lsm suckmt.spec dist
+rpm: CopyrightMessage suckmt.lsm suckmt.spec dist
 	rpm -ta $(distdir).tar.gz 
-	mv /usr/src/*/RPMS/i386/suckmt*.rpm ~
-	mv /usr/src/*/SRPMS/suckmt*.rpm ~
+	mv /usr/src/*/RPMS/i386/suckmt*.rpm .
+	mv /usr/src/*/SRPMS/suckmt*.rpm .
+
+debug: CopyrightMessage configure
+	./configure --enable-debug
+	@echo The makefile has been created with debugging ENABLED
+	@echo Run make again to actually start building suckmt.
+
+nodebug: CopyrightMessage configure
+	./configure --disable-debug
+	@echo The makefile has been created with debugging DISABLED
+	@echo Run make again to actually start building suckmt.
+
+CopyrightMessage: VERSION
+	@echo "+==================================================+"
+	@echo "| ----------- GETTING READY TO BUILD ------------- |"
+	@echo "+==================================================+"
+	@echo "| Suck MT `cat VERSION` - A Multi Threaded suck replacement |"
+	@echo "| (C)2000 by Niels Basjes  -  http://go.to/suckmt  |"
+	@echo "+--------------------------------------------------+"
+	@echo "| SuckMT may be used under the GNU Public Licence. |"
+	@echo "+==================================================+"
+	@echo 
+	@echo "Available targets to build:"
+	@echo "- all     : Just build it all."
+	@echo "- debug   : ENABLE  source debugging for all following compile sessions."
+	@echo "- nodebug : DISABLE source debugging for all following compile sessions."
+	@echo "- dist    : Create a suckmt.`cat VERSION`.tar.gz source distribution."
+	@echo "- rpm     : Create an RPM and SRPM for suckmt."
+	@echo 
 
 #End of the file Makefile.am
 #=========================================================================

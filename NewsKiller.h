@@ -6,8 +6,8 @@
 //  Filename  : NewsKiller.h
 //  Sub-system: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Date: 2000/03/02 20:51:30 $
-//  $Revision: 1.12 $
+//  $Date: 2000/03/19 12:21:58 $
+//  $Revision: 1.13 $
 //  $RCSfile: NewsKiller.h,v $
 //  $Author: niels $
 //=========================================================================
@@ -41,10 +41,8 @@ class NewsKiller; // Forward declaration
 #include <fstream.h>
 #include "NEWSArticle.h"
 #include "IniFile.h"
-#include "Printable.h"
 #include "omnithread.h"
 #include "HeaderMatcher.h"
-#include "DuplicatesChecker.h"
 
 //-------------------------------------------------------------------------
 
@@ -57,7 +55,7 @@ class NewsKiller; // Forward declaration
 
 //-------------------------------------------------------------------------
 
-class NewsKiller : public Printable, public Abortable
+class NewsKiller
 {
 public: 
     NewsKiller(IniFile *settings);
@@ -66,19 +64,10 @@ public:
     bool 
     DoWeKeepThisArticle(NEWSArticle * article);
 
-    void 
-    AbortChildren();
-
-    void 
-    Print (ostream &os) const;
-
 private:
     //------------------------------------------------------
     // Private members that are actually used for the storage 
     omni_mutex valuesMutex;    
-
-    // The settings file contains all downloaded message IDs
-    DuplicatesChecker fDuplicatesChecker;
 
     // The settings file contains all the kill rules
     IniFile          *fSettings;
@@ -147,8 +136,6 @@ private:
     ExecuteHeaderMatchers(NEWSArticle * article, strstream &killReasons, 
                           string headerName);
 };
-
-DEFINE_PRINTABLE_OPERATORS(NewsKiller)
 
 //-------------------------------------------------------------------------
 

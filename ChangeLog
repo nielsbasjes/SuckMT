@@ -40,4 +40,8 @@ Version 0.50
     Rewrite: (Almost) All messages use the LogStreams now.
     Changed: The -init option now updates the INI file if it already exists.    
     Fixed: It is now possible to create an RPM and SRPM file.
-           
+Version 0.51
+    Fixed: The restart file didn't include the killed messages.
+    Fixed: Constant size memory leak (unimportant but I fixed it anyway).
+    Changed: The makefiles have been improved and it's now possible to enable debugging without having to change the makefiles.
+
