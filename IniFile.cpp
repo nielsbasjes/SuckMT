@@ -97,7 +97,7 @@ IniFile::ReadFile(string filename)
             inFile.getline(buffer,9999);
             work_buffer += buffer;
         }
-        
+
         // Skip leading spaces and tabs
         RemoveLeadingSpaces(work_buffer);
 
@@ -146,7 +146,7 @@ IniFile::ReadFile(string filename)
             RemoveTrailingSpaces(work_buffer);
             
             // This is the start of a new section
-            string token(work_buffer,work_buffer.find("]"));
+            string token(work_buffer,0,work_buffer.find("]"));
 
             RemoveTrailingSpaces(token);
 

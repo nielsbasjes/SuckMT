@@ -1,43 +1,18 @@
-[]]
-News server Hostname                          = news.wirehub.nl
-Enable Kill Logfile                           = False
-Minimum Lines in a Message                    = -1 ;   100
-Maximum Lines in a Message                    = 500 ;   100
-Maximum Bytes in a Message                    = 15000 ;   100
-Maximum Groups in a Message                   = 4 ;   100
-Maximum messages per newsgroup threshold      = 1000
-Only download N messages when over threshold  = 100
-comp.os.linux.announce                        = 0
-nl.comp.os.linux.announce                     = 0
-~Content-Type:text/html                       = Tue Oct 17 23:44:18 2000 ;    79 ; 10000
-~Content-Type:multipart/alternative           = Fri Oct 20 17:42:28 2000 ;   872 ; 10000
-~Content-Type:multipart/mixed                 = Thu Oct 19 05:36:56 2000 ;   365 ; 10000
-~Content-Transfer-Encoding:base64             = Tue Feb  8 20:02:25 2000 ;     9 ; 10000
-~Newsgroups:nl.markt                          = Sun Oct 22 17:28:33 2000 ;  3446 ;   100
-~Subject:Geld verdienen                       = Wed Oct 18 03:09:37 2000 ;    58 ;   100
-~Subject:FS:                                  = Wed Aug 16 20:06:34 2000 ;   373 ;   100
-~From:maxss@dds.nl                            = Sat Sep 16 14:15:23 2000 ;    57 ;   100
-~From:none@none.com                           = Wed Oct 18 03:09:37 2000 ;    97 ;   100
-~Subject:C.A.B.L.E                            = Thu Jun 29 22:43:50 2000 ;     2 ;   100
-Newsgroups:^comp.os.linux.announce$           = Sun Oct 22 17:28:33 2000 ;  1873 ;  1000
-Newsgroups:^nl.comp.os.linux.announce$        = Sat Oct 21 20:40:41 2000 ;   117 ;  1000
-Newsgroups:^wirehub                           = Sat Oct 21 20:40:41 2000 ;   639 ;  1000
-
 [Suck MT Copyright Information]
 Author                         = SuckMT was written by ir. Niels Basjes (C) 1999-2001
 Suck MT License                = SuckMT is distributed under the GNU Public License.
 The Suck MT website            = http://go.to/suckmt
 You can email the author at    = SuckMT@Basjes.nl
-This file created by version   = 0.56
-This file modified by version  = 0.56
+This file created by version   = 0.57
+This file modified by version  = 0.57
 
 [Suck MT Installation]
-Date of first run  = Wed Jul 28 21:12:42 2004
-Date of last run   = Wed Jul 28 21:12:42 2004
+Date of first run  = Fri Oct  1 10:16:31 2004
+Date of last run   = Fri Oct  1 10:16:31 2004
 Run number         = 1
 
 [Suck MT Configuration]
-News server Hostname                        = news
+News server Hostname                        = news.wirehub.nl
 Connect with Port Number                    = 119
 Connect with Username                       = 
 Connect with Password                       = 
@@ -51,24 +26,37 @@ Number of retries if connection fails       = 0
 Send MODE READER to the server              = True
 Logging amount [0(nothing)..7(noise)]       = 2
 
-[Global Kill Rules]
-Minimum Lines in a Message                    = -1 ; 100
-Maximum Lines in a Message                    = -1 ; 100
-Maximum Bytes in a Message                    = -1 ; 100
-Maximum Groups in a Message                   = -1 ; 100
-Maximum messages per newsgroup threshold      = -1
-Only download N messages when over threshold  = -1
-
 [Kill Log File]
 Enable Kill Logfile   = False
 Kill Log Filename     = /tmp/SuckMT-KillLog.txt
 Kill Logfile Headers  = From Subject Newsgroups Lines X-Trace X-Complaints-To Message-ID
 
+[Global Kill Rules]
+Minimum Lines in a Message                    = -1 ;   100
+Maximum Lines in a Message                    = 500 ;   100
+Maximum Bytes in a Message                    = 15000 ;   100
+Maximum Groups in a Message                   = 4 ;   100
+Maximum messages per newsgroup threshold      = 1000
+Only download N messages when over threshold  = 100
+
 [News Groups]
+comp.os.linux.announce     = 0
+nl.comp.os.linux.announce  = 0
 
 [Kill Headers]
-Content-Type:text/html  = not yet ; 0 ; 10000
+~Content-Type:text/html              = Tue Oct 17 23:44:18 2000 ;    79 ; 10000
+~Content-Type:multipart/alternative  = Fri Oct 20 17:42:28 2000 ;   872 ; 10000
+~Content-Type:multipart/mixed        = Thu Oct 19 05:36:56 2000 ;   365 ; 10000
+~Content-Transfer-Encoding:base64    = Tue Feb  8 20:02:25 2000 ;     9 ; 10000
+~Newsgroups:nl.markt                 = Sun Oct 22 17:28:33 2000 ;  3446 ;   100
+~Subject:Geld verdienen              = Wed Oct 18 03:09:37 2000 ;    58 ;   100
+~Subject:FS:                         = Wed Aug 16 20:06:34 2000 ;   373 ;   100
+~From:maxss@dds.nl                   = Sat Sep 16 14:15:23 2000 ;    57 ;   100
+~From:none@none.com                  = Wed Oct 18 03:09:37 2000 ;    97 ;   100
+~Subject:C.A.B.L.E                   = Thu Jun 29 22:43:50 2000 ;     2 ;   100
 
 [Keep Headers]
-~From:Niels Basjes  = not yet ; 0 ; 10000
+Newsgroups:^comp.os.linux.announce$     = Sun Oct 22 17:28:33 2000 ;  1873 ;  1000
+Newsgroups:^nl.comp.os.linux.announce$  = Sat Oct 21 20:40:41 2000 ;   117 ;  1000
+Newsgroups:^wirehub                     = Sat Oct 21 20:40:41 2000 ;   639 ;  1000
 

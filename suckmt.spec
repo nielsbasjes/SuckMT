@@ -15,9 +15,9 @@
 Vendor: Niels Basjes
 Summary: SuckMT, a multithreaded suck replacement
 Name: suckmt
-Version: 0.56
+Version: 0.57
 Release: 1
-Source: http://www.wirehub.nl/~basjesn/suckmt/Files/suckmt-0.56.tar.gz
+Source: http://www.wirehub.nl/~basjesn/suckmt/Files/suckmt-0.57.tar.gz
 Packager: Niels Basjes <SuckMT@Basjes.nl>
 BuildRoot: /tmp/suck-%{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
 Copyright: GPL
