@@ -76,7 +76,6 @@ FUNCTION_START(CommandHandler::run_undetached(void* /*arg*/))
             {
                 cout << "FATAL ERROR !!!!!!" << endl << flush;
                 busy = false;
-                return NULL;
             }
             
             currentCommandMutex.lock();

@@ -294,7 +294,7 @@ IniFile::GetValue(string section, string name, long &value)
 
     //  man strtol says: "Thus, if *nptr is not `\0' but **endptr 
     //  is `\0' on return, the entire string is valid.
-    if (*endptr != 0x00 || errno == ERANGE )
+    if (*endptr != 0x00 /*|| errno == ERANGE*/ )
         return false;
 
     value = currentNumberValue;
