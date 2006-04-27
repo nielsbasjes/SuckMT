@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: RedHat RPM spec file.
-#  $Id: suckmt.spec.in 11 2004-12-26 20:06:37Z niels $
-#  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
-#  $Revision: 11 $
+#  $Id: suckmt.spec.in 12 2006-04-27 22:08:45Z niels $
+#  $Date: 2006-04-28 00:08:45 +0200 (Fri, 28 Apr 2006) $
+#  $Revision: 12 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #
@@ -29,7 +29,7 @@ Release: 1
 Source: http://oss.basjes.nl/SuckMT/Files/suckmt-#VERSION#.tar.gz
 Packager: Niels Basjes <SuckMT@Basjes.nl>
 BuildRoot: /tmp/suck-%{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Copyright: GPL
+License: GPLv2
 Group: News
 Provides: suckmt
 Requires: boost

@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: main.cpp 8 2004-12-20 22:15:34Z niels $
-//  $Date: 2004-12-20 23:15:34 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 8 $
+//  $Id: main.cpp 12 2006-04-27 22:08:45Z niels $
+//  $Date: 2006-04-28 00:08:45 +0200 (Fri, 28 Apr 2006) $
+//  $Revision: 12 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -108,9 +108,9 @@ InitializeIniFile(IniFile &settings)
  
     // Setting copyright information 
     settings.SetValue(SUCK_COPYRIGHT,SUCK_AUTHOR,
-            string("SuckMT was written by drs. ir. Niels Basjes (C) 1999-2005"));
+            string("SuckMT was written by ir. drs. Niels Basjes (C) 1999-2006"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_LICENSE,
-            string("SuckMT is distributed under the GNU Public License."));
+            string("SuckMT is distributed under the GNU Public License V2."));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_WEBSITE,
             string("http://suckmt.basjes.nl"));
     settings.SetValue(SUCK_COPYRIGHT,SUCK_EMAIL,
