@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language: English
-//  $Id: ChangeLog 11 2004-12-26 20:06:37Z niels $
-//  $Date: 2004-12-26 21:06:37 +0100 (Sun, 26 Dec 2004) $
-//  $Revision: 11 $
+//  $Id: ChangeLog 13 2006-04-27 22:09:16Z niels $
+//  $Date: 2006-04-28 00:09:16 +0200 (Fri, 28 Apr 2006) $
+//  $Revision: 13 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
@@ -115,3 +115,5 @@ Version 0.58
     Updated: Copyright info updated to reflect current year.
     Updated: Changed CVS tags into SVN tags.
     Changed: The default config file location has been changed from /etc/suckmt.ini to /etc/suckmt/suckmt.ini
+Version 0.60
+    Fixed: SuckMT now builds on Fedora Core 5 (IMPORTANT: I DON'T KNOW IF IT WORKS WITH SELINUX ON !) 
