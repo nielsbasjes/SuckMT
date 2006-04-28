@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: automake
-#  $Id: GNUmakefile.am 12 2006-04-27 22:08:45Z niels $
-#  $Date: 2006-04-28 00:08:45 +0200 (Fri, 28 Apr 2006) $
-#  $Revision: 12 $
+#  $Id: GNUmakefile.am 16 2006-04-28 17:09:07Z niels $
+#  $Date: 2006-04-28 19:09:07 +0200 (Fri, 28 Apr 2006) $
+#  $Revision: 16 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #
@@ -150,10 +150,10 @@ AM_CFLAGS +=
 suckmt_SOURCES = $(SUCKSOURCES)
 suckmtstatic_SOURCES = $(SUCKSOURCES)
 
-suckmt_LDFLAGS        = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) 
-suckmt_LDADD          = $(OMNITHREADLINKFLAG)
-suckmtstatic_LDFLAGS  = $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) -static 
-suckmtstatic_LDADD    = $(OMNITHREADLINKFLAG) 
+suckmt_LDFLAGS        = -lboost_regex $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) 
+suckmt_LDADD          = -lboost_regex $(OMNITHREADLINKFLAG)
+suckmtstatic_LDFLAGS  = -lboost_regex $(OMNITHREADLINKFLAG) $(LD_OMIT_SYMBOLS) -static 
+suckmtstatic_LDADD    = -lboost_regex $(OMNITHREADLINKFLAG) 
 
 #------------------------------
 # Explicit dependency
@@ -290,7 +290,8 @@ CopyrightMessage: VERSION
 	@echo 
 
 full-revert: clean
-	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h{,.in}
+	rm -f *.o core *.core suckmt suckmt-static
+	rm -f configure configure.in config.{status,cache,log,h,h.in} aclocal.m4 stamp-h*
 	rm -f GNUmakefile GNUmakefile.in 
 	rm -f suckmt.lsm suckmt.spec suckmt.ini.sample suckmt.ini.sample.win32 
 	rm -rf .deps
