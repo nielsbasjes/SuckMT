@@ -1,13 +1,13 @@
 #=========================================================================
-#                 Copyright (C)1999-2005 by Niels Basjes
+#                 Copyright (C)1999-2006 by Niels Basjes
 #              SuckMT Website : http://oss.basjes.nl/SuckMT
 #                       Author: SuckMT@Basjes.nl
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: make
-#  $Id: Makefile.nognumake 10 2004-12-26 19:40:18Z niels $
-#  $Date: 2004-12-26 20:40:18 +0100 (Sun, 26 Dec 2004) $
-#  $Revision: 10 $
+#  $Id: Makefile.nognumake 15 2006-04-28 17:08:25Z niels $
+#  $Date: 2006-04-28 19:08:25 +0200 (Fri, 28 Apr 2006) $
+#  $Revision: 15 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #
@@ -24,7 +24,7 @@
 all: 
 	@echo "+==================================================+"
 	@echo "| SuckMT `cat VERSION` - A Multi Threaded suck replacement  |"
-	@echo "| (C)2005 by Niels Basjes  http://suckmt.basjes.nl |"
+	@echo "| (C)2006 by Niels Basjes  http://suckmt.basjes.nl |"
 	@echo "+--------------------------------------------------+"
 	@echo "| SuckMT may be used under the GNU Public Licence. |"
 	@echo "+==================================================+"
