@@ -5,9 +5,9 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: make
-#  $Id: Makefile 14 2006-04-28 17:07:53Z niels $
-#  $Date: 2006-04-28 19:07:53 +0200 (Fri, 28 Apr 2006) $
-#  $Revision: 14 $
+#  $Id: Makefile 17 2008-08-17 15:29:35Z niels $
+#  $Date: 2008-08-17 17:29:35 +0200 (Sun, 17 Aug 2008) $
+#  $Revision: 17 $
 #  $LastChangedBy: niels $
 #=========================================================================
 #

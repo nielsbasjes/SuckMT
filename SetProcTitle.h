@@ -5,9 +5,9 @@
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: SetProcTitle.h 6 2004-12-20 20:53:20Z niels $
-//  $Date: 2004-12-20 21:53:20 +0100 (Mon, 20 Dec 2004) $
-//  $Revision: 6 $
+//  $Id: SetProcTitle.h 17 2008-08-17 15:29:35Z niels $
+//  $Date: 2008-08-17 17:29:35 +0200 (Sun, 17 Aug 2008) $
+//  $Revision: 17 $
 //  $LastChangedBy: niels $
 //=========================================================================
 //
