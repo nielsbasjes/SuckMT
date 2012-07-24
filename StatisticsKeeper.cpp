@@ -1,14 +1,10 @@
 //=========================================================================
-//                 Copyright (C)1999-2005 by Niels Basjes
+//                 Copyright (C)1999-2012 by Niels Basjes
 //              SuckMT Website : http://oss.basjes.nl/SuckMT
 //                       Author: SuckMT@Basjes.nl
 //-------------------------------------------------------------------------
 //  Project: SuckMT, a multithreaded suck replacement
 //  Language  : C++
-//  $Id: StatisticsKeeper.cpp 17 2008-08-17 15:29:35Z niels $
-//  $Date: 2008-08-17 17:29:35 +0200 (Sun, 17 Aug 2008) $
-//  $Revision: 17 $
-//  $LastChangedBy: niels $
 //=========================================================================
 //
 //   This program is free software; you can redistribute it and/or modify

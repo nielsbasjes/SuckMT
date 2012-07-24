@@ -5,10 +5,6 @@
 #-------------------------------------------------------------------------
 #  Project: SuckMT, a multithreaded suck replacement
 #  Language: make
-#  $Id: Makefile.nognumake 17 2008-08-17 15:29:35Z niels $
-#  $Date: 2008-08-17 17:29:35 +0200 (Sun, 17 Aug 2008) $
-#  $Revision: 17 $
-#  $LastChangedBy: niels $
 #=========================================================================
 #
 #   This program is free software; you can redistribute it and/or modify

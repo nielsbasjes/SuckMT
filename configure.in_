@@ -1,14 +1,10 @@
 dnl =========================================================================
-dnl                  Copyright (C)1999-2005 by Niels Basjes
+dnl                  Copyright (C)1999-2012 by Niels Basjes
 dnl               SuckMT Website : http://oss.basjes.nl/SuckMT
 dnl                        Author: SuckMT@Basjes.nl
 dnl -------------------------------------------------------------------------
 dnl   Project: SuckMT, a multithreaded suck replacement
 dnl   Language: Automake
-dnl   $Id: configure.in_ 17 2008-08-17 15:29:35Z niels $
-dnl   $Date: 2008-08-17 17:29:35 +0200 (Sun, 17 Aug 2008) $
-dnl   $Revision: 17 $
-dnl   $LastChangedBy: niels $
 dnl =========================================================================
 dnl 
 dnl    This program is free software; you can redistribute it and/or modify
